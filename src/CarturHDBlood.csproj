@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>CarturHDBlood</AssemblyName>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
+    <!-- Managed DLLs come from the raw Steam install -->
+    <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
+    <!-- Actual play happens through r2modman's Default profile - deploy the built DLL there -->
+    <R2MODMAN_PROFILE Condition="'$(R2MODMAN_PROFILE)' == ''">$(APPDATA)\r2modmanPlus-local\Valheim\profiles\Default</R2MODMAN_PROFILE>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="HarmonyX" Version="2.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Stay PNGs rather than raw pixel dumps: they're decoded via reflection on LoadImage,
+         which avoids referencing the ReadOnlySpan<byte> overload set at compile time
+         (CS0518 under net472 against this game's netstandard.dll). -->
+    <EmbeddedResource Include="Assets\blood_splat_atlas.png">
+      <LogicalName>CarturHDBlood.blood_splat_atlas.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\blood_splat_atlas_n.png">
+      <LogicalName>CarturHDBlood.blood_splat_atlas_n.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\blood_droplet.png">
+      <LogicalName>CarturHDBlood.blood_droplet.png</LogicalName>
+    </EmbeddedResource>
+    <!-- Single-cell fallback, used when UseVariantAtlas is off. Without it, disabling the
+         atlas would leave the full sheet mapped onto one quad - a square blob. -->
+    <EmbeddedResource Include="Assets\blood_splat_single.png">
+      <LogicalName>CarturHDBlood.blood_splat_single.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\blood_splat_single_n.png">
+      <LogicalName>CarturHDBlood.blood_splat_single_n.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\assembly_valheim.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\assembly_utils.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- ParticleSystem, its module structs, and ParticleSystemRenderer all live here. The whole
+         probe is about reading those, so this reference is the load-bearing one. -->
+    <!-- Physics.Raycast, used to find the ground under a kill so a pool lies on the surface. -->
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(VALHEIM_INSTALL)\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Auto-deploy built DLL into the r2modman profile BepInEx actually loads -->
+  <Target Name="DeployToPlugins" AfterTargets="Build">
+    <ItemGroup>
+      <DeployFiles Include="$(TargetDir)$(AssemblyName).dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood" />
+    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood" />
+  </Target>
+
+</Project>

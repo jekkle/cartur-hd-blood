@@ -1,0 +1,946 @@
+Cartur's HD Blood - effect reference graph
+generated 2026-09-08 18:26:28
+
+scanned 3505 prefabs in 364 ms
+
+================================================================
+REFERENCES TO BLOOD EFFECT PREFABS
+  (owner prefab :: component.field -> effect prefab)
+
+  AxeBerzerkrBlood :: ItemDrop.m_itemData.m_shared.m_attack.m_hitEffect -> fx_bloodweapon_hit  (enabled=True)
+  AxeBerzerkrBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  AxeBerzerkrBlood :: ItemDrop.m_itemData.m_shared.m_hitEffect -> sfx_weapons_blood_impact  (enabled=True)
+  BowAshlandsBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  BowAshlandsBlood :: ItemDrop.m_itemData.m_shared.m_triggerEffect -> sfx_weapons_blood_impact  (enabled=True)
+  BowAshlandsBlood :: ItemDrop.m_itemData.m_shared.m_triggerEffect -> vfx_ashlandsbow_blood_fire  (enabled=True)
+  CrossbowRipperBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  CrossbowRipperBlood :: ItemDrop.m_itemData.m_shared.m_triggerEffect -> sfx_weapons_blood_impact  (enabled=True)
+  CrossbowRipperBlood :: ItemDrop.m_itemData.m_shared.m_triggerEffect -> vfx_crossbow_blood_fire  (enabled=True)
+  fuling_trap :: Aoe.m_hitEffects -> vfx_BloodHit  (enabled=True)
+  MaceEldnerBlood :: ItemDrop.m_itemData.m_shared.m_attack.m_hitEffect -> fx_bloodweapon_hit  (enabled=True)
+  MaceEldnerBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  MaceEldnerBlood :: ItemDrop.m_itemData.m_shared.m_hitEffect -> sfx_weapons_blood_impact  (enabled=True)
+  piece_trap_troll :: Aoe.m_hitEffects -> vfx_BloodHit  (enabled=True)
+  projectile_splitner_blood :: Projectile.m_hitEffects -> fx_bloodweapon_hit  (enabled=True)
+  SpearSplitner_Blood :: ItemDrop.m_itemData.m_shared.m_attack.m_hitEffect -> fx_bloodweapon_hit  (enabled=True)
+  SpearSplitner_Blood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  SpearSplitner_Blood :: ItemDrop.m_itemData.m_shared.m_hitEffect -> sfx_weapons_blood_impact  (enabled=True)
+  SwordNiedhoggBlood :: ItemDrop.m_itemData.m_shared.m_attack.m_hitEffect -> fx_bloodweapon_hit  (enabled=True)
+  SwordNiedhoggBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  SwordNiedhoggBlood :: ItemDrop.m_itemData.m_shared.m_hitEffect -> sfx_weapons_blood_impact  (enabled=True)
+  THSwordSlayerBlood :: ItemDrop.m_itemData.m_shared.m_attack.m_hitEffect -> fx_bloodweapon_hit  (enabled=True)
+  THSwordSlayerBlood :: ItemDrop.m_itemData.m_shared.m_equipEffect -> sfx_weapons_blood_enable  (enabled=True)
+  THSwordSlayerBlood :: ItemDrop.m_itemData.m_shared.m_hitEffect -> sfx_weapons_blood_impact  (enabled=True)
+
+================================================================
+EVERY PREFAB CARRYING A ParticleDecal, GROUPED BY DECAL MATERIAL
+  (if a material's only owners are the standalone blood prefabs, then
+   editing those prefabs reaches every decal that uses it)
+
+  material "seeker_blood_splat" id=218850 _MainTex="brains" 64x64  -  15 owner(s):
+      fx_babyseeker_death :: fx_babyseeker_death/drops-withdecals (m_chance=40)
+      fx_babyseeker_hurt :: fx_babyseeker_hurt/drops-withdecals (m_chance=40)
+      fx_egg_splash :: fx_egg_splash/drops-withdecals (m_chance=100)
+      fx_gjall_death :: fx_gjall_death/drops-withdecals (m_chance=100)
+      fx_jelly_pickup :: fx_jelly_pickup/drops-withdecals (m_chance=100)
+      fx_Queen_Death :: fx_Queen_Death/drops-withdecals (m_chance=100)
+      fx_Queen_Death :: fx_Queen_Death/lumps-ass-with decals (m_chance=40)
+      fx_seeker_death :: fx_seeker_death/drops-withdecals (m_chance=40)
+      fx_seeker_hurt :: fx_seeker_hurt/drops-withdecals (m_chance=40)
+      fx_seeker_spawn :: fx_seeker_spawn/drops-withdecals (m_chance=40)
+      fx_seekerbrute_death :: fx_seekerbrute_death/drops-withdecals (m_chance=40)
+      fx_seekerbrute_death :: fx_seekerbrute_death/lumps-ass-with decals (m_chance=40)
+      SeekerQueen_projectile_spit :: SeekerQueen_projectile_spit/drops-withdecals (m_chance=40)
+      SeekerQueen_projectile_teleport :: SeekerQueen_projectile_teleport/drops-withdecals (m_chance=40)
+      vfx_hjall_spit_hit :: vfx_hjall_spit_hit/splash decals (m_chance=100)
+
+  material "splat_decal_blend" id=135318 _MainTex="brains" 64x64  -  88 owner(s):
+      fx_bat_death :: fx_bat_death/splat (m_chance=100)
+      fx_bat_death :: fx_bat_death/vfx_BloodHit 1 (m_chance=10)
+      fx_bat_hit :: fx_bat_hit/vfx_BloodHit_decals (m_chance=100)
+      fx_bjorn_death :: fx_bjorn_death/vfx_BloodHit 1 (m_chance=10)
+      fx_bjorn_hit :: fx_bjorn_hit/bloodchunks (m_chance=100)
+      fx_chicken_death :: fx_chicken_death/vfx_BloodHit 1 (1) (m_chance=10)
+      fx_deathsquito_hit :: fx_deathsquito_hit/vfx_BloodHit_decals (m_chance=100)
+      fx_deatsquito_death :: fx_deatsquito_death/blobs (m_chance=100)
+      fx_deatsquito_death :: fx_deatsquito_death/splat (m_chance=100)
+      fx_deatsquito_death :: fx_deatsquito_death/vfx_BloodHit 1 (m_chance=10)
+      fx_Dverger_death :: fx_Dverger_death/bloodchunks (m_chance=100)
+      fx_Dverger_hit :: fx_Dverger_hit/bloodchunks (m_chance=100)
+      fx_fallenvalkyrie_death :: fx_fallenvalkyrie_death/vfx_BloodHit 1 (m_chance=10)
+      fx_gjall_death :: fx_gjall_death/Eggs/drops-withdecals (m_chance=10)
+      fx_gjall_egg_splat :: fx_gjall_egg_splat/drops-withdecals (m_chance=10)
+      fx_goblinking_death :: fx_goblinking_death/bloodchunks (m_chance=100)
+      fx_goblinking_hit :: fx_goblinking_hit/cunks (m_chance=100)
+      fx_hare_death :: fx_hare_death/vfx_BloodHit 1 (m_chance=10)
+      fx_hen_death :: fx_hen_death/vfx_BloodHit 1 (1) (m_chance=10)
+      fx_lox_death :: fx_lox_death/vfx_BloodHit 1 (m_chance=10)
+      fx_lox_hit :: fx_lox_hit/bloodchunks (m_chance=100)
+      fx_loxcalf_death :: fx_loxcalf_death/vfx_BloodHit 1 (m_chance=10)
+      fx_morgen_death :: fx_morgen_death/vfx_BloodHit 1 (m_chance=10)
+      fx_Puke :: fx_Puke/tardrop (m_chance=100)
+      fx_Puke :: fx_Puke/flow_local (m_chance=100)
+      fx_tentaroot_death :: fx_tentaroot_death/blobs (m_chance=100)
+      fx_tentaroot_death :: fx_tentaroot_death/splat (m_chance=100)
+      fx_tick_death :: fx_tick_death/drops-withdecals (m_chance=10)
+      fx_TickBloodHit :: fx_TickBloodHit/bloodchunks (m_chance=100)
+      fx_unbjorn_death :: fx_unbjorn_death/vfx_BloodHit 1 (m_chance=10)
+      fx_unbjorn_hit :: fx_unbjorn_hit/bloodchunks (m_chance=100)
+      vfx_blob_death :: vfx_blob_death/Chunks (m_chance=100)
+      vfx_blob_frost_death :: vfx_blob_frost_death/Chunks (m_chance=100)
+      vfx_blob_hit :: vfx_blob_hit/chunks (m_chance=100)
+      vfx_BloodDeath :: vfx_BloodDeath/vfx_BloodHit 1 (m_chance=22)
+      vfx_BloodHit :: vfx_BloodHit/bloodchunks (m_chance=100)
+      vfx_boar_death :: vfx_boar_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_boar_hit :: vfx_boar_hit/bloodchunks (m_chance=100)
+      vfx_BonemassDeath :: vfx_BonemassDeath/Chunks (m_chance=100)
+      vfx_BonemassHit :: vfx_BonemassHit/Chunks (m_chance=100)
+      vfx_bonemawserpent_death :: vfx_bonemawserpent_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_deer_death :: vfx_deer_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_deer_hit :: vfx_deer_hit/bloodchunks (m_chance=100)
+      vfx_dragon_coldbreath :: vfx_dragon_coldbreath/spray (m_chance=48)
+      vfx_dragon_death :: vfx_dragon_death/bloodchunks (m_chance=100)
+      vfx_dragon_hurt :: vfx_dragon_hurt/bloodchunks (m_chance=100)
+      vfx_dragonegg_destroy :: vfx_dragonegg_destroy/blood_drops (m_chance=20)
+      vfx_draugr_death :: vfx_draugr_death/Chunks (m_chance=100)
+      vfx_draugr_hit :: vfx_draugr_hit/chunks (m_chance=100)
+      vfx_draugrpile_hit :: vfx_draugrpile_hit/chunks (m_chance=100)
+      vfx_eikthyr_death :: vfx_eikthyr_death/vfx_BloodHit 1 (m_chance=50)
+      vfx_fenring_cultist_death :: vfx_fenring_cultist_death/vfx_BloodHit 1 (m_chance=15)
+      vfx_fenring_cultist_hildir_death :: vfx_fenring_cultist_hildir_death/vfx_BloodHit 1 (m_chance=15)
+      vfx_fenring_death :: vfx_fenring_death/vfx_BloodHit 1 (m_chance=15)
+      vfx_fenring_hurt :: vfx_fenring_hurt/bloodchunks (m_chance=100)
+      vfx_foresttroll_hit :: vfx_foresttroll_hit/cunks (m_chance=100)
+      vfx_frosttroll_hit :: vfx_frosttroll_hit/cunks (m_chance=100)
+      vfx_goblin_death :: vfx_goblin_death/bloodchunks (m_chance=100)
+      vfx_goblin_hit :: vfx_goblin_hit/bloodchunks (m_chance=100)
+      vfx_goblinbrute_death :: vfx_goblinbrute_death/bloodchunks (m_chance=100)
+      vfx_goblinbrute_hildir_death :: vfx_goblinbrute_hildir_death/bloodchunks (m_chance=100)
+      vfx_goblinbrute_hit :: vfx_goblinbrute_hit/bloodchunks (m_chance=100)
+      vfx_greydwarf_death :: vfx_greydwarf_death/blobs (m_chance=100)
+      vfx_greydwarf_death :: vfx_greydwarf_death/splat (m_chance=100)
+      vfx_greydwarf_elite_death :: vfx_greydwarf_elite_death/blobs (1) (m_chance=100)
+      vfx_greydwarf_elite_death :: vfx_greydwarf_elite_death/splat (m_chance=100)
+      vfx_greydwarf_hit :: vfx_greydwarf_hit/vfx_BloodHit_decals (m_chance=100)
+      vfx_greydwarf_root_destroyed :: vfx_greydwarf_root_destroyed/vfx_BloodHit_decals (m_chance=100)
+      vfx_greydwarfnest_destroyed :: vfx_greydwarfnest_destroyed/blobs (m_chance=100)
+      vfx_greydwarfnest_destroyed :: vfx_greydwarfnest_destroyed/splat (m_chance=100)
+      vfx_greydwarfnest_hit :: vfx_greydwarfnest_hit/vfx_BloodHit_decals (m_chance=100)
+      vfx_hatchling_death :: vfx_hatchling_death/bloodchunks (m_chance=100)
+      vfx_hatchling_hurt :: vfx_hatchling_hurt/bloodchunks (m_chance=100)
+      vfx_leech_death :: vfx_leech_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_leech_hit :: vfx_leech_hit/bloodchunks (m_chance=100)
+      vfx_neck_death :: vfx_neck_death/blobs (m_chance=100)
+      vfx_neck_death :: vfx_neck_death/splat (m_chance=100)
+      vfx_neck_hit :: vfx_neck_hit/vfx_BloodHit_decals (m_chance=100)
+      vfx_player_death :: vfx_player_death/vfx_BloodHit 1 (m_chance=22)
+      vfx_player_hit :: vfx_player_hit/bloodchunks (m_chance=100)
+      vfx_serpent_death :: vfx_serpent_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_serpent_hurt :: vfx_serpent_hurt/bloodchunks (m_chance=100)
+      vfx_skeleton_mace_hit :: vfx_skeleton_mace_hit/Chunks (m_chance=100)
+      vfx_troll_death :: vfx_troll_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_troll_death :: vfx_troll_death/cunks (m_chance=100)
+      vfx_ulv_death :: vfx_ulv_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_wolf_death :: vfx_wolf_death/vfx_BloodHit 1 (m_chance=10)
+      vfx_wolf_hit :: vfx_wolf_hit/bloodchunks (m_chance=100)
+
+  material "puke" id=193816 _MainTex="water_foam" 128x128  -  9 owner(s):
+      fx_blobtar_tarball_hit :: fx_blobtar_tarball_hit/Chunks (m_chance=100)
+      fx_Puke :: fx_Puke/flow_global (m_chance=100)
+      SeekerQueen :: SeekerQueen/Visual/Armature/Hip/8/9/10/11/12/13/14/15/16/17/head/jaw/flow (m_chance=25)
+      SeekerQueen_projectile_spit :: SeekerQueen_projectile_spit/flow (m_chance=25)
+      SeekerQueen_projectile_teleport :: SeekerQueen_projectile_teleport/flow (m_chance=25)
+      vfx_blobtar_death :: vfx_blobtar_death/Chunks (m_chance=100)
+      vfx_blobtar_hit :: vfx_blobtar_hit/chunks (m_chance=100)
+      vfx_morgenhole_pile_destroyed :: vfx_morgenhole_pile_destroyed/vfx_blobtar_death/Chunks (m_chance=100)
+      vfx_Tared :: vfx_Tared/flow (m_chance=25)
+
+  material "SeekerQueen_decals" id=441828 _MainTex="brains" 64x64  -  2 owner(s):
+      fx_Queen_Death :: fx_Queen_Death/WhiteChunks (m_chance=100)
+      SeekerQueen_spithit :: SeekerQueen_spithit/Chunks (m_chance=50)
+
+  material (null decal system)  -  1 owner(s):
+      SeekerQueen :: SeekerQueen/Visual/Armature/Hip/8/9/10/11/12/13/14/15/16/17/head/jaw/drops-withdecals (m_chance=40)
+
+  material "splat_decal_blend" id=69740 _MainTex="brains" 64x64  -  1 owner(s):
+      vfx_horse_death :: vfx_horse_death/vfx_BloodHit 1 (m_chance=10)
+
+================================================================
+PARTICLE INVENTORY OF EVERY BLOOD EFFECT
+  Answers whether a per-creature hit effect has any airborne spray at
+  all, or only a ground decal. The earlier probes only ever dumped the
+  standalone vfx_BloodHit / vfx_BloodDeath prefabs, which turned out not
+  to be what creatures actually use - so this was never established.
+
+  fx_babyseeker_death  (7 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_babyseeker_death        mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=20    size=0.1..0.3
+      spray                  drops-withdecals           mat=blood_drop             burst=50    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime                  burst=100   size=0.4..0.5
+      spray                  Legs                       mat=babyseeker             burst=4     size=0.3..0.3
+      spray                  Wings                      mat=babyseeker             burst=2     size=0.3..0.3
+      spray                  Carapace                   mat=babyseeker             burst=15    size=0.2..0.3
+
+  fx_babyseeker_hurt  (5 spray system(s), 1 decal system(s))
+      spray                  fx_babyseeker_hurt         mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime                  burst=30    size=0.4..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  drops-withdecals           mat=blood_drop             burst=10    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  skinflakes                 mat=blood_splat            burst=15    size=0.2..0.4
+
+  fx_bat_death  (6 spray system(s), 2 decal system(s))
+      spray(emission OFF)    fx_bat_death               mat=blood_splat2           burst=50    size=1..1
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=0.5..0.5
+      spray                  skinflakes                 mat=bat_wing_particle      burst=50    size=0.1..0.4
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+      spray                  wetsplsh                   mat=slime_green            burst=20    size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  fx_bat_hit  (3 spray system(s), 1 decal system(s))
+      spray                  fx_bat_hit                 mat=blood_splat            burst=5     size=0.2..0.2
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=10    size=0.05..0.05
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=3     size=0.1..0.1
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+
+  fx_bjorn_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_bjorn_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=lox_hair_particle      burst=200   size=0.25..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.1..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=1..2
+
+  fx_bjorn_hit  (5 spray system(s), 1 decal system(s))
+      spray                  fx_bjorn_hit               mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=lox_hair_particle      burst=45    size=0.25..0.8
+
+  fx_chicken_death  (5 spray system(s), 1 decal system(s))
+      spray                  smokepoff                  mat=dust_particle          burst=10    size=0.5..1
+      spray                  Feathers                   mat=feather_white          burst=100   size=0.1..0.3
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=25    size=0.05..0.1
+      spray                  wetsplsh (2)               mat=slime_green            burst=20    size=0.5..1
+      spray                  vfx_BloodHit 1 (1)         mat=blood_drop             burst=50    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  fx_deathsquito_hit  (3 spray system(s), 1 decal system(s))
+      spray                  fx_deathsquito_hit         mat=blood_splat            burst=5     size=0.2..0.2
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=10    size=0.05..0.05
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=3     size=0.1..0.1
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+
+  fx_deatsquito_death  (9 spray system(s), 3 decal system(s))
+      spray(emission OFF)    fx_deatsquito_death        mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=0.5..1
+      spray                  skinflakes                 mat=lox_hair_particle      burst=5     size=0.7..0.5
+      spray                  blobs                      mat=blood_cloud            burst=8     size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..1.5
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+      spray                  wetsplsh                   mat=slime_green            burst=20    size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  fx_Dverger_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_Dverger_death           mat=blood_splat2           burst=50    size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=20    size=0.5..0.7
+      spray                  vfx_BloodHit 1             mat=pixel_lit              burst=200   size=0.04..0.04
+      spray                  bloodchunks                mat=blood_splat            burst=20    size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=30    size=0.2..0.45
+
+  fx_Dverger_hit  (5 spray system(s), 1 decal system(s))
+      spray                  fx_Dverger_hit             mat=blood_splat            burst=10    size=0.2..0.2
+      spray                  wetsplsh                   mat=slime_green            burst=10    size=0.5..0.7
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.4..0.6
+
+  fx_egg_splash  (8 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_egg_splash              mat=blood_splat2           burst=50    size=1..1
+      spray                  drops                      mat=rain_drop_indoor       burst=25    size=0.05..0.2
+      spray                  drops-withoutdecals        mat=pixel_lit_opaque       burst=15    size=0.05..0.08
+      spray(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=2..4
+      spray                  drops-withdecals           mat=pixel_lit_opaque       burst=3     size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=2..4
+      spray                  wetsplsh                   mat=eggsplash              burst=25    size=1..1.5
+      spray                  wetsplsh (1)               mat=slime                  burst=20    size=2..3
+      spray                  Carapace                   mat=babyseeker             burst=6     size=0.2..0.6
+
+  fx_fallenvalkyrie_death  (6 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_fallenvalkyrie_death    mat=blood_splat2           burst=50    size=1..1
+      spray                  soft cloud                 mat=slowwispysmoke         burst=250   size=1..6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.15
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+      spray                  Reanimation Rays           mat=Default-ParticleSystem burst=7     size=0.2..0.4
+      spray                  fire_burst                 mat=flameball_flipbook_gradient burst=100   size=2..3
+      spray                  BONES                      mat=Bone                   burst=40    size=0.5..2
+
+  fx_gjall_death  (16 spray system(s), 2 decal system(s))
+      spray(emission OFF)    fx_gjall_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=200   size=0.1..0.3
+      spray                  drops-withdecals           mat=slime                  burst=50    size=0.2..1.5
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=6..8
+      spray                  wetsplsh                   mat=slime_green            burst=200   size=0.6..2
+      spray                  wetsplsh (1)               mat=slime_green            burst=200   size=0.6..2
+      spray                  wetsplsh (2)               mat=slime_green            burst=200   size=0.6..2
+      spray                  Eggs                       mat=gjall_mat              burst=10    size=1..1
+      spray(emission OFF)    eggsplash                  mat=slime_green            burst=30    size=0.6..1.5
+      spray                  skinflakes                 mat=gjall_egg_flake        burst=10    size=0.3..1
+      spray                  drops-withdecals           mat=blood_drop             burst=10    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=splat_decal_blend      burst=3     size=1..3
+      spray                  BodyGibs                   mat=gjall_mat              burst=10    size=0.2..0.5
+      spray                  BodyGibs (1)               mat=gjall_mat              burst=10    size=0.2..0.5
+      spray                  BodyGibs (2)               mat=gjall_mat              burst=10    size=0.2..0.5
+      spray                  Head                       mat=gjall_mat              burst=1     size=1..1
+      spray                  eyes                       mat=gjall_mat              burst=6     size=1..1.5
+      spray                  zinder                     mat=pixel_unlit_red        burst=200   size=0.05..0.1
+
+  fx_gjall_egg_splat  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_gjall_egg_splat         mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=gjall_egg_flake        burst=100   size=0.3..1
+      spray                  drops-withdecals           mat=blood_drop             burst=10    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.6..1.5
+
+  fx_goblinking_death  (9 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_goblinking_death        mat=blood_splat2           burst=50    size=1..1
+      spray                  flakes                     mat=blue_cinder            burst=0     size=0.1..0.2
+      spray                  bloodchunks                mat=blood_splat            burst=100   size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  skinflakes                 mat=hive                   burst=60    size=2..3
+      spray                  wetsplsh                   mat=slime_green            burst=40    size=2..3
+      spray                  wetsplsh (1)               mat=slime_green            burst=40    size=2..3
+      spray                  smoke                      mat=smoke                  burst=0     size=6..8
+      spray                  shockwave                  mat=energywave             burst=1     size=0..60
+      spray                  shokwave flakes            mat=blue_cinder            burst=200   size=0.1..0.2
+
+  fx_goblinking_hit  (2 spray system(s), 1 decal system(s))
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=80    size=0.05..0.05
+      spray                  cunks                      mat=blood_splat            burst=15    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  fx_hare_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_hare_death              mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=15    size=0.3..0.4
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=50    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=0.5..1.4
+      spray                  wetsplsh                   mat=slime_green            burst=10    size=0.2..0.4
+
+  fx_hen_death  (4 spray system(s), 1 decal system(s))
+      spray                  smokepoff                  mat=dust_particle          burst=20    size=0.5..1
+      spray                  Feathers                   mat=feather_white          burst=160   size=0.2..0.3
+      spray                  wetsplsh (2)               mat=slime_green            burst=20    size=0.5..1
+      spray                  vfx_BloodHit 1 (1)         mat=blood_drop             burst=100   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  fx_jelly_pickup  (6 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_jelly_pickup            mat=blood_splat2           burst=50    size=1..1
+      spray                  drops                      mat=rain_drop_indoor       burst=50    size=0.05..0.2
+      spray                  drops-withdecals           mat=pixel_lit_opaque       burst=50    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=2..5
+      spray                  wetsplsh                   mat=eggsplash              burst=100   size=1..1.5
+      spray                  wetsplsh (1)               mat=slime                  burst=50    size=2..3
+      spray                  Chunks                     mat=JellyItem              burst=30    size=0.05..0.02
+
+  fx_lox_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_lox_death               mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=lox_hair_particle      burst=100   size=1..3
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.1..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=1..2
+
+  fx_lox_hit  (5 spray system(s), 1 decal system(s))
+      spray                  fx_lox_hit                 mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=lox_hair_particle      burst=20    size=1..2
+
+  fx_loxcalf_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_loxcalf_death           mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=lox_hair_particle      burst=100   size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.04..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.5..1
+
+  fx_morgen_death  (5 spray system(s), 1 decal system(s))
+      spray                  fx_morgen_death            mat=blood_splat            burst=60    size=0.2..0.4
+      spray                  Blood                      mat=blood_cloud            burst=50    size=5..12
+      spray                  bones                      mat=stone                  burst=20    size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.15
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+      spray                  soft cloud                 mat=slowwispysmoke         burst=150   size=1..6
+
+  fx_Puke  (3 spray system(s), 2 decal system(s))
+      spray                  tardrop                    mat=tar_drop               burst=0     size=0.1..0.3
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+      spray                  flow_global                mat=puke                   burst=0     size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=puke                   burst=3     size=0.5..1.2
+      spray                  flow_local                 mat=puke                   burst=0     size=0.1..0.5
+
+  fx_Queen_Death  (15 spray system(s), 3 decal system(s))
+      spray(emission OFF)    fx_Queen_Death             mat=blood_splat2           burst=50    size=1..1
+      spray                  Carapace                   mat=SeekerQueen_Carpace    burst=30    size=2..2
+      spray                  Legs                       mat=SeekerQueen_Carpace    burst=6     size=2..2
+      spray                  skinflakes                 mat=blood_splat            burst=200   size=0.3..1
+      spray                  drops-withdecals           mat=blood_drop             burst=200   size=0.05..0.1
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=4..10
+      spray                  wetsplsh                   mat=slime_green            burst=400   size=2..8
+      spray                  wetsplsh (1)               mat=queenslime             burst=50    size=2..6
+      spray                  WhiteChunks                mat=SeekerQueen_spit       burst=60    size=0.1..0.2
+      DECAL(emission OFF)    blob_splat (1)             mat=SeekerQueen_decals     burst=3     size=0..6
+      spray                  lumps-ass-with decals      mat=blood_drop             burst=100   size=0.05..0.1
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=4..5
+      spray                  Carapace_ass               mat=seeker_Brute_mat       burst=30    size=0.6..0.6
+      spray                  wetsplsh_back              mat=slime_green            burst=100   size=0.6..1
+      spray                  Slime Droplet Rain         mat=dust_particle_pixel    burst=200   size=0.1..0.75
+      spray                  Splats                     mat=blood_cloud            burst=10    size=1..0.5
+      spray                  Burst                      mat=queenslime             burst=80    size=0.75..1
+      spray                  Big Splat                  mat=blood_cloud            burst=25    size=5..10
+
+  fx_seeker_death  (7 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_seeker_death            mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=100   size=0.1..0.3
+      spray                  drops-withdecals           mat=blood_drop             burst=200   size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=0.6..1.5
+      spray                  Legs                       mat=seeker                 burst=4     size=0.3..0.8
+      spray                  Wings                      mat=seeker                 burst=2     size=0.8..0.8
+      spray                  Carapace                   mat=seeker                 burst=30    size=0.5..1
+
+  fx_seeker_hurt  (5 spray system(s), 1 decal system(s))
+      spray                  fx_seeker_hurt             mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.5..0.7
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  drops-withdecals           mat=blood_drop             burst=10    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  skinflakes                 mat=blood_splat            burst=15    size=0.2..0.4
+
+  fx_seeker_spawn  (3 spray system(s), 1 decal system(s))
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.1..0.3
+      spray                  drops-withdecals           mat=blood_drop             burst=10    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  wetsplsh                   mat=slime_green            burst=5     size=0.5..1
+
+  fx_seekerbrute_death  (10 spray system(s), 2 decal system(s))
+      spray(emission OFF)    fx_seekerbrute_death       mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=200   size=0.1..0.3
+      spray                  drops-withdecals           mat=blood_drop             burst=200   size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=0.6..1.5
+      spray                  Legs                       mat=seeker_Brute_mat       burst=4     size=1.3..1.3
+      spray                  Wings                      mat=seeker                 burst=2     size=0.8..0.8
+      spray                  Carapace                   mat=seeker_Brute_mat       burst=30    size=1..1
+      spray                  lumps-ass-with decals      mat=blood_drop             burst=20    size=0.01..0.04
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=4..5
+      spray                  Carapace_ass               mat=seeker_Brute_mat       burst=30    size=0.6..0.6
+      spray                  wetsplsh_back              mat=slime_green            burst=100   size=0.6..1
+
+  fx_tentaroot_death  (6 spray system(s), 2 decal system(s))
+      spray(emission OFF)    fx_tentaroot_death         mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=0.5..1.5
+      spray                  blobs                      mat=blood_cloud            burst=8     size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..1.5
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+
+  fx_tick_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_tick_death              mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=tick_flake             burst=60    size=0.3..0.8
+      spray                  drops-withdecals           mat=blood_drop             burst=200   size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=0.6..1.5
+      spray                  Blood Cloud                mat=blood_cloud            burst=10    size=3..4
+
+  fx_TickBloodHit  (4 spray system(s), 1 decal system(s))
+      spray                  fx_TickBloodHit            mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.3
+      spray                  blood_drops                mat=blood_drop             burst=25    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.2
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+
+  fx_unbjorn_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    fx_unbjorn_death           mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=tick_flake             burst=200   size=0.25..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.1..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=1..2
+
+  fx_unbjorn_hit  (5 spray system(s), 1 decal system(s))
+      spray                  fx_unbjorn_hit             mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..1
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=tick_flake             burst=45    size=0.25..0.8
+
+  SeekerQueen_projectile_spit  (7 spray system(s), 2 decal system(s))
+      spray                  wetsplsh                   mat=slime                  burst=0     size=0.5..1.5
+      spray                  flames                     mat=slime                  burst=0     size=0..0.74
+      spray                  flow                       mat=barnacle_piece         burst=0     size=1..2
+      DECAL(emission OFF)    blob_splat                 mat=puke                   burst=3     size=0..2
+      spray                  flames_world               mat=slime                  burst=0     size=0..1
+      spray                  wetsplsh (1)               mat=queenslime             burst=0     size=0.5..1.5
+      spray                  drops-withdecals           mat=blood_drop             burst=0     size=0.04..0.04
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+      spray                  drops                      mat=blood_drop             burst=0     size=0.04..0.04
+
+  SeekerQueen_projectile_teleport  (6 spray system(s), 2 decal system(s))
+      spray                  wetsplsh                   mat=slime                  burst=0     size=0.5..1.5
+      spray                  flames                     mat=slime                  burst=0     size=0..0.74
+      spray                  flow                       mat=barnacle_piece         burst=0     size=1..2
+      DECAL(emission OFF)    blob_splat                 mat=puke                   burst=3     size=0..2
+      spray                  flames_world               mat=slime                  burst=0     size=0..1
+      spray                  wetsplsh (1)               mat=queenslime             burst=0     size=0.5..1.5
+      spray                  drops-withdecals           mat=blood_drop             burst=0     size=0.04..0.04
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+
+  SeekerQueen_spithit  (5 spray system(s), 1 decal system(s))
+      spray                  SeekerQueen_spithit        mat=pixel_lit_opaque       burst=50    size=0.05..0.1
+      spray                  trails                     mat=queenslime             burst=50    size=1..1.5
+      spray                  Chunks                     mat=SeekerQueen_spit       burst=10    size=0.1..0.2
+      DECAL(emission OFF)    blob_splat (1)             mat=SeekerQueen_decals     burst=3     size=0..3
+      spray                  wetsplsh                   mat=queenslime             burst=30    size=1..2
+      spray                  blobs                      mat=spit_blob              burst=15    size=0.02..0.05
+
+  vfx_blob_death  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_blob_death             mat=rocks                  burst=50    size=0.05..0.1
+      spray                  Chunks                     mat=blood_cloud            burst=20    size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  bones                      mat=stone                  burst=4     size=0.3..0.4
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=1..2
+
+  vfx_blob_frost_death  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_blob_frost_death       mat=rocks                  burst=50    size=0.05..0.1
+      spray                  Chunks                     mat=blood_cloud            burst=20    size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=queenslime             burst=30    size=1..2
+
+  vfx_blob_hit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_blob_hit               mat=rocks                  burst=50    size=0.05..0.06
+      spray                  chunks                     mat=blood_cloud            burst=10    size=0.1..0.3
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  vfx_RockHit (1)            mat=stone                  burst=4     size=0.2..0.3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_BloodDeath  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_BloodDeath             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=50    size=0.4..0.6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_BloodHit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_BloodHit               mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_boar_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_boar_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=50    size=0.4..0.6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_boar_hit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_boar_hit               mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_BonemassDeath  (7 spray system(s), 1 decal system(s))
+      spray                  vfx_BonemassDeath          mat=rocks                  burst=50    size=0.05..0.1
+      spray                  Chunks                     mat=blood_cloud            burst=50    size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=4..5
+      spray                  GameObject                 mat=blood_cloud            burst=200   size=0.2..0.5
+      spray                  bones                      mat=stone                  burst=40    size=0.3..0.4
+      spray                  wetsplsh                   mat=slime_green            burst=300   size=1..3
+      spray                  skulls                     mat=fi_village_catacombs   burst=40    size=0..1
+      spray                  Slime                      mat=dust_particle          burst=200   size=0.2..0.5
+
+  vfx_BonemassHit  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_BonemassHit            mat=rocks                  burst=50    size=0.05..0.06
+      spray                  GameObject                 mat=blood_cloud            burst=50    size=0.1..0.3
+      spray                  bones                      mat=stone                  burst=4     size=0.2..0.3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+      spray                  Chunks                     mat=blood_cloud            burst=10    size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_bonemawserpent_death  (6 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_bonemawserpent_death   mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=100   size=0.1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=1..2
+      spray                  lumps                      mat=bloodbag_rotten        burst=10    size=0.05..0.2
+      spray                  meat                       mat=entrails               burst=5     size=0.2..0.5
+
+  vfx_deer_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_deer_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=50    size=0.4..0.6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_deer_hit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_deer_hit               mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_dragon_coldbreath  (3 spray system(s), 1 decal system(s))
+      spray                  clouds                     mat=dragon_coldbreath      burst=0     size=6..8
+      spray                  pixel flakes               mat=pixel_lit_opaque       burst=0     size=0..0.05
+      spray                  spray                      mat=dragon_coldbreath_solid burst=0     size=0..4
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  vfx_dragon_death  (10 spray system(s), 1 decal system(s))
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=1..4
+      spray                  smoke_expl                 mat=wraith_smoke           burst=200   size=0..4
+      spray                  spray                      mat=dragon_coldbreath_solid burst=0     size=0..4
+      spray                  vfx_corpse_destruction_large mat=gnista                 burst=30    size=0.2..0.4
+      spray                  sparcs                     mat=dragon_bluecinder      burst=200   size=0.03..0.08
+      spray                  sparcs (1)                 mat=dragon_bluecinder      burst=200   size=0.03..0.08
+      spray                  trails                     mat=ashrain_cinder         burst=80    size=0.02..0.04
+      spray                  pixel flakes               mat=pixel_lit_opaque       burst=0     size=0..0.05
+      spray                  skinflakes                 mat=blood_splat            burst=200   size=0.2..1
+      spray                  bloodchunks                mat=blood_splat            burst=80    size=1..3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=5..8
+
+  vfx_dragon_hurt  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_dragon_hurt            mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.2..0.6
+
+  vfx_dragonegg_destroy  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_dragonegg_destroy      mat=blood_splat2           burst=50    size=1..1
+      spray                  shellflakes                mat=blood_splat            burst=50    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blood_Decal                mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.4..1
+
+  vfx_draugr_death  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_draugr_death           mat=rocks                  burst=50    size=0.05..0.1
+      spray                  Chunks                     mat=pixel_lit              burst=20    size=0.1..0.05
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.5..1
+
+  vfx_draugr_hit  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_draugr_hit             mat=rocks                  burst=50    size=0.05..0.06
+      spray                  chunks                     mat=pixel_lit              burst=10    size=0.05..0.1
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..1
+
+  vfx_draugrpile_hit  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_draugrpile_hit         mat=rocks                  burst=50    size=0.05..0.06
+      spray                  chunks                     mat=pixel_lit              burst=10    size=0.05..0.1
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.5..2
+
+  vfx_eikthyr_death  (6 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_eikthyr_death          mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=50    size=0.4..0.6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+      spray                  wetsplsh_head              mat=slime_green            burst=30    size=0.3..0.7
+      spray                  skinflakes_head            mat=blood_splat            burst=50    size=0.4..0.6
+
+  vfx_fenring_cultist_death  (7 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_fenring_cultist_death  mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=hair                   burst=100   size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=300   size=0.04..0.08
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.6..1.5
+      spray                  flames_world left          mat=flameball_flipbook_gradient burst=100   size=1..2
+      spray                  FireEmbers                 mat=EmbersParticle         burst=150   size=0.02..0.1
+      spray                  flames_world right         mat=FlameRoundYellowParticle burst=0     size=0..2
+
+  vfx_fenring_cultist_hildir_death  (7 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_fenring_cultist_hildir_death mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=hair                   burst=100   size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=300   size=0.04..0.08
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..6
+      spray                  wetsplsh                   mat=blood_cloud            burst=50    size=0.6..1.5
+      spray                  flames_world left          mat=dragon_coldbreath      burst=100   size=1..2
+      spray                  FireEmbers                 mat=pixel_unlit            burst=150   size=0.02..0.04
+      spray                  flames_world right         mat=FlameRoundYellowParticle burst=0     size=0..2
+
+  vfx_fenring_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_fenring_death          mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=hair                   burst=100   size=0.5..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=300   size=0.04..0.08
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.6..1.5
+
+  vfx_fenring_hurt  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_fenring_hurt           mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.6
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=8     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=6     size=0.5..1
+
+  vfx_foresttroll_hit  (3 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_foresttroll_hit        mat=blood_splat            burst=15    size=0.5..0.5
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=80    size=0.05..0.05
+      spray                  cunks                      mat=blood_splat            burst=15    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_frosttroll_hit  (3 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_frosttroll_hit         mat=blood_splat            burst=15    size=0.5..0.5
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=80    size=0.05..0.05
+      spray                  cunks                      mat=blood_splat            burst=15    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_goblin_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_goblin_death           mat=blood_splat2           burst=50    size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=20    size=0.5..0.7
+      spray                  vfx_BloodHit 1             mat=pixel_lit              burst=200   size=0.04..0.04
+      spray                  bloodchunks                mat=blood_splat            burst=20    size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=30    size=0.4..0.8
+
+  vfx_goblin_hit  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_goblin_hit             mat=blood_splat            burst=10    size=0.2..0.2
+      spray                  wetsplsh                   mat=slime_green            burst=10    size=0.5..0.7
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.4..0.6
+
+  vfx_goblinbrute_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_goblinbrute_death      mat=blood_splat2           burst=50    size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=40    size=0.5..1
+      spray                  vfx_BloodHit 1             mat=pixel_lit              burst=400   size=0.04..0.04
+      spray                  bloodchunks                mat=blood_splat            burst=40    size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=2..4
+      spray                  skinflakes                 mat=blood_splat            burst=60    size=0.5..1
+
+  vfx_goblinbrute_hildir_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_goblinbrute_hildir_death mat=blood_splat2           burst=50    size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=40    size=0.5..1
+      spray                  vfx_BloodHit 1             mat=pixel_lit              burst=400   size=0.04..0.04
+      spray                  bloodchunks                mat=blood_splat            burst=40    size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=2..4
+      spray                  skinflakes                 mat=blood_splat            burst=60    size=0.5..1
+
+  vfx_goblinbrute_hit  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_goblinbrute_hit        mat=blood_splat            burst=10    size=0.2..0.2
+      spray                  wetsplsh                   mat=slime_green            burst=10    size=0.5..0.7
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.4..0.6
+
+  vfx_greydwarf_death  (6 spray system(s), 2 decal system(s))
+      spray(emission OFF)    vfx_greydwarf_death        mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=0.5..1.5
+      spray                  blobs                      mat=blood_cloud            burst=8     size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..1.5
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+
+  vfx_greydwarf_elite_death  (6 spray system(s), 2 decal system(s))
+      spray(emission OFF)    vfx_greydwarf_elite_death  mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.1
+      spray                  soft cloud                 mat=blood_cloud            burst=50    size=0.5..1.5
+      spray                  blobs (1)                  mat=blood_cloud            burst=10    size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..1.5
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+
+  vfx_greydwarf_hit  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_greydwarf_hit          mat=blood_splat            burst=10    size=0.5..0.5
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=3     size=0.2..0.2
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+
+  vfx_greydwarf_root_destroyed  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_greydwarf_root_destroyed mat=blood_splat            burst=100   size=0.2..0.5
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=100   size=0.05..0.05
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=20    size=0.2..0.2
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+      spray                  twiggs                     mat=branch                 burst=5     size=0.1..0.5
+
+  vfx_greydwarfnest_destroyed  (9 spray system(s), 2 decal system(s))
+      spray(emission OFF)    vfx_greydwarfnest_destroyed mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=1..3
+      spray                  blobs                      mat=blood_cloud            burst=20    size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=2..3
+      spray                  splat                      mat=blood_cloud            burst=100   size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+      spray                  twiggs                     mat=branch                 burst=30    size=0.05..0.2
+      spray                  twiggs_ground              mat=branch                 burst=30    size=0.1..0.2
+      spray                  soft cloud _ground         mat=blood_cloud            burst=30    size=1..3
+
+  vfx_greydwarfnest_hit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_greydwarfnest_hit      mat=blood_splat            burst=10    size=0.5..0.5
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=3     size=0.2..0.2
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+      spray                  twiggs                     mat=branch                 burst=10    size=0.1..0.2
+
+  vfx_hatchling_death  (12 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_hatchling_death        mat=blood_splat2           burst=50    size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.5..1.5
+      spray                  smoke_expl                 mat=wraith_smoke           burst=50    size=0..4
+      spray                  skinflakes                 mat=blood_splat            burst=20    size=0.4..0.6
+      spray                  bloodchunks                mat=blood_splat            burst=30    size=0.4..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=2..4
+      spray                  blobs                      mat=blood_cloud            burst=20    size=0.5..1
+      spray                  blob_splat                 mat=blood_drop             burst=10    size=0.03..0.02
+      spray                  vfx_corpse_destruction_small mat=gnista                 burst=30    size=0.2..0.4
+      spray                  smoke                      mat=smoke                  burst=300   size=0.5..1
+      spray                  sparcs                     mat=ashrain_cinder         burst=100   size=0.03..0.03
+      spray                  sparcs (1)                 mat=ashrain_cinder         burst=100   size=0.03..0.03
+      spray                  trails                     mat=ashrain_cinder         burst=20    size=0.02..0.02
+
+  vfx_hatchling_hurt  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_hatchling_hurt         mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.2..0.6
+
+  vfx_hjall_spit_hit  (9 spray system(s), 1 decal system(s))
+      spray                  vfx_hjall_spit_hit         mat=cold_sparcs            burst=30    size=0.1..0.05
+      spray                  vfx_RockHit (1)            mat=coldball               burst=8     size=0.01..0.04
+      spray                  vfx_ice_hit                mat=pixel_lit              burst=100   size=0.04..0.06
+      spray                  smoke                      mat=smoke                  burst=10    size=2..3
+      spray                  smoke (1)                  mat=smoke                  burst=20    size=3..4
+      spray                  zinder                     mat=pixel_unlit_red        burst=100   size=0.05..0.1
+      spray                  wetsplsh                   mat=slime                  burst=50    size=2..3
+      spray                  wet trailers               mat=slime                  burst=30    size=0.2..1
+      spray                  splash decals              mat=blood_drop             burst=50    size=0.05..0.08
+      DECAL(emission OFF)    blood_decal                mat=seeker_blood_splat     burst=3     size=3..4
+
+  vfx_leech_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_leech_death            mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=100   size=0.1..0.4
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=0.4..1
+
+  vfx_leech_hit  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_leech_hit              mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.6
+      spray                  blood_drops                mat=blood_drop             burst=80    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=8     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_neck_death  (6 spray system(s), 2 decal system(s))
+      spray(emission OFF)    vfx_neck_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=1..1.5
+      spray                  blobs                      mat=blood_cloud            burst=8     size=0.5..0.5
+      spray                  blood                      mat=blood_drop             burst=10    size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..1.5
+      spray                  splat                      mat=blood_cloud            burst=50    size=0.5..0.5
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..3
+
+  vfx_neck_hit  (3 spray system(s), 1 decal system(s))
+      spray                  vfx_neck_hit               mat=blood_cloud            burst=2     size=1.5..2
+      spray                  blood_drips                mat=blood_drop             burst=50    size=0.04..0.04
+      spray                  vfx_BloodHit_decals        mat=blood_splat            burst=3     size=0.2..0.2
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..2
+
+  vfx_player_death  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_player_death           mat=blood_splat2           burst=50    size=1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  soft cloud                 mat=blood_cloud            burst=30    size=0.7..0.7
+      spray                  skinflakes                 mat=blood_splat            burst=20    size=0.4..0.6
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_player_hit  (5 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_player_hit             mat=(none)                 burst=0     size=0..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=10    size=0.2..0.3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_serpent_death  (6 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_serpent_death          mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=100   size=0.1..1
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.1
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=100   size=1..2
+      spray                  lumps                      mat=bloodbag               burst=10    size=0.05..0.2
+      spray                  meat                       mat=entrails               burst=5     size=0.2..0.5
+
+  vfx_serpent_hurt  (4 spray system(s), 1 decal system(s))
+      spray                  vfx_serpent_hurt           mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=1..2
+      spray                  blood_drops                mat=blood_drop             burst=80    size=0.05..0.07
+      spray                  bloodchunks                mat=blood_splat            burst=8     size=0.3..0.4
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=3..4
+
+  vfx_skeleton_mace_hit  (2 spray system(s), 1 decal system(s))
+      spray                  wetsplsh                   mat=flame_large            burst=30    size=1..1.5
+      spray                  Chunks                     mat=blood_cloud            burst=10    size=0.2..0.5
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_troll_death  (3 spray system(s), 2 decal system(s))
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=4..6
+      spray                  wetsplsh                   mat=slime_green            burst=50    size=1..2
+      spray                  cunks                      mat=blood_splat            burst=50    size=0.4..0.6
+      DECAL(emission OFF)    blob_splat                 mat=splat_decal_blend      burst=3     size=1..3
+
+  vfx_ulv_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_ulv_death              mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=20    size=0.6..0.8
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_wolf_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_wolf_death             mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=20    size=0.6..0.8
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+
+  vfx_wolf_hit  (5 spray system(s), 1 decal system(s))
+      spray                  vfx_wolf_hit               mat=blood_splat            burst=6     size=1..1
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.2..0.5
+      spray                  blood_drops                mat=blood_drop             burst=50    size=0.05..0.05
+      spray                  bloodchunks                mat=blood_splat            burst=5     size=0.2..0.3
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  skinflakes                 mat=blood_splat            burst=6     size=0.4..0.8
+
+  vfx_horse_death  (4 spray system(s), 1 decal system(s))
+      spray(emission OFF)    vfx_horse_death            mat=blood_splat2           burst=50    size=1..1
+      spray                  skinflakes                 mat=blood_splat            burst=50    size=0.4..0.6
+      spray                  vfx_BloodHit 1             mat=blood_drop             burst=200   size=0.05..0.05
+      DECAL(emission OFF)    blob_splat (1)             mat=splat_decal_blend      burst=3     size=1..3
+      spray                  wetsplsh                   mat=slime_green            burst=30    size=0.3..0.7
+

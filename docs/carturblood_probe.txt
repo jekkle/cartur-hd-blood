@@ -1,0 +1,1504 @@
+Cartur's HD Blood - vanilla blood probe
+generated 2026-09-08 18:26:28
+
+scanned 3505 prefabs, 104 with a Character component
+distinct blood effect prefabs: 17
+
+================================================================
+PREFAB: AxeBerzerkrBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [AxeBerzerkrBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    [attach_skin]  localScale=(1, 1, 1)
+      [armature]  localScale=(100, 100, 100)
+        [Hips]  localScale=(1, 1, 1)
+          [LeftUpLeg]  localScale=(1, 1, 1)
+            [LeftLeg]  localScale=(1, 1, 1)
+              [LeftFoot]  localScale=(1, 1, 1)
+                [LeftToeBase]  localScale=(1, 1, 1)
+          [RightUpLeg]  localScale=(1, 1, 1)
+            [RightLeg]  localScale=(1, 1, 1)
+              [RightFoot]  localScale=(1, 1, 1)
+                [RightToeBase]  localScale=(1, 1, 1)
+          [Spine]  localScale=(1, 1, 1)
+            [Spine1]  localScale=(1, 1, 1)
+              [Spine2]  localScale=(1, 1, 1)
+                [LeftShoulder]  localScale=(1, 1, 1)
+                  [LeftArm]  localScale=(1, 1, 1)
+                    [LeftForeArm]  localScale=(1, 1, 1)
+                      [LeftHand]  localScale=(1, 1, 1)
+                        [LeftHandIndex1]  localScale=(1, 1, 1)
+                          [LeftHandIndex2]  localScale=(1, 1, 1)
+                            [LeftHandIndex3]  localScale=(1, 1, 1)
+                        [LeftHandMiddle1]  localScale=(1, 1, 1)
+                          [LeftHandMiddle2]  localScale=(1, 1, 1)
+                            [LeftHandMiddle3]  localScale=(1, 1, 1)
+                        [LeftHandPinky1]  localScale=(1, 1, 1)
+                          [LeftHandPinky2]  localScale=(1, 1, 1)
+                            [LeftHandPinky3]  localScale=(1, 1, 1)
+                        [LeftHandRing1]  localScale=(1, 1, 1)
+                          [LeftHandRing2]  localScale=(1, 1, 1)
+                            [LeftHandRing3]  localScale=(1, 1, 1)
+                        [LeftHandThumb1]  localScale=(1, 1, 1)
+                          [LeftHandThumb2]  localScale=(1, 1, 1)
+                            [LeftHandThumb3]  localScale=(1, 1, 1)
+                [Neck]  localScale=(1, 1, 1)
+                  [Head]  localScale=(1, 1, 1)
+                    [Jaw]  localScale=(1, 1, 1)
+                [RightShoulder]  localScale=(1, 1, 1)
+                  [RightArm]  localScale=(1, 1, 1)
+                    [RightForeArm]  localScale=(1, 1, 1)
+                      [RightHand]  localScale=(1, 1, 1)
+                        [RightHandIndex1]  localScale=(1, 1, 1)
+                          [RightHandIndex2]  localScale=(1, 1, 1)
+                            [RightHandIndex3]  localScale=(1, 1, 1)
+                        [RightHandMiddle1]  localScale=(1, 1, 1)
+                          [RightHandMiddle2]  localScale=(1, 1, 1)
+                            [RightHandMiddle3]  localScale=(1, 1, 1)
+                        [RightHandPinky1]  localScale=(1, 1, 1)
+                          [RightHandPinky2]  localScale=(1, 1, 1)
+                            [RightHandPinky3]  localScale=(1, 1, 1)
+                        [RightHandRing1]  localScale=(1, 1, 1)
+                          [RightHandRing2]  localScale=(1, 1, 1)
+                            [RightHandRing3]  localScale=(1, 1, 1)
+                        [RightHandThumb1]  localScale=(1, 1, 1)
+                          [RightHandThumb2]  localScale=(1, 1, 1)
+                            [RightHandThumb3]  localScale=(1, 1, 1)
+      [berzerkr]  localScale=(1, 1, 1)
+        [equiped]  localScale=(1, 1, 1)
+          [trail]  localScale=(1, 1, 1)
+            + MeleeWeaponTrail
+            [base]  localScale=(1, 1, 1)
+            [tip]  localScale=(1, 1, 1)
+        [Berzerkr]  localScale=(100, 100, 100)
+          + SkinnedMeshRenderer
+        [Swirls]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=5 looping=True maxParticles=1000
+            startSize     = 0.05      <-- decal size, if this is the decal system
+            startLifetime = 0.5..1  <-- how long a decal lingers
+            startSpeed    = 0
+            startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+            simulationSpace=World scalingMode=Local
+            emission: enabled=True rateOverTime=15 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=None alignment=View sortMode=None
+            material: NULL
+            material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+              renderQueue=3000
+              _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+              _BumpMap = (none)
+              _EmissionMap = (none)
+              _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        [blood drip]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=3 looping=True maxParticles=50
+            startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+            startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+            startSpeed    = 0..0
+            startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+            simulationSpace=World scalingMode=Local
+            emission: enabled=True rateOverTime=3 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=Stretch alignment=View sortMode=None
+            material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+              renderQueue=3000
+              _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+              _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+              _NoiseTex = (none)
+              _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+    [attach]  localScale=(1, 1, 1)
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + BoxCollider
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + BoxCollider
+      [Swirls]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=5 looping=True maxParticles=1000
+          startSize     = 0.05      <-- decal size, if this is the decal system
+          startLifetime = 0.5..1  <-- how long a decal lingers
+          startSpeed    = 0
+          startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=True rateOverTime=15 bursts=0
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=None alignment=View sortMode=None
+          material: NULL
+          material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+            renderQueue=3000
+            _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+            _BumpMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: Bloodbag
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [Bloodbag]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+      material: NULL
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + LODGroup
+    [model]  localScale=(0.645, 0.645, 0.645)
+      + MeshFilter
+      + MeshRenderer
+      + BoxCollider
+    [vfx_BloodHit 1]  localScale=(1.312, 1.312, 1.312)
+      ParticleSystem:
+        duration=3 looping=True maxParticles=30
+        startSize     = 0.02..0.04      <-- decal size, if this is the decal system
+        startLifetime = 1  <-- how long a decal lingers
+        startSpeed    = 0..0
+        startColor    = RGBA(0.559, 0.012, 0.012, 1.000)..RGBA(1.000, 0.147, 0.147, 1.000)
+        simulationSpace=World scalingMode=Hierarchy
+        emission: enabled=True rateOverTime=0 bursts=0
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "pixel_lit_opaque" id=140084  shader="Particles/Standard Surface2"
+          renderQueue=2000
+          _MainTex = (none)
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        material: NULL
+
+================================================================
+PREFAB: BloodPudding
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [BloodPudding]  localScale=(1, 1, 1)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + Piece
+    + WearNTear
+    [attach]  localScale=(1.1, 1.1, 1.1)
+      + MeshFilter
+      + MeshRenderer
+      + LODGroup
+      + MeshCollider
+    [fx_FoodSteam_Small]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=5 looping=True maxParticles=10
+        startSize     = 1..0.5      <-- decal size, if this is the decal system
+        startLifetime = 3..6  <-- how long a decal lingers
+        startSpeed    = 0
+        startColor    = RGBA(1.000, 1.000, 1.000, 0.059)..RGBA(1.000, 1.000, 1.000, 0.020)
+        simulationSpace=World scalingMode=Shape
+        emission: enabled=True rateOverTime=0.5 bursts=0
+        textureSheetAnimation: ENABLED=True   <-- ANSWERS single-image vs flipbook
+          numTilesX=8 numTilesY=8 animation=WholeSheet
+          cycleCount=1 frameOverTime=Curve (curve, multiplier 1) startFrame=0..1
+          => art must be a 8x8 grid of equal cells
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slowwispysmoke_hard" id=147652  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slowwispysmokeloop" 512x512 Texture2D format=DXT5 mips=10
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [fx_FoodSteam]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=5 looping=True maxParticles=10
+          startSize     = 0.5      <-- decal size, if this is the decal system
+          startLifetime = 3..6  <-- how long a decal lingers
+          startSpeed    = 0
+          startColor    = RGBA(1.000, 1.000, 1.000, 0.020)..RGBA(1.000, 1.000, 1.000, 0.102)
+          simulationSpace=World scalingMode=Shape
+          emission: enabled=True rateOverTime=2 bursts=0
+          textureSheetAnimation: ENABLED=True   <-- ANSWERS single-image vs flipbook
+            numTilesX=16 numTilesY=8 animation=WholeSheet
+            cycleCount=1 frameOverTime=Curve (curve, multiplier 1) startFrame=0..1
+            => art must be a 16x8 grid of equal cells
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=VerticalBillboard alignment=View sortMode=None
+          material: "risingsmoke" id=147666  shader="Lux Lit Particles/ Bumped"
+            renderQueue=3000
+            _MainTex = "RisingSmoke" 256x256 Texture2D format=DXT5 mips=9
+            _AlbedoMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+    [fx_ItemSparkles]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=5 looping=True maxParticles=2
+        startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+        startLifetime = 2  <-- how long a decal lingers
+        startSpeed    = 0
+        startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+        simulationSpace=World scalingMode=Local
+        emission: enabled=True rateOverTime=2 bursts=0
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+          renderQueue=3000
+          _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+          _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    [equipoffset]  localScale=(1, 1, 1)
+      [pie (1)]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + LODGroup
+        + BoxCollider
+
+================================================================
+PREFAB: BowAshlandsBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [BowAshlandsBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + Floating
+    + LODGroup
+    [attach]  localScale=(1, 1, 1)
+      [BloodFang]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + BoxCollider
+        [vfx]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+          [Swirls]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=5 looping=True maxParticles=1000
+              startSize     = 0.05      <-- decal size, if this is the decal system
+              startLifetime = 1..1.5  <-- how long a decal lingers
+              startSpeed    = 0
+              startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+              simulationSpace=Local scalingMode=Local
+              emission: enabled=True rateOverTime=2.5 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=None alignment=View sortMode=None
+              material: NULL
+              material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+                renderQueue=3000
+                _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+                _BumpMap = (none)
+                _EmissionMap = (none)
+                _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+          [Swirls (1)]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=5 looping=True maxParticles=1000
+              startSize     = 0.05      <-- decal size, if this is the decal system
+              startLifetime = 1..1.5  <-- how long a decal lingers
+              startSpeed    = 0
+              startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+              simulationSpace=Local scalingMode=Local
+              emission: enabled=True rateOverTime=2.5 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=None alignment=View sortMode=None
+              material: NULL
+              material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+                renderQueue=3000
+                _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+                _BumpMap = (none)
+                _EmissionMap = (none)
+                _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+          [blood drip]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=3 looping=True maxParticles=50
+              startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+              startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+              startSpeed    = 0..0
+              startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+              simulationSpace=World scalingMode=Hierarchy
+              emission: enabled=True rateOverTime=3 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=Stretch alignment=View sortMode=None
+              material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+                renderQueue=3000
+                _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+                _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+                _NoiseTex = (none)
+                _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: CrossbowRipperBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [CrossbowRipperBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + Floating
+    [attach]  localScale=(1, 1, 1)
+      + WeaponLoadState
+      [Collider]  localScale=(1, 1, 1)
+        + MeshCollider
+      [Unloaded]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        [Bloodripper_Glow_Unloaded]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+      [Loaded]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        [default]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+        [Bloodripper_Glow_Loaded]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+      [Swirls]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=5 looping=True maxParticles=1000
+          startSize     = 0.05      <-- decal size, if this is the decal system
+          startLifetime = 1..2  <-- how long a decal lingers
+          startSpeed    = 0
+          startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+          simulationSpace=Local scalingMode=Local
+          emission: enabled=True rateOverTime=2.5 bursts=0
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=None alignment=View sortMode=None
+          material: NULL
+          material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+            renderQueue=3000
+            _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+            _BumpMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [blood drip]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=True maxParticles=50
+          startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+          startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+          startSpeed    = 0..0
+          startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+          simulationSpace=World scalingMode=Hierarchy
+          emission: enabled=True rateOverTime=3 bursts=0
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Stretch alignment=View sortMode=None
+          material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+            renderQueue=3000
+            _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+            _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+            _NoiseTex = (none)
+            _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: fx_bloodweapon_hit
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [fx_bloodweapon_hit]  localScale=(1, 1, 1)
+    + ZNetView
+    + TimedDestruction
+    [drops]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=35
+        startSize     = 0.06..0.1      <-- decal size, if this is the decal system
+        startLifetime = 0.4..2  <-- how long a decal lingers
+        startSpeed    = 2..4
+        startColor    = RGBA(0.472, 0.051, 0.079, 1.000)
+        simulationSpace=World scalingMode=Hierarchy
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=35 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Stretch alignment=View sortMode=None
+        material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+          renderQueue=3000
+          _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+          _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+          _NoiseTex = (none)
+          _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [poisonarrow_hit]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=10
+          startSize     = 0.5..1      <-- decal size, if this is the decal system
+          startLifetime = 1  <-- how long a decal lingers
+          startSpeed    = 2..3
+          startColor    = RGBA(0.660, 0.034, 0.144, 0.255)..RGBA(0.509, 0.099, 0.156, 0.239)
+          simulationSpace=Local scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=5 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=View sortMode=None
+          material: "dust_particle_pixel" id=153838  shader="Lux Lit Particles/ Bumped"
+            renderQueue=3000
+            _MainTex = "wildfire01_pixel" 32x32 Texture2D format=DXT5 mips=6
+            _AlbedoMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [vfx_ice_hit]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=1000
+          startSize     = 0.04..0.06      <-- decal size, if this is the decal system
+          startLifetime = 2  <-- how long a decal lingers
+          startSpeed    = 1..3
+          startColor    = RGBA(0.415, 0.065, 0.078, 0.497)..RGBA(0.573, 0.044, 0.008, 1.000)
+          simulationSpace=Local scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=50 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=View sortMode=None
+          material: "pixel_lit" id=134686  shader="Lux Lit Particles/ Bumped"
+            renderQueue=3000
+            _MainTex = (none)
+            _AlbedoMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [smoke]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=1000
+          startSize     = 2..3      <-- decal size, if this is the decal system
+          startLifetime = 4..6  <-- how long a decal lingers
+          startSpeed    = 2..4
+          startColor    = RGBA(0.415, 0.053, 0.066, 0.439)
+          simulationSpace=Local scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=10 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=View sortMode=Distance
+          material: "smoke" id=127884  shader="Lux Lit Particles/ Bumped"
+            renderQueue=3000
+            _MainTex = "dust01_bw" 2048x2048 Texture2D format=DXT5 mips=12
+            _AlbedoMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [Splash]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=5 looping=False maxParticles=1
+          startSize     = 6      <-- decal size, if this is the decal system
+          startLifetime = 0.4  <-- how long a decal lingers
+          startSpeed    = 0
+          startColor    = RGBA(0.377, 0.041, 0.075, 1.000)
+          simulationSpace=Local scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=1 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=View sortMode=None
+          material: "BloodDripSplash" id=203686  shader="Particles/Standard Surface2"
+            renderQueue=3000
+            _MainTex = "brains" 64x64 Texture2D format=DXT5 mips=7
+            _MetallicGlossMap = (none)
+            _BumpMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: fx_TickBloodHit
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [fx_TickBloodHit]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=3 looping=False maxParticles=0
+      startSize     = 1..1      <-- decal size, if this is the decal system
+      startLifetime = 0.4  <-- how long a decal lingers
+      startSpeed    = 1..4
+      startColor    = RGBA(0.860, 0.000, 0.000, 1.000)
+      simulationSpace=Local scalingMode=Local
+      emission: enabled=True rateOverTime=0 bursts=1
+        burst[0] count=6 time=0 cycles=1 prob=1
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "blood_splat" id=135352  shader="Particles/Standard Surface2"
+        renderQueue=2450
+        _MainTex = "leaf_low" 8x8 Texture2D format=DXT5 mips=4
+        _MetallicGlossMap = (none)
+        _BumpMap = (none)
+        _EmissionMap = (none)
+        _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+        _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+    + ZNetView
+    + TimedDestruction
+    [wetsplsh]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.2..0.3      <-- decal size, if this is the decal system
+        startLifetime = 0.3..0.7  <-- how long a decal lingers
+        startSpeed    = 1..3
+        startColor    = RGBA(0.971, 0.000, 0.000, 1.000)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=30 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slime_green" id=135328  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slime_splash" 64x64 Texture2D format=DXT5 mips=7
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(0.557, 0.702, 0.384, 1.000)
+          _EmissionColor = RGBA(0.129, 0.169, 0.083, 1.000)
+    [blood_drops]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.05..0.05      <-- decal size, if this is the decal system
+        startLifetime = 1  <-- how long a decal lingers
+        startSpeed    = 1..4
+        startColor    = RGBA(0.331, 0.048, 0.000, 0.491)..RGBA(0.544, 0.000, 0.000, 0.534)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=25 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_drop" id=135298  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = (none)
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+    [bloodchunks]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.2..0.2      <-- decal size, if this is the decal system
+        startLifetime = 0.5  <-- how long a decal lingers
+        startSpeed    = 1..3
+        startColor    = RGBA(1.000, 0.007, 0.007, 1.000)
+        simulationSpace=World scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=5 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=True type=World mode=Collision3D sendCollisionMessages=True lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_splat" id=135352  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = "leaf_low" 8x8 Texture2D format=DXT5 mips=4
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      ParticleDecal:
+        m_chance = 100   <-- decals per collision, 0-100
+        m_decalSystem = fx_TickBloodHit/bloodchunks/blob_splat (1)   <-- THIS system's material is the ground mark
+      [blob_splat (1)]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=100
+          startSize     = 1..3      <-- decal size, if this is the decal system
+          startLifetime = 10  <-- how long a decal lingers
+          startSpeed    = 0..0
+          startColor    = RGBA(0.868, 0.006, 0.006, 1.000)..RGBA(0.934, 0.034, 0.034, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=False rateOverTime=0 bursts=1
+            burst[0] count=3 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=World sortMode=None
+          material: "splat_decal_blend" id=135318  shader="Custom/ParticleDecal"
+            renderQueue=3000
+            _MainTex = "brains" 64x64 Texture2D format=DXT5 mips=7
+            _NormalTex = "brains_n" 64x64 Texture2D format=BC7 mips=7
+            _Color = RGBA(0.502, 0.502, 0.502, 1.000)
+
+================================================================
+PREFAB: GiantBloodSack
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [GiantBloodSack]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + LODGroup
+    [model]  localScale=(0.804, 0.804, 0.804)
+      + MeshFilter
+      + MeshRenderer
+      + BoxCollider
+
+================================================================
+PREFAB: MaceEldnerBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [MaceEldnerBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + Floating
+    [attach]  localScale=(1, 1, 1)
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + MeshCollider
+      [equiped]  localScale=(1, 1, 1)
+        [trail]  localScale=(1, 1, 1)
+          + MeleeWeaponTrail
+          [base]  localScale=(1, 1, 1)
+          [tip]  localScale=(1, 1, 1)
+      [VFX]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        [Swirls]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=5 looping=True maxParticles=1000
+            startSize     = 0.05      <-- decal size, if this is the decal system
+            startLifetime = 1..2  <-- how long a decal lingers
+            startSpeed    = 0
+            startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+            simulationSpace=Local scalingMode=Local
+            emission: enabled=True rateOverTime=2.5 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=None alignment=View sortMode=None
+            material: NULL
+            material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+              renderQueue=3000
+              _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+              _BumpMap = (none)
+              _EmissionMap = (none)
+              _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        [blood drip]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=3 looping=True maxParticles=50
+            startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+            startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+            startSpeed    = 0..0
+            startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+            simulationSpace=World scalingMode=Hierarchy
+            emission: enabled=True rateOverTime=3 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=Stretch alignment=View sortMode=None
+            material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+              renderQueue=3000
+              _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+              _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+              _NoiseTex = (none)
+              _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: projectile_splitner_blood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [projectile_splitner_blood]  localScale=(1, 1, 1)
+    + Projectile
+    + ZNetView
+    + ZSyncTransform
+    [trail]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=5 looping=True maxParticles=500
+        startSize     = 0.15      <-- decal size, if this is the decal system
+        startLifetime = 0.4  <-- how long a decal lingers
+        startSpeed    = 0.1..0.2
+        startColor    = RGBA(0.660, 0.000, 0.000, 0.491)..RGBA(0.425, 0.034, 0.034, 0.497)
+        simulationSpace=World scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=0
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=None alignment=View sortMode=None
+        material: NULL
+        material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+          renderQueue=3000
+          _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+    [spear]  localScale=(1, 1, 1)
+      + MeshFilter
+      + MeshRenderer
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+
+================================================================
+PREFAB: SpearSplitner_Blood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [SpearSplitner_Blood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + Floating
+    [attach]  localScale=(1, 1, 1)
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+      [collider]  localScale=(0.8, 0.8, 0.8)
+        + BoxCollider
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        [Swirls]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=5 looping=True maxParticles=1000
+            startSize     = 0.05      <-- decal size, if this is the decal system
+            startLifetime = 1..1.6  <-- how long a decal lingers
+            startSpeed    = 0
+            startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+            simulationSpace=Local scalingMode=Local
+            emission: enabled=True rateOverTime=2.5 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=None alignment=View sortMode=None
+            material: NULL
+            material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+              renderQueue=3000
+              _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+              _BumpMap = (none)
+              _EmissionMap = (none)
+              _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        [blood drip]  localScale=(1, 1, 1)
+          ParticleSystem:
+            duration=3 looping=True maxParticles=50
+            startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+            startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+            startSpeed    = 0..0
+            startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+            simulationSpace=World scalingMode=Hierarchy
+            emission: enabled=True rateOverTime=3 bursts=0
+            textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+            collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+            renderer: mode=Stretch alignment=View sortMode=None
+            material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+              renderQueue=3000
+              _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+              _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+              _NoiseTex = (none)
+              _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+              _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: SwordNiedhoggBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [SwordNiedhoggBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    [attach]  localScale=(1, 1, 1)
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + BoxCollider
+        [glow]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+          [Swirls]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=5 looping=True maxParticles=1000
+              startSize     = 0.05      <-- decal size, if this is the decal system
+              startLifetime = 1..2  <-- how long a decal lingers
+              startSpeed    = 0
+              startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+              simulationSpace=Local scalingMode=Local
+              emission: enabled=True rateOverTime=2.5 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=None alignment=View sortMode=None
+              material: NULL
+              material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+                renderQueue=3000
+                _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+                _BumpMap = (none)
+                _EmissionMap = (none)
+                _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+          [blood drip]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=3 looping=True maxParticles=50
+              startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+              startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+              startSpeed    = 0..0
+              startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+              simulationSpace=World scalingMode=Hierarchy
+              emission: enabled=True rateOverTime=3 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=Stretch alignment=View sortMode=None
+              material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+                renderQueue=3000
+                _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+                _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+                _NoiseTex = (none)
+                _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [equiped]  localScale=(1, 1, 1)
+        [trail]  localScale=(1, 1, 1)
+          + MeleeWeaponTrail
+          [base]  localScale=(1, 1, 1)
+          [tip]  localScale=(1, 1, 1)
+
+================================================================
+PREFAB: THSwordSlayerBlood
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [THSwordSlayerBlood]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=5 looping=True maxParticles=2
+      startSize     = 0.3..0.5      <-- decal size, if this is the decal system
+      startLifetime = 2  <-- how long a decal lingers
+      startSpeed    = 0
+      startColor    = RGBA(1.000, 0.886, 0.250, 1.000)..RGBA(1.000, 0.397, 0.397, 1.000)
+      simulationSpace=World scalingMode=Local
+      emission: enabled=True rateOverTime=1 bursts=0
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "item_particle" id=128948  shader="Legacy Shaders/Particles/Alpha Blended"
+        renderQueue=3000
+        _MainTex = "starspark-c4210710" 512x512 Texture2D format=DXT5 mips=10
+        _TintColor = RGBA(1.000, 1.000, 1.000, 1.000)
+    + Rigidbody
+    + ZNetView
+    + ZSyncTransform
+    + ItemDrop
+    + LODGroup
+    [attach]  localScale=(1, 1, 1)
+      [default]  localScale=(1, 1, 1)
+        + MeshFilter
+        + MeshRenderer
+        + BoxCollider
+        [VFX]  localScale=(1, 1, 1)
+          + MeshFilter
+          + MeshRenderer
+          [Swirls]  localScale=(1, 0.433, 1)
+            ParticleSystem:
+              duration=5 looping=True maxParticles=1000
+              startSize     = 0.05      <-- decal size, if this is the decal system
+              startLifetime = 1..2  <-- how long a decal lingers
+              startSpeed    = 0
+              startColor    = RGBA(0.179, 0.018, 0.018, 1.000)..RGBA(0.792, 0.000, 0.000, 1.000)
+              simulationSpace=Local scalingMode=Local
+              emission: enabled=True rateOverTime=2.5 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=None alignment=View sortMode=None
+              material: NULL
+              material: "alpha_trail" id=172602  shader="Particles/Standard Unlit2"
+                renderQueue=3000
+                _MainTex = "Alpha_Trail" 256x256 Texture2D format=DXT5 mips=9
+                _BumpMap = (none)
+                _EmissionMap = (none)
+                _Color = RGBA(0.891, 0.891, 0.891, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+          [blood drip]  localScale=(1, 1, 1)
+            ParticleSystem:
+              duration=3 looping=True maxParticles=50
+              startSize     = 0.1..0.13      <-- decal size, if this is the decal system
+              startLifetime = TwoCurves (curve, multiplier 1)  <-- how long a decal lingers
+              startSpeed    = 0..0
+              startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+              simulationSpace=World scalingMode=Hierarchy
+              emission: enabled=True rateOverTime=3 bursts=0
+              textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+              collision: enabled=True type=World mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+              renderer: mode=Stretch alignment=View sortMode=None
+              material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+                renderQueue=3000
+                _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+                _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+                _NoiseTex = (none)
+                _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+                _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [equiped]  localScale=(1, 1, 1)
+        [trail]  localScale=(1, 1, 1)
+          + MeleeWeaponTrail
+          [base]  localScale=(1, 1, 1)
+          [tip]  localScale=(1, 1, 1)
+
+================================================================
+PREFAB: vfx_ashlandsbow_blood_fire
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [vfx_ashlandsbow_blood_fire]  localScale=(1, 1, 1)
+    + ZNetView
+    + TimedDestruction
+    [smoke]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.3..1.5      <-- decal size, if this is the decal system
+        startLifetime = 2..4  <-- how long a decal lingers
+        startSpeed    = 1..20
+        startColor    = RGBA(0.443, 0.136, 0.136, 0.369)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=20 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=True   <-- ANSWERS single-image vs flipbook
+          numTilesX=8 numTilesY=8 animation=WholeSheet
+          cycleCount=1 frameOverTime=Curve (curve, multiplier 1) startFrame=0..1
+          => art must be a 8x8 grid of equal cells
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slowwispysmoke" id=139984  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slowwispysmokeloop" 512x512 Texture2D format=DXT5 mips=10
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [spikes]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=100
+          startSize     = 0.05..0.2      <-- decal size, if this is the decal system
+          startLifetime = 0.5..1  <-- how long a decal lingers
+          startSpeed    = 10..35
+          startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=30..10 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Stretch alignment=View sortMode=None
+          material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+            renderQueue=3000
+            _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+            _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+            _NoiseTex = (none)
+            _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+PREFAB: vfx_BloodDeath
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [vfx_BloodDeath]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=3 looping=False maxParticles=0
+      startSize     = 1..1      <-- decal size, if this is the decal system
+      startLifetime = 1  <-- how long a decal lingers
+      startSpeed    = 1..5
+      startColor    = RGBA(0.691, 0.000, 0.000, 1.000)
+      simulationSpace=Local scalingMode=Local
+      emission: enabled=False rateOverTime=0 bursts=1
+        burst[0] count=50 time=0 cycles=1 prob=1
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "blood_splat2" id=135346  shader="Standard"
+        renderQueue=2450
+        _MainTex = (none)
+        _MetallicGlossMap = (none)
+        _BumpMap = (none)
+        _ParallaxMap = (none)
+        _OcclusionMap = (none)
+        _EmissionMap = (none)
+        _DetailMask = (none)
+        _DetailAlbedoMap = (none)
+        _DetailNormalMap = (none)
+        _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+        _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      material: NULL
+    + ZNetView
+    + TimedDestruction
+    [skinflakes]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.4..0.6      <-- decal size, if this is the decal system
+        startLifetime = 2..3  <-- how long a decal lingers
+        startSpeed    = 1..4
+        startColor    = RGBA(0.566, 0.393, 0.200, 1.000)
+        simulationSpace=World scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=50 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_splat" id=135352  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = "leaf_low" 8x8 Texture2D format=DXT5 mips=4
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        material: NULL
+    [vfx_BloodHit 1]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.05..0.05      <-- decal size, if this is the decal system
+        startLifetime = 2  <-- how long a decal lingers
+        startSpeed    = 1..6
+        startColor    = RGBA(0.331, 0.048, 0.000, 0.491)..RGBA(0.544, 0.000, 0.000, 0.534)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=200 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=True type=World mode=Collision3D sendCollisionMessages=True lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_drop" id=135298  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = (none)
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        material: NULL
+      ParticleDecal:
+        m_chance = 22   <-- decals per collision, 0-100
+        m_decalSystem = vfx_BloodDeath/vfx_BloodHit 1/blob_splat (1)   <-- THIS system's material is the ground mark
+      [blob_splat (1)]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=100
+          startSize     = 1..3      <-- decal size, if this is the decal system
+          startLifetime = 10  <-- how long a decal lingers
+          startSpeed    = 0..0
+          startColor    = RGBA(0.868, 0.006, 0.006, 1.000)..RGBA(0.934, 0.034, 0.034, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=False rateOverTime=0 bursts=1
+            burst[0] count=3 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=World sortMode=None
+          material: "splat_decal_blend" id=135318  shader="Custom/ParticleDecal"
+            renderQueue=3000
+            _MainTex = "brains" 64x64 Texture2D format=DXT5 mips=7
+            _NormalTex = "brains_n" 64x64 Texture2D format=BC7 mips=7
+            _Color = RGBA(0.502, 0.502, 0.502, 1.000)
+          material: NULL
+    [wetsplsh]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.3..0.7      <-- decal size, if this is the decal system
+        startLifetime = 0.5..1  <-- how long a decal lingers
+        startSpeed    = 1..3
+        startColor    = RGBA(0.971, 0.000, 0.000, 1.000)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=30 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slime_green" id=135328  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slime_splash" 64x64 Texture2D format=DXT5 mips=7
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(0.557, 0.702, 0.384, 1.000)
+          _EmissionColor = RGBA(0.129, 0.169, 0.083, 1.000)
+        material: NULL
+
+================================================================
+PREFAB: vfx_BloodHit
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [vfx_BloodHit]  localScale=(1, 1, 1)
+    ParticleSystem:
+      duration=3 looping=False maxParticles=0
+      startSize     = 1..1      <-- decal size, if this is the decal system
+      startLifetime = 0.4  <-- how long a decal lingers
+      startSpeed    = 1..4
+      startColor    = RGBA(0.860, 0.000, 0.000, 1.000)
+      simulationSpace=Local scalingMode=Local
+      emission: enabled=True rateOverTime=0 bursts=1
+        burst[0] count=6 time=0 cycles=1 prob=1
+      textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+      collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+      renderer: mode=Billboard alignment=View sortMode=None
+      material: "blood_splat" id=135352  shader="Particles/Standard Surface2"
+        renderQueue=2450
+        _MainTex = "leaf_low" 8x8 Texture2D format=DXT5 mips=4
+        _MetallicGlossMap = (none)
+        _BumpMap = (none)
+        _EmissionMap = (none)
+        _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+        _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      material: NULL
+    + ZNetView
+    + TimedDestruction
+    [wetsplsh]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.2..0.5      <-- decal size, if this is the decal system
+        startLifetime = 0.5..1  <-- how long a decal lingers
+        startSpeed    = 1..3
+        startColor    = RGBA(0.971, 0.000, 0.000, 1.000)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=30 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slime_green" id=135328  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slime_splash" 64x64 Texture2D format=DXT5 mips=7
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(0.557, 0.702, 0.384, 1.000)
+          _EmissionColor = RGBA(0.129, 0.169, 0.083, 1.000)
+        material: NULL
+    [blood_drops]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.05..0.05      <-- decal size, if this is the decal system
+        startLifetime = 2  <-- how long a decal lingers
+        startSpeed    = 1..6
+        startColor    = RGBA(0.331, 0.048, 0.000, 0.491)..RGBA(0.544, 0.000, 0.000, 0.534)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=50 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_drop" id=135298  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = (none)
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        material: NULL
+    [bloodchunks]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.2..0.3      <-- decal size, if this is the decal system
+        startLifetime = 1  <-- how long a decal lingers
+        startSpeed    = 1..4
+        startColor    = RGBA(1.000, 0.007, 0.007, 1.000)
+        simulationSpace=World scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=5 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+        collision: enabled=True type=World mode=Collision3D sendCollisionMessages=True lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "blood_splat" id=135352  shader="Particles/Standard Surface2"
+          renderQueue=2450
+          _MainTex = "leaf_low" 8x8 Texture2D format=DXT5 mips=4
+          _MetallicGlossMap = (none)
+          _BumpMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+        material: NULL
+      ParticleDecal:
+        m_chance = 100   <-- decals per collision, 0-100
+        m_decalSystem = vfx_BloodHit/bloodchunks/blob_splat (1)   <-- THIS system's material is the ground mark
+      [blob_splat (1)]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=100
+          startSize     = 1..3      <-- decal size, if this is the decal system
+          startLifetime = 10  <-- how long a decal lingers
+          startSpeed    = 0..0
+          startColor    = RGBA(0.868, 0.006, 0.006, 1.000)..RGBA(0.934, 0.034, 0.034, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=False rateOverTime=0 bursts=1
+            burst[0] count=3 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=World sortMode=None
+          material: "splat_decal_blend" id=135318  shader="Custom/ParticleDecal"
+            renderQueue=3000
+            _MainTex = "brains" 64x64 Texture2D format=DXT5 mips=7
+            _NormalTex = "brains_n" 64x64 Texture2D format=BC7 mips=7
+            _Color = RGBA(0.502, 0.502, 0.502, 1.000)
+          material: NULL
+
+================================================================
+PREFAB: vfx_crossbow_blood_fire
+  referenced by 1 source(s), first 1:
+    ZNetScene.m_prefabs (by name)
+
+  [vfx_crossbow_blood_fire]  localScale=(1, 1, 1)
+    + ZNetView
+    + TimedDestruction
+    [smoke]  localScale=(1, 1, 1)
+      ParticleSystem:
+        duration=3 looping=False maxParticles=1000
+        startSize     = 0.3..1.5      <-- decal size, if this is the decal system
+        startLifetime = 2..4  <-- how long a decal lingers
+        startSpeed    = 1..20
+        startColor    = RGBA(0.443, 0.136, 0.136, 0.369)
+        simulationSpace=Local scalingMode=Local
+        emission: enabled=True rateOverTime=0 bursts=1
+          burst[0] count=20 time=0 cycles=1 prob=1
+        textureSheetAnimation: ENABLED=True   <-- ANSWERS single-image vs flipbook
+          numTilesX=8 numTilesY=8 animation=WholeSheet
+          cycleCount=1 frameOverTime=Curve (curve, multiplier 1) startFrame=0..1
+          => art must be a 8x8 grid of equal cells
+        collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+        renderer: mode=Billboard alignment=View sortMode=None
+        material: "slowwispysmoke" id=139984  shader="Lux Lit Particles/ Bumped"
+          renderQueue=3000
+          _MainTex = "slowwispysmokeloop" 512x512 Texture2D format=DXT5 mips=10
+          _AlbedoMap = (none)
+          _EmissionMap = (none)
+          _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+          _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [spikes]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=3 looping=False maxParticles=100
+          startSize     = 0.05..0.2      <-- decal size, if this is the decal system
+          startLifetime = 0.5..1  <-- how long a decal lingers
+          startSpeed    = 10..35
+          startColor    = RGBA(0.321, 0.026, 0.075, 1.000)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=30..10 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Stretch alignment=View sortMode=None
+          material: "water_drop_noemissive" id=148238  shader="Custom/LitParticles"
+            renderQueue=3000
+            _MainTex = "drop_pixel" 32x8 Texture2D format=RGBA32 mips=1
+            _NormalTex = "drop_pixel_n" 32x8 Texture2D format=RGBA32 mips=6
+            _NoiseTex = (none)
+            _Color = RGBA(0.745, 0.745, 0.745, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+      [shockwave]  localScale=(1, 1, 1)
+        ParticleSystem:
+          duration=1 looping=False maxParticles=1000
+          startSize     = 4      <-- decal size, if this is the decal system
+          startLifetime = 0.3  <-- how long a decal lingers
+          startSpeed    = 4..4
+          startColor    = RGBA(1.000, 0.476, 0.476, 0.216)
+          simulationSpace=World scalingMode=Local
+          emission: enabled=True rateOverTime=0 bursts=1
+            burst[0] count=1 time=0 cycles=1 prob=1
+          textureSheetAnimation: ENABLED=False   <-- ANSWERS single-image vs flipbook
+          collision: enabled=False type=Planes mode=Collision3D sendCollisionMessages=False lifetimeLoss=UnityEngine.ParticleSystem+MinMaxCurve
+          renderer: mode=Billboard alignment=View sortMode=None
+          material: "block_wave" id=136334  shader="Particles/Standard Unlit2"
+            renderQueue=3000
+            _MainTex = "shockwave" 128x128 Texture2D format=DXT5 mips=8
+            _BumpMap = (none)
+            _EmissionMap = (none)
+            _Color = RGBA(1.000, 1.000, 1.000, 1.000)
+            _EmissionColor = RGBA(0.000, 0.000, 0.000, 1.000)
+
+================================================================
+MATERIAL SHARING
+  (a material listed against more than one path is shared - swapping it
+   changes every one of them unless the material is instanced first)
+
+  SHARED by 10:
+    AxeBerzerkrBlood/AxeBerzerkrBlood [mat0]
+    Bloodbag/Bloodbag [mat0]
+    BloodPudding/BloodPudding/fx_ItemSparkles [mat0]
+    BowAshlandsBlood/BowAshlandsBlood [mat0]
+    CrossbowRipperBlood/CrossbowRipperBlood [mat0]
+    GiantBloodSack/GiantBloodSack [mat0]
+    MaceEldnerBlood/MaceEldnerBlood [mat0]
+    SpearSplitner_Blood/SpearSplitner_Blood [mat0]
+    SwordNiedhoggBlood/SwordNiedhoggBlood [mat0]
+    THSwordSlayerBlood/THSwordSlayerBlood [mat0]
+  SHARED by 10:
+    AxeBerzerkrBlood/AxeBerzerkrBlood/attach_skin/berzerkr/Swirls [mat1]
+    AxeBerzerkrBlood/AxeBerzerkrBlood/attach/Swirls [mat1]
+    BowAshlandsBlood/BowAshlandsBlood/attach/BloodFang/vfx/Swirls [mat1]
+    BowAshlandsBlood/BowAshlandsBlood/attach/BloodFang/vfx/Swirls (1) [mat1]
+    CrossbowRipperBlood/CrossbowRipperBlood/attach/Swirls [mat1]
+    MaceEldnerBlood/MaceEldnerBlood/attach/VFX/Swirls [mat1]
+    projectile_splitner_blood/projectile_splitner_blood/trail [mat1]
+    SpearSplitner_Blood/SpearSplitner_Blood/attach/default/Swirls [mat1]
+    SwordNiedhoggBlood/SwordNiedhoggBlood/attach/default/glow/Swirls [mat1]
+    THSwordSlayerBlood/THSwordSlayerBlood/attach/default/VFX/Swirls [mat1]
+  SHARED by 10:
+    AxeBerzerkrBlood/AxeBerzerkrBlood/attach_skin/berzerkr/blood drip [mat0]
+    BowAshlandsBlood/BowAshlandsBlood/attach/BloodFang/vfx/blood drip [mat0]
+    CrossbowRipperBlood/CrossbowRipperBlood/attach/blood drip [mat0]
+    fx_bloodweapon_hit/fx_bloodweapon_hit/drops [mat0]
+    MaceEldnerBlood/MaceEldnerBlood/attach/VFX/blood drip [mat0]
+    SpearSplitner_Blood/SpearSplitner_Blood/attach/default/blood drip [mat0]
+    SwordNiedhoggBlood/SwordNiedhoggBlood/attach/default/glow/blood drip [mat0]
+    THSwordSlayerBlood/THSwordSlayerBlood/attach/default/VFX/blood drip [mat0]
+    vfx_ashlandsbow_blood_fire/vfx_ashlandsbow_blood_fire/smoke/spikes [mat0]
+    vfx_crossbow_blood_fire/vfx_crossbow_blood_fire/smoke/spikes [mat0]
+  SHARED by 5:
+    fx_TickBloodHit/fx_TickBloodHit [mat0]
+    fx_TickBloodHit/fx_TickBloodHit/bloodchunks [mat0]
+    vfx_BloodDeath/vfx_BloodDeath/skinflakes [mat0]
+    vfx_BloodHit/vfx_BloodHit [mat0]
+    vfx_BloodHit/vfx_BloodHit/bloodchunks [mat0]
+  SHARED by 3:
+    fx_TickBloodHit/fx_TickBloodHit/wetsplsh [mat0]
+    vfx_BloodDeath/vfx_BloodDeath/wetsplsh [mat0]
+    vfx_BloodHit/vfx_BloodHit/wetsplsh [mat0]
+  SHARED by 3:
+    fx_TickBloodHit/fx_TickBloodHit/blood_drops [mat0]
+    vfx_BloodDeath/vfx_BloodDeath/vfx_BloodHit 1 [mat0]
+    vfx_BloodHit/vfx_BloodHit/blood_drops [mat0]
+  SHARED by 3:
+    fx_TickBloodHit/fx_TickBloodHit/bloodchunks/blob_splat (1) [mat0]
+    vfx_BloodDeath/vfx_BloodDeath/vfx_BloodHit 1/blob_splat (1) [mat0]
+    vfx_BloodHit/vfx_BloodHit/bloodchunks/blob_splat (1) [mat0]
+  SHARED by 2:
+    vfx_ashlandsbow_blood_fire/vfx_ashlandsbow_blood_fire/smoke [mat0]
+    vfx_crossbow_blood_fire/vfx_crossbow_blood_fire/smoke [mat0]
+
+  materials seen in total: 17
