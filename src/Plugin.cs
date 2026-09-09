@@ -145,19 +145,20 @@ namespace CarturHDBlood
                     "the sheet is shared by both.",
                     new AcceptableValueList<int>(128, 256, 512)));
 
-            AtlasColumns = Config.Bind("Texture", "AtlasColumns", 4,
+            AtlasColumns = Config.Bind("Texture", "AtlasColumns", 3,
                 new ConfigDescription(
                     "Columns in the splat atlas. Must match the shipped texture, or the wrong " +
                     "sub-rects get sampled and splats appear cropped.",
                     new AcceptableValueRange<int>(1, 8)));
 
-            AtlasRows = Config.Bind("Texture", "AtlasRows", 4,
+            AtlasRows = Config.Bind("Texture", "AtlasRows", 3,
                 new ConfigDescription(
-                    "Rows in the splat atlas. Shipped texture is 4x4 - sixteen splats at 512px in " +
-                    "a 2048x2048 sheet: twelve large marks across rows 0-2 (spatters, a slash, a " +
-                    "spray fan, a wide streak) and four small marks on row 3. Every row above the " +
-                    "last is the 'large' set and the last row is the 'small' set. Both values are " +
-                    "auto-corrected from the texture size if they disagree with it.",
+                    "Rows in the splat atlas. Shipped texture is 3x3 - nine splats at 1024px in a " +
+                    "3072x3072 sheet: six large marks across rows 0-1 and three small marks on " +
+                    "row 2. Every row above the last is the 'large' set and the last row is the " +
+                    "'small' set, so a grid with no spare slots is required - an empty cell would " +
+                    "still get a material built for it and would draw an invisible decal. Both " +
+                    "values are auto-corrected from the texture size if they disagree with it.",
                     new AcceptableValueRange<int>(1, 8)));
 
             SizeAwareVariants = Config.Bind("Texture", "SizeAwareVariants", true,
