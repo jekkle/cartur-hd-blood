@@ -34,6 +34,9 @@ namespace CarturHDBlood
         private static Texture2D _single;
         private static Texture2D _singleNormal;
         private static Texture2D _droplet;
+        private static Texture2D _mist;
+        private static Texture2D _spraySplat;
+        private static Texture2D _sprayDrop;
         private static bool _loadAttempted;
 
         // Parsed once, like the decal list.
@@ -345,32 +348,56 @@ namespace CarturHDBlood
                 return;
 
             LoadTextures();
-            if (_droplet == null)
-                return;
 
             if (!mat.HasProperty("_MainTex"))
                 return;
 
             Texture before = mat.GetTexture("_MainTex");
 
-            // With variants off, the material must get a SINGLE CELL, never the whole sheet.
+            // One fixed texture per material, chosen by name.
             //
-            // Sheet animation is what confines a particle to one cell. Assign the full atlas
-            // without it and every particle samples all sixteen frames at once - a grid crammed
-            // into one quad, which reads as a square block. The ground path already had this
-            // fallback; the spray path did not, and mist is where it shows worst because those
-            // frames are soft and low-contrast.
-            Texture2D sprayTex = _droplet;
-            if (!Plugin.SprayVariants.Value)
-                sprayTex = SliceFirstCell(_droplet) ?? _droplet;
+            // The old path handed every spray material the same sheet and let particle size
+            // decide which frame to sample. That was wrong in principle and measurably wrong in
+            // practice: "is this mist" is a property of blood_cloud, not of how large the
+            // particle happens to be, and blood_cloud draws at 0.5 units on an ordinary death -
+            // well under any sensible size threshold - so the material that IS mist was being
+            // handed crisp droplet frames. With MistBias at 0 the mist frames were unreachable
+            // for ordinary kills entirely.
+            //
+            // Selecting by material removes the guess. It is also exactly what vanilla does:
+            // leaf_low on blood_splat, brains on blood_cloud, nothing at all on blood_drop.
+            Texture2D sprayTex = SprayTextureFor(mat.name);
+            if (sprayTex == null)
+                return;
 
             mat.SetTexture("_MainTex", sprayTex);
 
             Plugin.Log.LogInfo($"Skinned spray \"{mat.name}\" id={mat.GetInstanceID()} " +
                                $"shader=\"{(mat.shader == null ? "?" : mat.shader.name)}\": " +
                                $"_MainTex \"{(before == null ? "NONE (untextured quads)" : before.name)}\" " +
-                               $"-> \"{sprayTex.name}\" {sprayTex.width}x{sprayTex.height} " +
-                               $"(variants={Plugin.SprayVariants.Value})");
+                               $"-> \"{sprayTex.name}\" {sprayTex.width}x{sprayTex.height}");
+        }
+
+        /// Picks the texture for a spray material by name, falling back to the legacy sheet's
+        /// first cell so an unrecognised blood material still gets art rather than nothing.
+        private static Texture2D SprayTextureFor(string matName)
+        {
+            if (matName != null)
+            {
+                if (matName.StartsWith("blood_cloud", StringComparison.OrdinalIgnoreCase)
+                    && _mist != null)
+                    return _mist;
+
+                if (matName.StartsWith("blood_drop", StringComparison.OrdinalIgnoreCase)
+                    && _sprayDrop != null)
+                    return _sprayDrop;
+
+                if (matName.StartsWith("blood_splat", StringComparison.OrdinalIgnoreCase)
+                    && _spraySplat != null)
+                    return _spraySplat;
+            }
+
+            return _spraySplat ?? (_droplet == null ? null : SliceFirstCell(_droplet) ?? _droplet);
         }
 
         /// Gives the airborne spray the same random-variant treatment the ground decals get.
@@ -533,7 +560,10 @@ namespace CarturHDBlood
             {
                 LoadTextures();
                 _trailMaterial = new Material(template) { name = "CarturBloodTrail" };
-                Texture2D cell = SliceFirstCell(_droplet);
+                // The plain droplet, not a sheet cell. The legacy sheet's first cell is a large
+                // glossy sphere with a specular highlight - stretched along a trail it reads as a
+                // shiny tube.
+                Texture2D cell = _sprayDrop ?? SliceFirstCell(_droplet);
                 if (cell != null && _trailMaterial.HasProperty("_MainTex"))
                     _trailMaterial.SetTexture("_MainTex", cell);
             }
@@ -623,11 +653,11 @@ namespace CarturHDBlood
 
                 LoadTextures();
 
-                // A single cell, not the whole sheet. This material's renderers don't get sheet
+                // A single image, not a sheet. This material's renderers don't get sheet
                 // animation enabled - they aren't in the spray whitelist, they're reached by the
                 // clone path - so handing them the atlas made every splash particle draw all four
-                // droplets squashed together. One cell is what a plain shader expects.
-                Texture2D splashTex = SliceFirstCell(_droplet) ?? _droplet;
+                // droplets squashed together. One image is what a plain shader expects.
+                Texture2D splashTex = _spraySplat ?? SliceFirstCell(_droplet) ?? _droplet;
                 if (splashTex != null && _bloodSplashMaterial.HasProperty("_MainTex"))
                     _bloodSplashMaterial.SetTexture("_MainTex", splashTex);
 
@@ -1014,11 +1044,23 @@ namespace CarturHDBlood
             _atlas = Load("blood_splat_atlas.png", "CarturBloodAtlas", mipmap: true);
             _atlasNormal = Load("blood_splat_atlas_n.png", "CarturBloodAtlasNormal", mipmap: true);
 
-            // The spray sheet must NOT have mipmaps. It stays whole and is sampled by sub-rect
-            // through Texture Sheet Animation, so a mip level averages across cell boundaries and
-            // a particle ends up drawing a blurred block of its neighbours - which reads as a
-            // square, worst on the soft low-contrast mist frames. Slight aliasing on distant
-            // spray is the cheaper problem.
+            // One texture per spray material, each sized to what that material actually draws
+            // at, which is how vanilla assigns particle textures in the first place - it never
+            // samples a sheet. Because these are single images rather than atlas cells, mipmaps
+            // are safe and wanted: there are no cell boundaries for a mip level to average
+            // across, which was the whole reason the old sheet had to ship without them.
+            //
+            // The sizes come from the effect graph, not from taste:
+            //   blood_cloud  0.5 units typical, up to 12 on big creatures  -> 1024
+            //   blood_splat  <= 0.6                                        ->  256
+            //   blood_drop   0.05, 200 per death; vanilla ships 8x8 here   ->  128
+            _mist = Load("blood_mist.png", "CarturBloodMist", mipmap: true);
+            _spraySplat = Load("blood_splat.png", "CarturBloodSpraySplat", mipmap: true);
+            _sprayDrop = Load("blood_drops.png", "CarturBloodDrop", mipmap: true);
+
+            // The legacy 16-frame sheet. Still loaded because SprayVariants, the trail material
+            // and the green-splash clone all slice cells out of it, and because a file dropped in
+            // BepInEx/config can still override it. Nothing reads it on the default path.
             _droplet = Load("blood_droplet.png", "CarturBloodDroplet", mipmap: false);
 
             _single = Load("blood_splat_single.png", "CarturBloodSingle", mipmap: true);
