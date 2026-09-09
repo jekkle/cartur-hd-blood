@@ -65,7 +65,7 @@ namespace CarturHDBlood
                 float size = Plugin.PoolSize.Value;
                 // Scaled by the same lifetime multiplier as everything else, which the config
                 // description promises and the code was not doing.
-                float life = Plugin.PoolLifetime.Value * BloodPreset.Current().LifetimeMultiplier;
+                float life = Plugin.PoolLifetime.Value * GroundPreset.Current().LifetimeMultiplier;
 
                 for (int i = 0; i < count; i++)
                 {

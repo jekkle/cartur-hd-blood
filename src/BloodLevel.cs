@@ -1,23 +1,20 @@
+using UnityEngine;
+
 namespace CarturHDBlood
 {
-    /// One dial for "how much blood", instead of making the player reason about four
-    /// interacting multipliers.
+    /// Ground decals: how often the terrain gets marked, how big, how long it lasts.
     ///
-    /// The numbers aren't arbitrary - they come from what the probe found in the game. Vanilla
-    /// puts 23 of its 116 decal owners at only 10% chance, including most creatures' death
-    /// splat, so raising the floor is what actually produces more blood; the multiplier alone
-    /// does nothing to the 69 owners already sitting at 100. And raising chance without also
-    /// raising the particle cap just makes new decals evict old ones, so the ground never fills.
-    public enum BloodLevel
-    {
-        Low,
-        Normal,
-        High,
-        Extreme,
-        Custom,
-    }
-
-    internal struct BloodPreset
+    /// One number drives all five, because five interacting multipliers is not a setting a
+    /// person can reason about. The scale is anchored so that **1 is exactly vanilla** - at 1
+    /// only the artwork differs from an unmodded game - and 0 is no ground blood at all.
+    ///
+    /// The mapping is not linear on chance, and that is deliberate. Vanilla puts 23 of its 116
+    /// decal owners at only 10% chance, including most creatures' death splat, while 69 are
+    /// already at 100. So the multiplier does nothing for the majority and the FLOOR is what
+    /// actually produces more blood - which is why the floor is what climbs fastest above 1.
+    /// Raising chance without also raising the particle cap just makes new decals evict old
+    /// ones, so the cap comes up alongside it.
+    internal struct GroundPreset
     {
         public float MinChance;
         public float ChanceMultiplier;
@@ -25,70 +22,44 @@ namespace CarturHDBlood
         public float LifetimeMultiplier;
         public int MaxDecals;
 
-        /// Normal reproduces vanilla's own amounts exactly, so it's a true baseline rather than
-        /// a mild version of the mod - at Normal only the artwork differs from vanilla.
-        public static BloodPreset For(BloodLevel level)
+        /// <param name="g">0 = none, 1 = vanilla, 3 = every hit marks and marks last.</param>
+        public static GroundPreset From(float g)
         {
-            switch (level)
+            g = Mathf.Clamp(g, 0f, 3f);
+
+            if (g <= 0f)
             {
-                case BloodLevel.Low:
-                    return new BloodPreset
-                    {
-                        MinChance = 0f,
-                        ChanceMultiplier = 0.5f,
-                        SizeMultiplier = 0.8f,
-                        LifetimeMultiplier = 0.6f,
-                        MaxDecals = 0,
-                    };
-
-                case BloodLevel.High:
-                    return new BloodPreset
-                    {
-                        MinChance = 50f,
-                        ChanceMultiplier = 1.5f,
-                        SizeMultiplier = 1.25f,
-                        LifetimeMultiplier = 2f,
-                        MaxDecals = 200,
-                    };
-
-                case BloodLevel.Extreme:
-                    return new BloodPreset
-                    {
-                        MinChance = 100f,
-                        ChanceMultiplier = 3f,
-                        SizeMultiplier = 1.6f,
-                        LifetimeMultiplier = 4f,
-                        MaxDecals = 600,
-                    };
-
-                case BloodLevel.Normal:
-                default:
-                    return new BloodPreset
-                    {
-                        MinChance = 10f,
-                        ChanceMultiplier = 1f,
-                        SizeMultiplier = 1f,
-                        LifetimeMultiplier = 1f,
-                        MaxDecals = 0,
-                    };
+                return new GroundPreset
+                {
+                    MinChance = 0f,
+                    ChanceMultiplier = 0f,
+                    SizeMultiplier = 1f,
+                    LifetimeMultiplier = 1f,
+                    MaxDecals = 0,
+                };
             }
-        }
 
-        /// Custom hands control back to the individual config entries.
-        public static BloodPreset Current()
-        {
-            BloodLevel level = Plugin.Level.Value;
-            if (level != BloodLevel.Custom)
-                return For(level);
-
-            return new BloodPreset
+            return new GroundPreset
             {
-                MinChance = Plugin.MinChance.Value,
-                ChanceMultiplier = Plugin.ChanceMultiplier.Value,
-                SizeMultiplier = Plugin.SizeMultiplier.Value,
-                LifetimeMultiplier = Plugin.LifetimeMultiplier.Value,
-                MaxDecals = Plugin.MaxDecals.Value,
+                // Below 1 the floor falls away with the scale; above it, it climbs toward
+                // certainty. 1 -> 10 (vanilla), 1.5 -> 32, 2 -> 55, 3 -> 100.
+                MinChance = g <= 1f ? 10f * g : Mathf.Lerp(10f, 100f, (g - 1f) * 0.5f),
+
+                ChanceMultiplier = g,
+
+                // Size moves far less than the rest. Decal size is authored per creature on
+                // purpose - a troll marks more ground than a greyling - and this scale is about
+                // how much blood there is, not about flattening that design.
+                SizeMultiplier = Mathf.Max(0.25f, 1f + (g - 1f) * 0.3f),
+
+                LifetimeMultiplier = Mathf.Max(0.25f, g),
+
+                // 0 leaves vanilla's own caps alone (they run 10 to 1000); the caller only ever
+                // raises a cap, never lowers one. 2 -> 300, 3 -> 600.
+                MaxDecals = g <= 1f ? 0 : Mathf.RoundToInt(Mathf.Lerp(0f, 600f, (g - 1f) * 0.5f)),
             };
         }
+
+        public static GroundPreset Current() => From(Plugin.GroundBlood.Value);
     }
 }

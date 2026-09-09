@@ -3,13 +3,29 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>CarturHDBlood</AssemblyName>
-    <Version>0.1.0</Version>
+    <!-- Keep in step with the version in [BepInPlugin] - Thunderstore reads the
+         manifest, BepInEx reads the attribute, and a mismatch shows users two
+         different numbers for the same build. -->
+    <Version>1.0.0</Version>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
     <!-- Managed DLLs come from the raw Steam install -->
     <VALHEIM_INSTALL Condition="'$(VALHEIM_INSTALL)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</VALHEIM_INSTALL>
     <!-- Actual play happens through r2modman's Default profile - deploy the built DLL there -->
     <R2MODMAN_PROFILE Condition="'$(R2MODMAN_PROFILE)' == ''">$(APPDATA)\r2modmanPlus-local\Valheim\profiles\Default</R2MODMAN_PROFILE>
+
+    <!-- Hot reload. `dotnet build -p:HOT_RELOAD=true` deploys to BepInEx\scripts instead of
+         plugins, where BepInEx's ScriptEngine reloads the assembly in-memory on F6 rather than
+         needing a game restart.
+
+         Off by default on purpose: a scripts deploy with ScriptEngine absent means the mod
+         simply never loads, and a silent no-op is a worse default than an extra restart.
+
+         The DLL must be in exactly ONE of the two folders. In both, it loads twice - two sets of
+         Harmony patches on the same methods, and every effect skinned and grafted twice. -->
+    <HOT_RELOAD Condition="'$(HOT_RELOAD)' == ''">false</HOT_RELOAD>
+    <DeployDir Condition="'$(HOT_RELOAD)' == 'true'">$(R2MODMAN_PROFILE)\BepInEx\scripts</DeployDir>
+    <DeployDir Condition="'$(HOT_RELOAD)' != 'true'">$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood</DeployDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,35 +38,36 @@
     <!-- Stay PNGs rather than raw pixel dumps: they're decoded via reflection on LoadImage,
          which avoids referencing the ReadOnlySpan<byte> overload set at compile time
          (CS0518 under net472 against this game's netstandard.dll). -->
-    <EmbeddedResource Include="Assets\blood_splat_atlas.png">
-      <LogicalName>CarturHDBlood.blood_splat_atlas.png</LogicalName>
+    <!-- One image per material, sized to the world size that material actually draws at, which
+         is how vanilla assigns particle textures in the first place - it never samples a sheet.
+         Every asset must be listed here individually; there is no wildcard, and forgetting one
+         fails at RUNTIME rather than at build.
+
+         Ground decals draw 0.5-8 world units, so the two large marks are 1024 and the small
+         one is 512. Nothing else ships: the airborne blood is vanilla again, and the grafted
+         cloud deliberately uses the game's own blood_cloud texture. -->
+    <EmbeddedResource Include="Assets\splatter_spray_1024_rgba.png">
+      <LogicalName>CarturHDBlood.splatter_spray_1024_rgba.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Assets\blood_splat_atlas_n.png">
-      <LogicalName>CarturHDBlood.blood_splat_atlas_n.png</LogicalName>
+    <EmbeddedResource Include="Assets\splatter_mist_1024_rgba.png">
+      <LogicalName>CarturHDBlood.splatter_mist_1024_rgba.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Assets\blood_droplet.png">
-      <LogicalName>CarturHDBlood.blood_droplet.png</LogicalName>
+    <EmbeddedResource Include="Assets\splatter_impact_512_rgba.png">
+      <LogicalName>CarturHDBlood.splatter_impact_512_rgba.png</LogicalName>
     </EmbeddedResource>
-    <!-- One image per spray material. Every asset must be listed here individually - there is
-         no wildcard - and forgetting one fails at RUNTIME, not at build: the loader logs
-         "Embedded texture missing" and falls back to a cell of the old sheet, so the mod keeps
-         working while drawing the wrong art. Adding art means adding a line here. -->
-    <EmbeddedResource Include="Assets\blood_mist.png">
-      <LogicalName>CarturHDBlood.blood_mist.png</LogicalName>
+
+    <!-- Normal maps, one per ground mark, same size as the diffuse it pairs with.
+         Custom/ParticleDecal has a live _NormalTex - vanilla puts brains_n 64x64 there - so the
+         ground decals ARE lit. Without these they were lit by the bumps of vanilla's blob while
+         drawing our splatter, which is why the blood read flat rather than wet. -->
+    <EmbeddedResource Include="Assets\splatter_spray_1024_normal.png">
+      <LogicalName>CarturHDBlood.splatter_spray_1024_normal.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Assets\blood_splat.png">
-      <LogicalName>CarturHDBlood.blood_splat.png</LogicalName>
+    <EmbeddedResource Include="Assets\splatter_mist_1024_normal.png">
+      <LogicalName>CarturHDBlood.splatter_mist_1024_normal.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Assets\blood_drops.png">
-      <LogicalName>CarturHDBlood.blood_drops.png</LogicalName>
-    </EmbeddedResource>
-    <!-- Single-cell fallback, used when UseVariantAtlas is off. Without it, disabling the
-         atlas would leave the full sheet mapped onto one quad - a square blob. -->
-    <EmbeddedResource Include="Assets\blood_splat_single.png">
-      <LogicalName>CarturHDBlood.blood_splat_single.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Assets\blood_splat_single_n.png">
-      <LogicalName>CarturHDBlood.blood_splat_single_n.png</LogicalName>
+    <EmbeddedResource Include="Assets\splatter_impact_512_normal.png">
+      <LogicalName>CarturHDBlood.splatter_impact_512_normal.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 
@@ -89,8 +106,9 @@
     <ItemGroup>
       <DeployFiles Include="$(TargetDir)$(AssemblyName).dll" />
     </ItemGroup>
-    <MakeDir Directories="$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood" />
-    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood" />
+    <MakeDir Directories="$(DeployDir)" />
+    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(DeployDir)" />
+    <Message Importance="high" Text="Deployed to $(DeployDir)" />
   </Target>
 
 </Project>

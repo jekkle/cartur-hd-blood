@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CarturHDBlood
 {
-    /// Re-skins and re-tunes the ground blood decals.
+    /// Re-skins and re-tunes the blood effects.
     ///
     /// Applied per ParticleDecal instance from its Awake, deliberately, rather than by editing
     /// the vfx_BloodHit / vfx_BloodDeath prefabs. The live probe showed why: creatures don't use
@@ -19,6 +19,12 @@ namespace CarturHDBlood
     /// The dials are multipliers, not absolute values, precisely because those per-creature
     /// numbers differ on purpose - a troll should mark more ground than a greyling. Absolute
     /// overrides would flatten that design into one size for everything.
+    ///
+    /// Texture assignment follows vanilla's own scheme: one fixed image per material, sized to
+    /// the world size that material actually draws at. There is no atlas and no Texture Sheet
+    /// Animation. An earlier version sliced a 4096 sheet into twelve materials to get shape
+    /// variety; it cost about 170 MB of uncompressed RGBA at runtime, needed a grid to be kept
+    /// in sync with the art, and Custom/ParticleDecal ignores sheet animation anyway.
     internal static class BloodSkin
     {
         // The decal material is shared by every blood effect in the game (verified: one instance
@@ -26,75 +32,30 @@ namespace CarturHDBlood
         // once per material, not once per spawned decal.
         private static readonly HashSet<int> SkinnedMaterials = new HashSet<int>();
 
-        private static readonly HashSet<int> SkinnedSprayMaterials = new HashSet<int>();
-
-        private static Texture2D _atlas;
-        private static Texture2D _atlasNormal;
-        // Single-cell fallback, for when the shader turns out not to honour the sheet animation.
-        private static Texture2D _single;
-        private static Texture2D _singleNormal;
-        private static Texture2D _droplet;
-        private static Texture2D _mist;
-        private static Texture2D _spraySplat;
-        private static Texture2D _sprayDrop;
+        // Ground marks. Two large, chosen per decal, and one small.
+        private static Texture2D _groundLarge;
+        private static Texture2D _groundLargeAlt;
+        private static Texture2D _groundSmall;
+        // One normal map per mark. Custom/ParticleDecal has a live _NormalTex - vanilla keeps
+        // brains_n 64x64 there - so these decals are lit. Leaving vanilla's normal under our
+        // albedo meant highlights followed the shape of a texture that is no longer drawn,
+        // which is what made the blood read flat instead of wet.
+        private static Texture2D _groundLargeNormal;
+        private static Texture2D _groundLargeAltNormal;
+        private static Texture2D _groundSmallNormal;
         private static bool _loadAttempted;
-
-        // Parsed once, like the decal list.
-        private static string[] _sprayPrefixes;
 
         /// Blood materials that are always covered, whatever the config says.
         ///
-        /// The config file persists across updates and silently wins over new code defaults -
-        /// the same trap that had a 12-frame sheet being sliced as 8 for hours. So the materials
-        /// the game actually uses for blood are listed here in code and always included; the
-        /// config setting adds to this rather than replacing it. That way finding a missed
-        /// material - blood_cloud, with 37 owners, was missed - fixes every install rather than
-        /// only fresh ones.
+        /// The config file persists across updates and silently wins over new code defaults, so
+        /// the materials the game actually uses for blood are listed here in code and always
+        /// included; the config setting adds to this rather than replacing it. That way finding
+        /// a missed material fixes every install rather than only fresh ones.
         private static readonly string[] KnownDecalMaterials =
             { "splat_decal_blend", "seeker_blood_splat", "SeekerQueen_decals" };
 
-        private static readonly string[] KnownSprayMaterials =
-            { "blood_splat", "blood_drop", "blood_cloud" };
-
         // Parsed once from config, then reused - this is checked on every decal spawn.
         private static string[] _materialPrefixes;
-
-        /// Grid size for a sheet, derived from the texture rather than taken from config.
-        ///
-        /// BepInEx keeps whatever is already in the .cfg and ignores new code defaults, so every
-        /// time the sheet layout changed the config on an existing install kept the OLD numbers.
-        /// The result is silent and confusing: a 12-frame sheet sliced as 8, wrong sub-rects,
-        /// bottom rows never drawn, and nothing in the log to say so.
-        ///
-        /// Cell size is the fixed thing here - 512 for the ground sheet, 256 for the spray - so
-        /// the grid is just the texture divided by it. Config still wins when it matches, and is
-        /// corrected with a log line when it doesn't.
-        private static readonly HashSet<string> _gridWarned = new HashSet<string>();
-
-        internal static void ResolveGrid(Texture2D tex, int cellSize, ref int cols, ref int rows, string what)
-        {
-            if (tex == null || cellSize <= 0)
-                return;
-
-            int c = Mathf.Max(1, tex.width / cellSize);
-            int r = Mathf.Max(1, tex.height / cellSize);
-
-            if (c == cols && r == rows)
-                return;
-
-            // Logged once per distinct correction. This runs per spray system - 350 of them -
-            // and the first version buried every other line in the log under one repeated
-            // warning.
-            string key = what + c + "x" + r;
-            if (_gridWarned.Add(key))
-                Plugin.Log.LogWarning(
-                $"{what} grid in config is {cols}x{rows} but the texture is {tex.width}x{tex.height} " +
-                $"({cellSize}px cells = {c}x{r}). Using {c}x{r}. Config values persist across " +
-                "updates, so an older layout would otherwise be used against newer art.");
-
-            cols = c;
-            rows = r;
-        }
 
         /// Skins the decal materials up front, at world load.
         ///
@@ -113,19 +74,16 @@ namespace CarturHDBlood
             // Each part checks its own switch below.
             //
             // This used to bail on ReplaceDecalTexture, which is the GROUND flag - so turning
-            // the ground texture off also silently disabled the spray texture, the green-splash
-            // fix, spray density, gravity, drag and trails, all of which have their own settings.
-            // Three unrelated features hidden behind one flag.
-            if (!Plugin.ReplaceTexture.Value && !Plugin.ReplaceSprayTexture.Value
-                                             && !Plugin.FixGreenSplash.Value)
+            // the ground texture off also silently disabled the green-splash fix, which has its
+            // own setting. Unrelated features hidden behind one flag.
+            if (!Plugin.ReplaceTexture.Value && !Plugin.FixGreenSplash.Value)
                 return;
 
             int decals = 0;
-            int sprays = 0;
             int splashes = 0;
 
-            // Decals and sprays in one pass over the prefabs. GetComponentsInChildren isn't
-            // cheap across 3500 prefabs, so it's worth not doing it twice.
+            // Decals and the green splash in one pass over the prefabs. GetComponentsInChildren
+            // isn't cheap across 3500 prefabs, so it's worth not doing it twice.
             foreach (GameObject prefab in scene.m_prefabs)
             {
                 if (prefab == null)
@@ -161,19 +119,13 @@ namespace CarturHDBlood
                     }
                 }
 
-                if (!Plugin.ReplaceSprayTexture.Value && !Plugin.FixGreenSplash.Value)
+                if (!Plugin.FixGreenSplash.Value)
                     continue;
 
                 // Whether this prefab is a blood effect at all, decided structurally: it carries
                 // a ParticleDecal that renders with a blood material. That test is what makes the
                 // green-splash fix below safe - no name matching, no guessing.
                 bool isBloodEffect = decalsHere > 0;
-
-                // Hit effects and death effects get separate density budgets. Naming is
-                // consistent across the game's per-creature effects - vfx_neck_hit,
-                // vfx_troll_death, fx_bat_hit - which is what makes this reliable here even
-                // though name matching was the wrong tool for finding the blood materials.
-                bool isHitEffect = prefab.name.IndexOf("hit", StringComparison.OrdinalIgnoreCase) >= 0;
 
                 foreach (ParticleSystemRenderer r in prefab.GetComponentsInChildren<ParticleSystemRenderer>(true))
                 {
@@ -183,27 +135,7 @@ namespace CarturHDBlood
                     if (mat == null)
                         continue;
 
-                    if (IsSprayMaterial(mat))
-                    {
-                        if (!Plugin.ReplaceSprayTexture.Value)
-                            continue;
-                        try
-                        {
-                            if (!SkinnedSprayMaterials.Contains(mat.GetInstanceID()))
-                            {
-                                SkinSprayMaterial(mat);
-                                sprays++;
-                            }
-                            EnableSprayVariants(r, isHitEffect);
-                        }
-                        catch (Exception e)
-                        {
-                            Plugin.Log.LogWarning("Spray skin failed on " + mat.name + ": " + e.Message);
-                        }
-                        continue;
-                    }
-
-                    if (isBloodEffect && Plugin.FixGreenSplash.Value && IsSlimeSplashMaterial(mat))
+                    if (isBloodEffect && IsSlimeSplashMaterial(mat))
                     {
                         try
                         {
@@ -218,8 +150,8 @@ namespace CarturHDBlood
                 }
             }
 
-            Plugin.Log.LogInfo($"Pre-skinned {decals} decal material(s), {sprays} spray material(s) " +
-                               $"and re-coloured {splashes} green splash renderer(s) at world load.");
+            Plugin.Log.LogInfo($"Pre-skinned {decals} decal material(s) and re-coloured " +
+                               $"{splashes} green splash renderer(s) at world load.");
         }
 
         public static void Apply(ParticleDecal decal)
@@ -249,8 +181,12 @@ namespace CarturHDBlood
                 if (Plugin.ReplaceTexture.Value)
                     SkinMaterial(mat);
 
-                TuneDecalSystem(decalSystem);
+                TuneDecalSystem(decalSystem, mat);
                 TuneChance(decal);
+
+                // Both of these key off the spawned effect root and dedupe themselves, so an
+                // effect carrying two or three ParticleDecals still gets one of each.
+                CloudGraft.Apply(decal);
 
                 if (IsDeathEffect(decal))
                     Pooling.SpawnPool(decal);
@@ -268,315 +204,15 @@ namespace CarturHDBlood
         ///
         /// Whitelisting by material also means the count of creatures is irrelevant. One entry
         /// covers 88 per-creature effects; the seeker entries cover another 17.
-        private static bool IsBloodMaterial(Material mat)
+        internal static bool IsBloodMaterial(Material mat)
         {
             if (mat.name == null)
                 return false;
 
             if (_materialPrefixes == null)
-            {
-                string raw = Plugin.DecalMaterials.Value ?? string.Empty;
-                var parsed = new List<string>();
-                foreach (string part in raw.Split(','))
-                {
-                    string trimmed = part.Trim();
-                    if (trimmed.Length > 0)
-                        parsed.Add(trimmed);
-                }
-                _materialPrefixes = parsed.ToArray();
-            }
+                _materialPrefixes = ParseList(Plugin.DecalMaterials.Value);
 
-            foreach (string prefix in _materialPrefixes)
-            {
-                // Prefix, not equality: Unity appends " (Instance)" when a material is instanced.
-                if (mat.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            foreach (string prefix in KnownDecalMaterials)
-            {
-                if (mat.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            return false;
-        }
-
-        /// The airborne spray, as distinct from the ground decal.
-        ///
-        /// Two materials carry it: "blood_splat", whose texture is `leaf_low` at 8x8, and
-        /// "blood_drop", which has no _MainTex at all - meaning those particles draw as flat
-        /// untextured quads, which is why airborne blood looks blocky.
-        ///
-        /// "slime_green" is the third material inside the blood effects and is deliberately
-        /// excluded: Blobs almost certainly share it, and replacing it would recolour every
-        /// slime in the game. Its owners were only visible within blood-named prefabs, so the
-        /// sharing report couldn't rule that out - and an unprovable risk isn't worth taking
-        /// for a splash that lasts half a second.
-        private static bool IsSprayMaterial(Material mat)
-        {
-            if (mat.name == null)
-                return false;
-
-            if (_sprayPrefixes == null)
-            {
-                string raw = Plugin.SprayMaterials.Value ?? string.Empty;
-                var parsed = new List<string>();
-                foreach (string part in raw.Split(','))
-                {
-                    string trimmed = part.Trim();
-                    if (trimmed.Length > 0)
-                        parsed.Add(trimmed);
-                }
-                _sprayPrefixes = parsed.ToArray();
-            }
-
-            foreach (string prefix in _sprayPrefixes)
-            {
-                if (mat.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            foreach (string prefix in KnownSprayMaterials)
-            {
-                if (mat.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            return false;
-        }
-
-        private static void SkinSprayMaterial(Material mat)
-        {
-            if (!SkinnedSprayMaterials.Add(mat.GetInstanceID()))
-                return;
-
-            LoadTextures();
-
-            if (!mat.HasProperty("_MainTex"))
-                return;
-
-            Texture before = mat.GetTexture("_MainTex");
-
-            // One fixed texture per material, chosen by name.
-            //
-            // The old path handed every spray material the same sheet and let particle size
-            // decide which frame to sample. That was wrong in principle and measurably wrong in
-            // practice: "is this mist" is a property of blood_cloud, not of how large the
-            // particle happens to be, and blood_cloud draws at 0.5 units on an ordinary death -
-            // well under any sensible size threshold - so the material that IS mist was being
-            // handed crisp droplet frames. With MistBias at 0 the mist frames were unreachable
-            // for ordinary kills entirely.
-            //
-            // Selecting by material removes the guess. It is also exactly what vanilla does:
-            // leaf_low on blood_splat, brains on blood_cloud, nothing at all on blood_drop.
-            Texture2D sprayTex = SprayTextureFor(mat.name);
-            if (sprayTex == null)
-                return;
-
-            mat.SetTexture("_MainTex", sprayTex);
-
-            Plugin.Log.LogInfo($"Skinned spray \"{mat.name}\" id={mat.GetInstanceID()} " +
-                               $"shader=\"{(mat.shader == null ? "?" : mat.shader.name)}\": " +
-                               $"_MainTex \"{(before == null ? "NONE (untextured quads)" : before.name)}\" " +
-                               $"-> \"{sprayTex.name}\" {sprayTex.width}x{sprayTex.height}");
-        }
-
-        /// Picks the texture for a spray material by name.
-        ///
-        /// A recognised material whose texture failed to load returns null, leaving vanilla's
-        /// texture in place. It must never be handed a different material's art: when the three
-        /// spray PNGs were missing from the csproj, the old fallback substituted a cell of the
-        /// legacy sheet - a 512px glossy sphere - onto all three materials, so every airborne
-        /// particle including blood_drop's 200-per-death drew a large shiny ball. The mod looked
-        /// broken rather than absent, which is the worse failure of the two.
-        private static Texture2D SprayTextureFor(string matName)
-        {
-            if (matName == null)
-                return null;
-
-            if (matName.StartsWith("blood_cloud", StringComparison.OrdinalIgnoreCase))
-                return _mist;
-
-            if (matName.StartsWith("blood_drop", StringComparison.OrdinalIgnoreCase))
-                return _sprayDrop;
-
-            if (matName.StartsWith("blood_splat", StringComparison.OrdinalIgnoreCase))
-                return _spraySplat;
-
-            // Only a material we do not recognise at all reaches the generic image, and only
-            // when it actually loaded.
-            return _spraySplat;
-        }
-
-        /// Gives the airborne spray the same random-variant treatment the ground decals get.
-        ///
-        /// Without it every particle in every spray is the same droplet silhouette, which is
-        /// what made the air look flatter than the ground once the ground had eight shapes.
-        private static void EnableSprayVariants(ParticleSystemRenderer r, bool isHitEffect)
-        {
-            ParticleSystem ps = r.GetComponent<ParticleSystem>();
-            if (ps == null)
-                return;
-
-            // A dedicated figure for hits, because that is the case that reads as too dry: a
-            // death already throws a lot of particles, while an ordinary hit emits a burst of
-            // five chunks and is over. Zero means "no separate value, use the general one".
-            float mul = Plugin.SprayDensity.Value;
-            if (isHitEffect && Plugin.HitSprayDensity.Value > 0f)
-                mul = Plugin.HitSprayDensity.Value;
-
-            // Cloud systems get their own multiplier, because they are not droplets.
-            //
-            // A greydwarf or neck death fires 88 blood_cloud particles across three systems
-            // (soft cloud 30, splat 50, blobs 8) at 0.5-1.5 units each. Multiplying those by the
-            // droplet figure produced ~265 overlapping clouds and read as an explosion of mist on
-            // ordinary kills. Droplets want density; clouds do not.
-            Material mat = r.sharedMaterial;
-            if (mat != null && mat.name != null
-                            && mat.name.StartsWith("blood_cloud", StringComparison.OrdinalIgnoreCase))
-                mul = Plugin.CloudSprayDensity.Value;
-
-            DensifySpray(ps, mul);
-            Realism.Trails(r, ps, TrailMaterial(r.sharedMaterial));
-            RandomiseSprayRotation(ps);
-            Realism.Ballistics(ps);
-
-            if (!Plugin.SprayVariants.Value)
-                return;
-
-            int cols = Mathf.Max(1, Plugin.SprayAtlasColumns.Value);
-            int rows = Mathf.Max(1, Plugin.SprayAtlasRows.Value);
-            ResolveGrid(_droplet, Plugin.SprayCellSize.Value, ref cols, ref rows, "Spray atlas");
-
-            ParticleSystem.TextureSheetAnimationModule tsa = ps.textureSheetAnimation;
-            tsa.enabled = true;
-            tsa.numTilesX = cols;
-            tsa.numTilesY = rows;
-            tsa.animation = ParticleSystemAnimationType.WholeSheet;
-            tsa.frameOverTime = new ParticleSystem.MinMaxCurve(0f);
-
-            // Big airborne particles must draw mist, not droplets.
-            //
-            // blood_cloud covers both "soft cloud" at 0.5 units and "Big Splat" at 5-12, so a
-            // free choice from the whole sheet would stretch a crisp round droplet across twelve
-            // metres - a smooth red ball. Anything large gets the mist row, where a soft diffuse
-            // cloud is exactly what enlarging should produce.
-            float authored = AuthoredSize(ps.main.startSize);
-            int mistRow = Mathf.Clamp(Plugin.MistFrameRow.Value, 0, rows - 1);
-
-            bool large = Plugin.SizeAwareSpray.Value && rows > 1 && authored >= Plugin.LargeSpraySize.Value;
-
-            // Small systems can also be pushed toward mist.
-            //
-            // Left to a free choice the mist row is 4 frames of 16, so only a quarter of small
-            // particles are hazy. MistBias raises that. It is decided PER SYSTEM rather than per
-            // particle - Unity's startFrame takes one range, not a weighted distribution - but a
-            // single hit fires several systems at once (chunks, drops, splash), so a burst still
-            // comes out mixed rather than uniformly one or the other.
-            bool biasToMist = !large && rows > 1 && Plugin.MistBias.Value > 0f
-                              && UnityEngine.Random.value < Plugin.MistBias.Value;
-
-            if (large || biasToMist)
-            {
-                tsa.startFrame = new ParticleSystem.MinMaxCurve(
-                    mistRow * cols, (mistRow + 1) * cols - 0.001f);
-            }
-            else
-            {
-                tsa.startFrame = new ParticleSystem.MinMaxCurve(0f, cols * rows - 0.001f);
-            }
-        }
-
-        /// Random start rotation for spray particles.
-        ///
-        /// Needed as soon as the spray sheet contains anything elongated - a slash arc, a
-        /// stretched droplet. These particles are view-aligned billboards, so without a random
-        /// rotation every one of them points the same way on screen and a burst reads as a set
-        /// of parallel streaks rather than blood thrown in all directions.
-        ///
-        /// Harmless for the round droplets, which look identical at any rotation.
-        private static void RandomiseSprayRotation(ParticleSystem ps)
-        {
-            if (!Plugin.SprayVariants.Value)
-                return;
-
-            ParticleSystem.MainModule main = ps.main;
-            if (main.startRotation3D)
-                return;   // authored per-axis; leave that alone rather than flatten it
-
-            main.startRotation = new ParticleSystem.MinMaxCurve(0f, Mathf.PI * 2f);
-        }
-
-        /// More particles in the air.
-        ///
-        /// Vanilla's spray counts are modest - a hit emits a burst of 5 chunks, 30 splash and 50
-        /// droplets, and a death 200 - so the air clears almost immediately while the ground mark
-        /// lingers for ten seconds. Scaling the burst counts is what closes that gap.
-        ///
-        /// maxParticles is raised alongside, because it caps the system regardless of what the
-        /// bursts ask for: multiplying a burst of 50 by four does nothing if the cap is still 50.
-        /// The emission rate is scaled too, for the few systems that stream instead of bursting.
-        private static void DensifySpray(ParticleSystem ps, float mul)
-        {
-            // Lifetime and size first - these apply regardless of the density multiplier.
-            //
-            // Density alone does not make the air feel bloodier. Vanilla spray lives 0.4 to 1
-            // second, so however many particles are emitted they are gone almost at once and
-            // never accumulate into anything. Making them last longer and read larger does more
-            // for "misting" than emitting more of them.
-            ParticleSystem.MainModule m = ps.main;
-
-            float lifeMul = Plugin.SprayLifetimeMultiplier.Value;
-            if (Math.Abs(lifeMul - 1f) > 0.001f)
-                m.startLifetime = Scale(m.startLifetime, lifeMul);
-
-            float sizeMul = Plugin.SpraySizeMultiplier.Value;
-            if (Math.Abs(sizeMul - 1f) > 0.001f)
-                m.startSize = Scale(m.startSize, sizeMul);
-
-            if (Math.Abs(mul - 1f) <= 0.001f)
-                return;
-
-            ParticleSystem.EmissionModule em = ps.emission;
-
-            for (int i = 0; i < em.burstCount; i++)
-            {
-                ParticleSystem.Burst b = em.GetBurst(i);
-                b.count = Scale(b.count, mul);
-                em.SetBurst(i, b);
-            }
-
-            if (em.rateOverTime.constant > 0f || em.rateOverTime.constantMax > 0f)
-                em.rateOverTime = Scale(em.rateOverTime, mul);
-
-            ParticleSystem.MainModule main = ps.main;
-            int wanted = Mathf.CeilToInt(main.maxParticles * mul);
-            if (wanted > main.maxParticles)
-                main.maxParticles = Mathf.Min(wanted, 10000);
-        }
-
-        /// Material for spray trails: the spray material with a single droplet cell.
-        ///
-        /// A ribbon sampling the full atlas would show the 4x4 grid stretched along its length,
-        /// so it gets one cell rather than the sheet.
-        private static Material TrailMaterial(Material template)
-        {
-            if (_trailMaterial != null || template == null)
-                return _trailMaterial;
-
-            try
-            {
-                LoadTextures();
-                _trailMaterial = new Material(template) { name = "CarturBloodTrail" };
-                // The plain droplet, not a sheet cell. The legacy sheet's first cell is a large
-                // glossy sphere with a specular highlight - stretched along a trail it reads as a
-                // shiny tube.
-                Texture2D cell = _sprayDrop ?? SliceFirstCell(_droplet);
-                if (cell != null && _trailMaterial.HasProperty("_MainTex"))
-                    _trailMaterial.SetTexture("_MainTex", cell);
-            }
-            catch (Exception e)
-            {
-                Plugin.Log.LogWarning("Could not build trail material: " + e.Message);
-            }
-            return _trailMaterial;
+            return MatchesAny(mat.name, _materialPrefixes) || MatchesAny(mat.name, KnownDecalMaterials);
         }
 
         /// The green splash hiding inside every blood effect.
@@ -598,46 +234,11 @@ namespace CarturHDBlood
 
         private static Material _bloodSplashMaterial;
 
-        // The textures the decal material had before we touched it, kept so effects that borrow
-        // the blood material for something that is not blood can be handed them back.
+        // The texture the decal material had before we touched it, kept so effects that borrow
+        // the blood material for something that is not blood can be handed it back.
         private static Texture _originalMainTex;
-        private static Texture _originalNormalTex;
         private static Material _vanillaDecalMaterial;
-        private static Material _trailMaterial;
         private static string[] _excludePrefixes;
-
-        /// Top-left cell of the spray sheet, as a standalone texture.
-        private static Texture2D SliceFirstCell(Texture2D sheet)
-        {
-            if (sheet == null)
-                return null;
-            try
-            {
-                int cols = Mathf.Max(1, Plugin.SprayAtlasColumns.Value);
-                int rows = Mathf.Max(1, Plugin.SprayAtlasRows.Value);
-                ResolveGrid(sheet, Plugin.SprayCellSize.Value, ref cols, ref rows, "Spray atlas");
-                int cw = sheet.width / cols;
-                int ch = sheet.height / rows;
-
-                // Cell 0 sits at the TOP-left, and Unity's texture origin is bottom-left, so the
-                // read starts at the top row rather than at y = 0.
-                Color[] px = sheet.GetPixels(0, sheet.height - ch, cw, ch);
-                var tex = new Texture2D(cw, ch, TextureFormat.RGBA32, true)
-                {
-                    name = "CarturBloodSplashCell",
-                    wrapMode = TextureWrapMode.Clamp,
-                    filterMode = FilterMode.Bilinear,
-                };
-                tex.SetPixels(px);
-                tex.Apply(true);
-                return tex;
-            }
-            catch (Exception e)
-            {
-                Plugin.Log.LogWarning("Could not slice splash cell: " + e.Message);
-                return null;
-            }
-        }
 
         private static bool ReplaceSlimeSplash(ParticleSystemRenderer r)
         {
@@ -656,16 +257,10 @@ namespace CarturHDBlood
                 if (_bloodSplashMaterial.HasProperty("_EmissionColor"))
                     _bloodSplashMaterial.SetColor("_EmissionColor", Color.black);
 
-                LoadTextures();
-
-                // A single image, not a sheet. This material's renderers don't get sheet
-                // animation enabled - they aren't in the spray whitelist, they're reached by the
-                // clone path - so handing them the atlas made every splash particle draw all four
-                // droplets squashed together. One image is what a plain shader expects.
-                Texture2D splashTex = _spraySplat ?? SliceFirstCell(_droplet) ?? _droplet;
-                if (splashTex != null && _bloodSplashMaterial.HasProperty("_MainTex"))
-                    _bloodSplashMaterial.SetTexture("_MainTex", splashTex);
-
+                // The texture is left as vanilla's slime_splash. Only the green comes off.
+                // This used to be handed the mod's own spray art, but the mod no longer ships
+                // any - the airborne blood is vanilla again - and a splash carrying the wrong
+                // silhouette was never the complaint. The tint was.
                 Plugin.Log.LogInfo($"Cloned \"{original.name}\" -> \"CarturBloodSplash\" " +
                                    "(green splash inside blood effects; the original is left alone " +
                                    "so slimes are unaffected).");
@@ -679,21 +274,12 @@ namespace CarturHDBlood
         {
             LoadTextures();
 
-            // With the atlas off, a single-splat texture has to be used - not the atlas. Leaving
-            // the atlas assigned while the sheet animation is disabled maps all eight cells onto
-            // one quad, which reads as a square blob. That was a real gap: turning the setting
-            // off to escape a square would have kept the square.
-            bool useAtlas = Plugin.UseVariantAtlas.Value;
-            Texture2D albedo = useAtlas ? _atlas : _single;
-            Texture2D normal = useAtlas ? _atlasNormal : _singleNormal;
-
+            // The shared material carries the first of the two large marks. It is the default
+            // every decal gets; the small mark and the second large one reach individual decals
+            // through AssignGroundVariant, which a shared material cannot do on its own.
+            Texture2D albedo = _groundLarge ?? _groundLargeAlt ?? _groundSmall;
             if (albedo == null)
-            {
-                albedo = _atlas ?? _single;
-                normal = _atlas != null ? _atlasNormal : _singleNormal;
-                if (albedo == null)
-                    return;
-            }
+                return;
 
             Texture before = mat.HasProperty("_MainTex") ? mat.GetTexture("_MainTex") : null;
 
@@ -716,25 +302,14 @@ namespace CarturHDBlood
             // things that are not blood - Moder's frost breath and the Seeker Queen's spit both
             // render through it - so those effects need the original texture put back.
             if (_originalMainTex == null && before != null)
-            {
                 _originalMainTex = before;
-                if (mat.HasProperty("_NormalTex"))
-                    _originalNormalTex = mat.GetTexture("_NormalTex");
-            }
 
             mat.SetTexture("_MainTex", albedo);
-
-            if (Plugin.ReplaceNormalMap.Value && normal != null && mat.HasProperty("_NormalTex"))
-                mat.SetTexture("_NormalTex", normal);
+            SetNormal(mat, _groundLargeNormal);
 
             Plugin.Log.LogInfo($"Skinned \"{mat.name}\" id={mat.GetInstanceID()}: " +
                                $"_MainTex \"{(before == null ? "none" : before.name)}\" -> \"{albedo.name}\" " +
-                               $"{albedo.width}x{albedo.height} (atlas={useAtlas})");
-
-            // Built from the freshly skinned material, so the variants inherit its shader,
-            // normal map and colour - everything except which cell of the atlas they show.
-            if (useAtlas && _atlas != null)
-                Variants.Build(mat, _atlas, Plugin.ReplaceNormalMap.Value ? _atlasNormal : null);
+                               $"{albedo.width}x{albedo.height}");
 
             Texture after = mat.HasProperty("_MainTex") ? mat.GetTexture("_MainTex") : null;
             if (after != albedo)
@@ -742,13 +317,96 @@ namespace CarturHDBlood
                                       "immediately after skinning - something else is writing to it.");
         }
 
-        private static void TuneDecalSystem(ParticleSystem ps)
+        // One cloned material per source material per variant. Keyed by the source's instance id
+        // because there are three decal materials in the game, not one - cloning splat_decal_blend
+        // and handing the clone to a Seeker Queen decal would change more than its texture.
+        private static readonly Dictionary<int, Material> SmallGroundMaterials = new Dictionary<int, Material>();
+        private static readonly Dictionary<int, Material> AltGroundMaterials = new Dictionary<int, Material>();
+
+        /// Gives this decal system one of the three ground marks.
+        ///
+        /// The shared material already holds the first large mark, so only the other two need a
+        /// clone, built once each and reused. Cloning is also what keeps a texture pack from
+        /// reaching them: the pack overwrites the shared material at about 25 seconds after
+        /// world load, and these are separate objects it has never heard of.
+        ///
+        /// Chosen per ParticleDecal INSTANCE, not per particle, so one effect's burst of three
+        /// decals all draw the same mark. Per-particle would need Texture Sheet Animation, and
+        /// Custom/ParticleDecal ignores that - verified, and the reason the old atlas existed.
+        private static void AssignGroundVariant(ParticleSystem ps, Material shared, float authoredSize)
         {
-            BloodPreset preset = BloodPreset.Current();
+            ParticleSystemRenderer r = ps.GetComponent<ParticleSystemRenderer>();
+            if (r == null)
+                return;
+
+            if (authoredSize < Plugin.SmallDecalSize.Value)
+            {
+                Material small = GroundClone(SmallGroundMaterials, shared, _groundSmall,
+                                             _groundSmallNormal, "CarturBloodGroundSmall");
+                if (small != null)
+                    r.sharedMaterial = small;
+                return;
+            }
+
+            // Coin flip between the two large marks. The shared material is already the first.
+            if (UnityEngine.Random.value < 0.5f)
+                return;
+
+            Material alt = GroundClone(AltGroundMaterials, shared, _groundLargeAlt,
+                                       _groundLargeAltNormal, "CarturBloodGroundAlt");
+            if (alt != null)
+                r.sharedMaterial = alt;
+        }
+
+        private static Material GroundClone(Dictionary<int, Material> cache, Material shared,
+                                            Texture2D tex, Texture2D normal, string name)
+        {
+            if (shared == null || tex == null)
+                return null;
+
+            int id = shared.GetInstanceID();
+            if (cache.TryGetValue(id, out Material cached) && cached != null)
+                return cached;
+
+            try
+            {
+                var clone = new Material(shared) { name = name };
+                if (!clone.HasProperty("_MainTex"))
+                    return null;
+                clone.SetTexture("_MainTex", tex);
+                // Its own normal, not the shared material's: the small mark lit by the large
+                // mark's bumps is exactly the mismatch this whole change is fixing.
+                SetNormal(clone, normal);
+                cache[id] = clone;
+                Plugin.Log.LogInfo($"Built \"{name}\" from \"{shared.name}\" with \"{tex.name}\" " +
+                                   $"{tex.width}x{tex.height}.");
+                return clone;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Could not build " + name + ": " + e.Message);
+                return null;
+            }
+        }
+
+        /// Assigns a normal map if the shader has the slot and we have the texture.
+        ///
+        /// Silent when either is missing, deliberately: the property is not documented anywhere,
+        /// and a modded or updated shader without it should cost the shine, not the blood.
+        private static void SetNormal(Material mat, Texture2D normal)
+        {
+            if (normal == null || mat == null || !mat.HasProperty("_NormalTex"))
+                return;
+            mat.SetTexture("_NormalTex", normal);
+        }
+
+        private static void TuneDecalSystem(ParticleSystem ps, Material shared)
+        {
+            GroundPreset preset = GroundPreset.Current();
             ParticleSystem.MainModule main = ps.main;
 
-            // Captured before scaling: the frame range is chosen from the decal's authored size,
-            // and a size multiplier shouldn't change which artwork it gets.
+            // Captured before scaling: which mark a decal gets is chosen from its authored size,
+            // and a size multiplier shouldn't change the artwork.
             float authoredSize = AuthoredSize(main.startSize);
 
             main.startSize = Realism.JitterSize(main.startSize);
@@ -765,23 +423,15 @@ namespace CarturHDBlood
                 main.maxParticles = preset.MaxDecals;
 
             FixWashedOutColor(ref main);
+            DeepenRed(ref main);
             Realism.AgeDecal(ps);
             Realism.GrowDecal(ps);
 
-            if (!Plugin.ReplaceTexture.Value || !Plugin.UseVariantAtlas.Value)
-                return;
-
-            bool small = authoredSize < Plugin.SmallDecalSize.Value;
-
-            // Material variants first: the shader ignores sheet animation, so that route made
-            // every puddle identical. A per-decal material is something it can't ignore.
-            if (Variants.Assign(ps, small))
-                return;
-
-            EnableVariants(ps, authoredSize);
+            if (Plugin.ReplaceTexture.Value)
+                AssignGroundVariant(ps, shared, authoredSize);
         }
 
-        private static float AuthoredSize(ParticleSystem.MinMaxCurve c)
+        internal static float AuthoredSize(ParticleSystem.MinMaxCurve c)
         {
             switch (c.mode)
             {
@@ -796,10 +446,11 @@ namespace CarturHDBlood
 
         /// Repaints only the decals whose authored colour is too washed out to read as blood.
         ///
-        /// Replacing the texture with pure white made the effect's own startColor the only source
-        /// of colour. Most creatures author a saturated red and now look better than vanilla, but
-        /// some - the player's hit effect among them - author something near-grey and relied on
-        /// vanilla's reddish 'brains' texture to supply the red. Those came out grey.
+        /// Replacing the texture with a white one made the effect's own startColor the only
+        /// source of colour. Most creatures author a saturated red and now look better than
+        /// vanilla, but some - the player's hit effect among them - author something near-grey
+        /// and relied on vanilla's reddish 'brains' texture to supply the red. Those came out
+        /// grey.
         ///
         /// The threshold is why this isn't a blanket recolour: forcing one colour everywhere
         /// would throw away the per-creature variety that the white texture just unlocked. Only
@@ -831,6 +482,54 @@ namespace CarturHDBlood
             }
         }
 
+        /// Pulls red blood toward a deeper, browner red.
+        ///
+        /// Vanilla authors its red blood very bright and very saturated - a boar is
+        /// RGBA(0.868, 0.006, 0.006), which is nearly primary red. Real blood is darker and
+        /// browner, and BloodColor already holds a better value; it was just never applied to
+        /// anything except the washed-out effects.
+        ///
+        /// ONLY colours that are already red-dominant are touched. Greydwarf blood is yellow and
+        /// neck blood is green - measured, and the game's own design - so the test requires green
+        /// and blue to both be well under red before anything happens. Greydwarf's orange
+        /// RGBA(0.838, 0.468, 0.000) fails it and is left alone, which is the point.
+        private static void DeepenRed(ref ParticleSystem.MainModule main)
+        {
+            float tint = Mathf.Clamp01(Plugin.BloodTint.Value);
+            if (tint <= 0.001f)
+                return;
+
+            Color blood = ParseColor(Plugin.BloodColor.Value);
+            ParticleSystem.MinMaxGradient g = main.startColor;
+
+            switch (g.mode)
+            {
+                case ParticleSystemGradientMode.Color:
+                    if (IsRedBlood(g.color))
+                        main.startColor = new ParticleSystem.MinMaxGradient(Deepen(g.color, blood, tint));
+                    break;
+                case ParticleSystemGradientMode.TwoColors:
+                    if (IsRedBlood(g.colorMin) && IsRedBlood(g.colorMax))
+                    {
+                        main.startColor = new ParticleSystem.MinMaxGradient(
+                            Deepen(g.colorMin, blood, tint), Deepen(g.colorMax, blood, tint));
+                    }
+                    break;
+            }
+        }
+
+        /// Red-dominant: green and blue both well under red. Deliberately strict, so anything
+        /// the game authored as a non-red blood keeps its own colour.
+        private static bool IsRedBlood(Color c) =>
+            c.r > 0.15f && c.g < c.r * 0.4f && c.b < c.r * 0.4f;
+
+        private static Color Deepen(Color original, Color blood, float tint)
+        {
+            Color mixed = Color.Lerp(original, blood, tint);
+            mixed.a = original.a;   // transparency is the effect's business, not ours
+            return mixed;
+        }
+
         private static Color Recolor(Color original, Color blood)
         {
             float brightness = Mathf.Max(original.r, Mathf.Max(original.g, original.b));
@@ -846,74 +545,21 @@ namespace CarturHDBlood
             return new Color(0.55f, 0.02f, 0.02f, 1f);   // fallback if the config value is malformed
         }
 
-        /// Turns one shared material into four random splat shapes.
-        ///
-        /// Texture Sheet Animation is off in vanilla (confirmed on every blood system). Enabling
-        /// it with a 2x2 grid, frameOverTime pinned to 0 and startFrame randomised gives each
-        /// particle a random cell that then holds still - the standard Unity way to get sprite
-        /// variants out of a single material. Without this, every splat in the game is the same
-        /// shape rotated, which is the main thing that makes vanilla blood read as repetitive.
-        private static void EnableVariants(ParticleSystem ps, float authoredSize)
-        {
-            int cols = Mathf.Max(1, Plugin.AtlasColumns.Value);
-            int rows = Mathf.Max(1, Plugin.AtlasRows.Value);
-
-            ParticleSystem.TextureSheetAnimationModule tsa = ps.textureSheetAnimation;
-            tsa.enabled = true;
-            tsa.numTilesX = cols;
-            tsa.numTilesY = rows;
-            tsa.animation = ParticleSystemAnimationType.WholeSheet;
-            // Pinned so the cell chosen at birth is the cell drawn for the decal's whole life.
-            tsa.frameOverTime = new ParticleSystem.MinMaxCurve(0f);
-
-            // Pick the frame range by how big this decal actually is.
-            //
-            // Otherwise a random cell means a size-1 hit can draw a full death burst while a
-            // troll's size-6 splat draws two droplets - the texture is random but the quad size
-            // is authored per creature, and nothing tied them together. The atlas is laid out
-            // with big shapes on the top row and small marks below, so the row is the choice.
-            //
-            // Frame indices run in reading order, so row r spans [r*cols, (r+1)*cols). Just
-            // short of the upper bound because the value is floored to an index.
-            int firstRow = 0;
-            int lastRow = rows - 1;
-            if (rows > 1 && Plugin.SizeAwareVariants.Value)
-            {
-                bool small = authoredSize < Plugin.SmallDecalSize.Value;
-                firstRow = small ? rows - 1 : 0;
-                lastRow = small ? rows - 1 : Mathf.Max(0, rows - 2);
-            }
-
-            tsa.startFrame = new ParticleSystem.MinMaxCurve(
-                firstRow * cols,
-                (lastRow + 1) * cols - 0.001f);
-        }
-
         private static void TuneChance(ParticleDecal decal)
         {
-            BloodPreset preset = BloodPreset.Current();
+            GroundPreset preset = GroundPreset.Current();
 
             float chance = decal.m_chance * preset.ChanceMultiplier;
             if (chance < preset.MinChance)
                 chance = preset.MinChance;
 
-            // Decouple ground blood from airborne density.
+            // No spray multiplier to divide back out any more.
             //
-            // The particles thrown into the air ARE the ones that mark the ground:
-            // ParticleDecal.OnParticleCollision emits one decal per collision event of its own
-            // emitter. So multiplying the spray by six also multiplies ground decals by roughly
-            // six, no matter what the chance says - a thick spray would carpet the terrain.
-            //
-            // Dividing the final chance by the same multiplier keeps the number of marks at the
-            // vanilla-equivalent rate while the air gets denser. Applied last, after the floor,
-            // because the goal is a decal count and anything applied afterwards would undo it.
-            if (Plugin.DecoupleGroundFromSpray.Value)
-            {
-                float sprayMul = SprayMultiplierFor(decal);
-                if (sprayMul > 1f)
-                    chance /= sprayMul;
-            }
-
+            // While the mod tuned airborne density this had to compensate: the particles thrown
+            // into the air ARE the ones that mark the ground - ParticleDecal.OnParticleCollision
+            // emits one decal per collision of its own emitter - so multiplying the spray by six
+            // multiplied ground decals by roughly six whatever the chance said. The airborne
+            // systems are vanilla now, so the chance is the whole story again.
             decal.m_chance = Mathf.Clamp(chance, 0f, 100f);
         }
 
@@ -931,17 +577,7 @@ namespace CarturHDBlood
         private static bool IsExcludedEffect(ParticleDecal decal)
         {
             if (_excludePrefixes == null)
-            {
-                string raw = Plugin.ExcludeEffects.Value ?? string.Empty;
-                var parsed = new List<string>();
-                foreach (string part in raw.Split(','))
-                {
-                    string t = part.Trim();
-                    if (t.Length > 0)
-                        parsed.Add(t);
-                }
-                _excludePrefixes = parsed.ToArray();
-            }
+                _excludePrefixes = ParseList(Plugin.ExcludeEffects.Value);
 
             if (_excludePrefixes.Length == 0)
                 return false;
@@ -960,7 +596,7 @@ namespace CarturHDBlood
             return false;
         }
 
-        /// Gives one decal renderer a material carrying the pre-swap textures, so an excluded
+        /// Gives one decal renderer a material carrying the pre-swap texture, so an excluded
         /// effect looks exactly as it did in vanilla. Assigned per renderer, so the shared
         /// material - and therefore real blood - is unaffected.
         private static void RestoreVanilla(ParticleSystem decalSystem, Material template)
@@ -974,8 +610,6 @@ namespace CarturHDBlood
                 {
                     _vanillaDecalMaterial = new Material(template) { name = "CarturVanillaDecal" };
                     _vanillaDecalMaterial.SetTexture("_MainTex", _originalMainTex);
-                    if (_originalNormalTex != null && _vanillaDecalMaterial.HasProperty("_NormalTex"))
-                        _vanillaDecalMaterial.SetTexture("_NormalTex", _originalNormalTex);
                     Plugin.Log.LogInfo(
                         $"Built \"CarturVanillaDecal\" from \"{_originalMainTex.name}\" for effects that " +
                         "borrow the blood material for non-blood (frost breath, acid spit, egg goo).");
@@ -991,34 +625,10 @@ namespace CarturHDBlood
             }
         }
 
-        /// Which spray multiplier this decal's emitter received.
-        ///
-        /// Read from the spawned instance's root name rather than remembered from the prefab
-        /// pass, because prefab instance ids don't survive instantiation. The game's per-creature
-        /// effects are named consistently - vfx_neck_hit, vfx_troll_death - and Unity only
-        /// appends "(Clone)", so the classification carries over intact.
-        private static float SprayMultiplierFor(ParticleDecal decal)
-        {
-            try
-            {
-                Transform root = decal.transform.root;
-                string name = root == null ? string.Empty : root.name;
-                bool isHit = name.IndexOf("hit", StringComparison.OrdinalIgnoreCase) >= 0;
-
-                if (isHit && Plugin.HitSprayDensity.Value > 0f)
-                    return Plugin.HitSprayDensity.Value;
-                return Plugin.SprayDensity.Value;
-            }
-            catch
-            {
-                return 1f;
-            }
-        }
-
         /// Scales a MinMaxCurve while preserving whichever mode it was authored in - the decal
         /// systems use both Constant and TwoConstants, and writing the wrong mode back would
         /// silently discard the authored range.
-        private static ParticleSystem.MinMaxCurve Scale(ParticleSystem.MinMaxCurve c, float mul)
+        internal static ParticleSystem.MinMaxCurve Scale(ParticleSystem.MinMaxCurve c, float mul)
         {
             switch (c.mode)
             {
@@ -1038,38 +648,52 @@ namespace CarturHDBlood
             return r == null ? null : r.sharedMaterial;
         }
 
+        private static string[] ParseList(string raw)
+        {
+            var parsed = new List<string>();
+            foreach (string part in (raw ?? string.Empty).Split(','))
+            {
+                string trimmed = part.Trim();
+                if (trimmed.Length > 0)
+                    parsed.Add(trimmed);
+            }
+            return parsed.ToArray();
+        }
+
+        // Prefix, not equality: Unity appends " (Instance)" when a material is instanced.
+        private static bool MatchesAny(string name, string[] prefixes)
+        {
+            foreach (string prefix in prefixes)
+            {
+                if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
+        /// One texture per material, each sized to what that material actually draws at, which is
+        /// how vanilla assigns particle textures in the first place - it never samples a sheet.
+        /// Because these are single images rather than atlas cells, mipmaps are safe and wanted:
+        /// there are no cell boundaries for a mip level to average across.
+        ///
+        /// The sizes come from the effect graph, not from taste:
+        ///   ground decal   0.5-8 world units, largest on troll and bjorn deaths  -> 1024 / 512
         private static void LoadTextures()
         {
             if (_loadAttempted)
                 return;
             _loadAttempted = true;
 
-            // The ground atlas keeps mipmaps: it is sliced into one texture per cell, so a mip
-            // level can only ever average within a single splat.
-            _atlas = Load("blood_splat_atlas.png", "CarturBloodAtlas", mipmap: true);
-            _atlasNormal = Load("blood_splat_atlas_n.png", "CarturBloodAtlasNormal", mipmap: true);
+            _groundLarge = Load("splatter_spray_1024_rgba.png", "CarturBloodGroundLarge", mipmap: true);
+            _groundLargeAlt = Load("splatter_mist_1024_rgba.png", "CarturBloodGroundLargeAlt", mipmap: true);
+            _groundSmall = Load("splatter_impact_512_rgba.png", "CarturBloodGroundSmall", mipmap: true);
 
-            // One texture per spray material, each sized to what that material actually draws
-            // at, which is how vanilla assigns particle textures in the first place - it never
-            // samples a sheet. Because these are single images rather than atlas cells, mipmaps
-            // are safe and wanted: there are no cell boundaries for a mip level to average
-            // across, which was the whole reason the old sheet had to ship without them.
-            //
-            // The sizes come from the effect graph, not from taste:
-            //   blood_cloud  0.5 units typical, up to 12 on big creatures  -> 1024
-            //   blood_splat  <= 0.6                                        ->  256
-            //   blood_drop   0.05, 200 per death; vanilla ships 8x8 here   ->  128
-            _mist = Load("blood_mist.png", "CarturBloodMist", mipmap: true);
-            _spraySplat = Load("blood_splat.png", "CarturBloodSpraySplat", mipmap: true);
-            _sprayDrop = Load("blood_drops.png", "CarturBloodDrop", mipmap: true);
-
-            // The legacy 16-frame sheet. Still loaded because SprayVariants, the trail material
-            // and the green-splash clone all slice cells out of it, and because a file dropped in
-            // BepInEx/config can still override it. Nothing reads it on the default path.
-            _droplet = Load("blood_droplet.png", "CarturBloodDroplet", mipmap: false);
-
-            _single = Load("blood_splat_single.png", "CarturBloodSingle", mipmap: true);
-            _singleNormal = Load("blood_splat_single_n.png", "CarturBloodSingleNormal", mipmap: true);
+            if (Plugin.GroundNormalMap.Value)
+            {
+                _groundLargeNormal = Load("splatter_spray_1024_normal.png", "CarturBloodGroundLargeN", mipmap: true);
+                _groundLargeAltNormal = Load("splatter_mist_1024_normal.png", "CarturBloodGroundLargeAltN", mipmap: true);
+                _groundSmallNormal = Load("splatter_impact_512_normal.png", "CarturBloodGroundSmallN", mipmap: true);
+            }
         }
 
         /// A file in BepInEx/config wins over the embedded asset, so the art can be swapped
@@ -1118,9 +742,8 @@ namespace CarturHDBlood
             var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipmap)
             {
                 name = texName,
-                // Clamp matters for an atlas: repeat would let a cell sample its neighbour at
-                // the seam. The cells also carry transparent margins, which keeps mip levels
-                // from bleeding one splat into the next.
+                // Clamp, so a particle quad cannot sample the opposite edge of the image and
+                // draw a seam.
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Bilinear,
             };

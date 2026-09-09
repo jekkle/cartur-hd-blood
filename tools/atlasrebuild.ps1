@@ -31,9 +31,15 @@ param(
     [int]$Cols = 3,
     [int]$Rows = 3,
     [int]$Cell = 1024,
-    # Cells needing premultiplication repair, and the luminance to tone them to.
+    # Cells needing premultiplication repair.
     [int[]]$RepairCells = @(16),
-    [int]$RepairLum = 145
+    [int]$RepairLum = 145,
+    # Tone EVERY cell to this mean luminance, 0 to leave each as authored.
+    #
+    # The surviving cells were authored across a 135-201 range, which reads as some splats
+    # being wet blood and others being pale wash - the inconsistency the owner noticed.
+    # Normalising is what makes a mixed set look like one set.
+    [int]$ToneAll = 0
 )
 
 Add-Type -AssemblyName System.Drawing
@@ -116,9 +122,32 @@ public static class AtlasRebuild
                              cov>0?viol*100.0/cov:0, before, MeanLum(b));
     }
 
+    static string ToneTo(Bitmap b,int targetLum)
+    {
+        double before=MeanLum(b);
+        if(before<=1) return "";
+        double factor=targetLum/before;
+        BitmapData d=b.LockBits(new Rectangle(0,0,b.Width,b.Height),ImageLockMode.ReadWrite,PixelFormat.Format32bppArgb);
+        try{
+            byte[] row=new byte[b.Width*4];
+            for(int j=0;j<b.Height;j++){
+                IntPtr p=(IntPtr)(d.Scan0.ToInt64()+(long)j*d.Stride);
+                Marshal.Copy(p,row,0,row.Length);
+                for(int i=0;i<row.Length;i+=4){
+                    byte a=row[i+3];
+                    // Clamped to alpha so premultiplication survives the scale.
+                    for(int k=0;k<3;k++)
+                        row[i+k]=(byte)Math.Min(a,Math.Min(255.0,row[i+k]*factor));
+                }
+                Marshal.Copy(row,0,p,row.Length);
+            }
+        } finally { b.UnlockBits(d); }
+        return string.Format("  lum {0:0.0} -> {1:0.0}",before,MeanLum(b));
+    }
+
     public static string Run(string srcA,string srcN,string outDir,string previewDir,
                              int[] layout,int cols,int rows,int cell,
-                             int[] repairCells,int repairLum)
+                             int[] repairCells,int repairLum,int toneAll)
     {
         Directory.CreateDirectory(outDir);
         Directory.CreateDirectory(previewDir);
@@ -147,6 +176,8 @@ public static class AtlasRebuild
                     string note="";
                     if(Array.IndexOf(repairCells,layout[i])>=0)
                         note="  REPAIRED: "+Repair(c,repairLum);
+                    if(toneAll>0)
+                        note+="  TONED:"+ToneTo(c,toneAll);
                     ga.DrawImage(c,tc*cell,tr*cell,cell,cell);
                     log.AppendLine(string.Format("slot {0,2} (col{1} row{2}) <- cell {3,2}{4}{5}",
                         i+1,tc,tr,layout[i], tr==rows-1?"  [small]":"          ", note));
@@ -182,4 +213,4 @@ public static class AtlasRebuild
 '@
 
 Add-Type -TypeDefinition $code -ReferencedAssemblies System.Drawing -ErrorAction Stop
-[AtlasRebuild]::Run($SrcAlbedo,$SrcNormal,$OutDir,$Preview,$Layout,$Cols,$Rows,$Cell,$RepairCells,$RepairLum)
+[AtlasRebuild]::Run($SrcAlbedo,$SrcNormal,$OutDir,$Preview,$Layout,$Cols,$Rows,$Cell,$RepairCells,$RepairLum,$ToneAll)

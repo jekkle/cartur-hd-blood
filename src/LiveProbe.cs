@@ -52,7 +52,18 @@ namespace CarturHDBlood
             Plugin.Log.LogInfo("[live] " + sb);
 
             foreach (ParticleDecal d in decals)
+            {
+                // Skip the cloud graft's own copies.
+                //
+                // This scan runs from EffectList.Create's postfix, mid-frame. The graft disables
+                // its stowaway ParticleDecals on the spot but destroys them with Destroy, which
+                // is deferred to the end of the frame - so they are still present here, already
+                // inert, and reporting them made it look as though the strip had failed. It cost
+                // one round of chasing a bug that was already fixed.
+                if (d == null || d.gameObject.name.StartsWith("CarturBloodCloud_", StringComparison.Ordinal))
+                    continue;
                 Describe(d, "    via " + name);
+            }
         }
 
         public static void NoteDecal(ParticleDecal decal) => Describe(decal, "direct Awake");
