@@ -378,26 +378,31 @@ namespace CarturHDBlood
                                $"-> \"{sprayTex.name}\" {sprayTex.width}x{sprayTex.height}");
         }
 
-        /// Picks the texture for a spray material by name, falling back to the legacy sheet's
-        /// first cell so an unrecognised blood material still gets art rather than nothing.
+        /// Picks the texture for a spray material by name.
+        ///
+        /// A recognised material whose texture failed to load returns null, leaving vanilla's
+        /// texture in place. It must never be handed a different material's art: when the three
+        /// spray PNGs were missing from the csproj, the old fallback substituted a cell of the
+        /// legacy sheet - a 512px glossy sphere - onto all three materials, so every airborne
+        /// particle including blood_drop's 200-per-death drew a large shiny ball. The mod looked
+        /// broken rather than absent, which is the worse failure of the two.
         private static Texture2D SprayTextureFor(string matName)
         {
-            if (matName != null)
-            {
-                if (matName.StartsWith("blood_cloud", StringComparison.OrdinalIgnoreCase)
-                    && _mist != null)
-                    return _mist;
+            if (matName == null)
+                return null;
 
-                if (matName.StartsWith("blood_drop", StringComparison.OrdinalIgnoreCase)
-                    && _sprayDrop != null)
-                    return _sprayDrop;
+            if (matName.StartsWith("blood_cloud", StringComparison.OrdinalIgnoreCase))
+                return _mist;
 
-                if (matName.StartsWith("blood_splat", StringComparison.OrdinalIgnoreCase)
-                    && _spraySplat != null)
-                    return _spraySplat;
-            }
+            if (matName.StartsWith("blood_drop", StringComparison.OrdinalIgnoreCase))
+                return _sprayDrop;
 
-            return _spraySplat ?? (_droplet == null ? null : SliceFirstCell(_droplet) ?? _droplet);
+            if (matName.StartsWith("blood_splat", StringComparison.OrdinalIgnoreCase))
+                return _spraySplat;
+
+            // Only a material we do not recognise at all reaches the generic image, and only
+            // when it actually loaded.
+            return _spraySplat;
         }
 
         /// Gives the airborne spray the same random-variant treatment the ground decals get.

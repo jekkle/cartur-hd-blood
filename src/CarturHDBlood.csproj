@@ -31,6 +31,19 @@
     <EmbeddedResource Include="Assets\blood_droplet.png">
       <LogicalName>CarturHDBlood.blood_droplet.png</LogicalName>
     </EmbeddedResource>
+    <!-- One image per spray material. Every asset must be listed here individually - there is
+         no wildcard - and forgetting one fails at RUNTIME, not at build: the loader logs
+         "Embedded texture missing" and falls back to a cell of the old sheet, so the mod keeps
+         working while drawing the wrong art. Adding art means adding a line here. -->
+    <EmbeddedResource Include="Assets\blood_mist.png">
+      <LogicalName>CarturHDBlood.blood_mist.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\blood_splat.png">
+      <LogicalName>CarturHDBlood.blood_splat.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\blood_drops.png">
+      <LogicalName>CarturHDBlood.blood_drops.png</LogicalName>
+    </EmbeddedResource>
     <!-- Single-cell fallback, used when UseVariantAtlas is off. Without it, disabling the
          atlas would leave the full sheet mapped onto one quad - a square blob. -->
     <EmbeddedResource Include="Assets\blood_splat_single.png">
