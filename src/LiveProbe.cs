@@ -25,6 +25,7 @@ namespace CarturHDBlood
     /// Log-once-per-key throughout: a fight would otherwise produce thousands of identical lines.
     internal static class LiveProbe
     {
+#if DIAGNOSTICS
         private static readonly HashSet<string> SeenEffect = new HashSet<string>();
         private static readonly HashSet<string> SeenDecal = new HashSet<string>();
 
@@ -149,9 +150,13 @@ namespace CarturHDBlood
             }
             catch { return "?"; }
         }
+#endif
 
         /// HSV saturation of the authored colour - the number that separates "this effect has a
         /// real blood tint" from "this effect is grey and relied on the texture for its colour".
+        ///
+        /// Not diagnostics: BloodSkin uses this to decide whether an effect carries a real blood
+        /// tint, so it is compiled into every build.
         internal static float Saturation(ParticleSystem.MinMaxGradient g)
         {
             try
@@ -177,8 +182,12 @@ namespace CarturHDBlood
         }
     }
 
+#if DIAGNOSTICS
     /// Every effect in the game is instantiated through here, so this one hook names the whole
     /// chain from a creature's hit or death to whatever draws its blood.
+    ///
+    /// Diagnostics only. EffectList.Create is a hot path - every effect in the game routes
+    /// through it - so a shipped build has no business hooking it.
     [HarmonyPatch(typeof(EffectList), nameof(EffectList.Create))]
     internal static class Patch_EffectList_Create
     {
@@ -190,6 +199,7 @@ namespace CarturHDBlood
                 LiveProbe.NoteEffect(go);
         }
     }
+#endif
 
     /// The mod's actual entry point, and the reason it works at all: this fires for every
     /// ParticleDecal instance no matter how it was spawned - standalone effect prefab or a copy
@@ -200,20 +210,29 @@ namespace CarturHDBlood
     {
         private static void Postfix(ParticleDecal __instance)
         {
+#if DIAGNOSTICS
             // Logged before the skin is applied, so the diagnostics record vanilla's values
             // rather than our own edits reflected back at us.
             LiveProbe.NoteDecal(__instance);
+#endif
             BloodSkin.Apply(__instance);
         }
     }
 
+#if DIAGNOSTICS
     /// Marks the moment in the log, so the lines above and below a kill can be told apart.
+    ///
+    /// Diagnostics only, and it was previously the one probe that forgot to check: it logged a
+    /// line on every creature death in every install, enabled or not.
     [HarmonyPatch(typeof(Character), "OnDeath")]
     internal static class Patch_Character_OnDeath
     {
         private static void Prefix(Character __instance)
         {
+            if (!Plugin.Diagnostics.Value)
+                return;
             Plugin.Log.LogInfo($"[live] ---- OnDeath: {__instance?.m_name} ----");
         }
     }
+#endif
 }

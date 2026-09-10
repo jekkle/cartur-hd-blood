@@ -39,12 +39,14 @@ namespace CarturHDBlood
         internal static ConfigEntry<float> PoolSize;
         internal static ConfigEntry<float> PoolLifetime;
         internal static ConfigEntry<int> PoolCount;
+#if DIAGNOSTICS
         internal static ConfigEntry<bool> Diagnostics;
         internal static ConfigEntry<bool> DumpTextures;
         internal static ConfigEntry<bool> DumpTextureImages;
         internal static ConfigEntry<float> DumpDelaySeconds;
         internal static ConfigEntry<bool> AuditMaterials;
         internal static ConfigEntry<string> AuditMaterialNames;
+#endif
 
         private Harmony _harmony;
 
@@ -235,6 +237,7 @@ namespace CarturHDBlood
                     "irregular mass rather than concentric stamps.",
                     new AcceptableValueRange<int>(1, 8)));
 
+#if DIAGNOSTICS
             Diagnostics = Config.Bind("3 - Diagnostics", "LogEffects", false,
                 "Log each blood effect and decal the first time it is seen - its chance, size, " +
                 "colour, material and texture. Each line is logged once per effect, so it is " +
@@ -281,6 +284,7 @@ namespace CarturHDBlood
                 "blood materials, with blood_splat2 first - that is the one carrying HD Valheim " +
                 "Textures' 2048 blood art on 43 systems that all appear to have emission off, " +
                 "and the open question is whether it is genuinely never drawn.");
+#endif
 
             _harmony = new Harmony(Guid);
             _harmony.PatchAll();
@@ -317,7 +321,9 @@ namespace CarturHDBlood
             Pooling.Clear();
         }
 
+#if DIAGNOSTICS
         private void Update() => TextureDump.Tick();
+#endif
 
         private void OnDestroy() => _harmony?.UnpatchSelf();
     }
@@ -347,6 +353,7 @@ namespace CarturHDBlood
 
             Plugin.ApplyToScene(__instance);
 
+#if DIAGNOSTICS
             if (!Plugin.Diagnostics.Value)
                 return;
             BloodProbe.Run(__instance);
@@ -360,6 +367,7 @@ namespace CarturHDBlood
             // the 1024 version. The dump is scheduled for a delay instead.
             TextureDump.Schedule(__instance);
             MaterialAudit.Run(__instance);
+#endif
         }
     }
 }

@@ -28,6 +28,24 @@
     <DeployDir Condition="'$(HOT_RELOAD)' != 'true'">$(R2MODMAN_PROFILE)\BepInEx\plugins\CarturHDBlood</DeployDir>
   </PropertyGroup>
 
+  <!-- The probes exist to answer "what did the game update break this time" - they read
+       material names, dump textures and log the effect graph. That is a development
+       question, not something a player's install should carry, so a Release build drops
+       them entirely: no diagnostic config entries, and no Harmony hooks on
+       EffectList.Create or Character.OnDeath, both of which are hot paths.
+
+       Build Debug to get them back:  dotnet build -c Debug -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);DIAGNOSTICS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <Compile Remove="BloodProbe.cs" />
+    <Compile Remove="EffectGraph.cs" />
+    <Compile Remove="MaterialAudit.cs" />
+    <Compile Remove="TextureDump.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
