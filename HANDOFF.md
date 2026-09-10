@@ -162,7 +162,7 @@ an r2modman toggle-off of a much older build). The current DLL deployed alongsid
 ### 3a. Released 1.0.0 — and what in it has never been run
 
 Published to Thunderstore on 2026-09-08 as `CarturHDBlood-1.0.0.zip` (3.13 MB), built against
-**Valheim 0.221.12**, BepInEx pack 5.4.2333. Package source lives in `package/`
+**Valheim 1.0.7**, BepInEx pack 5.4.2350. Package source lives in `package/`
 (`manifest.json`, `icon.png`, `README.md`); the zip is assembled at the repo root.
 
 Shipped ahead of the Valheim 1.0 patch, deliberately and with the owner's call, which means

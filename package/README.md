@@ -39,7 +39,7 @@ reload — a trip to the main menu and back — not just on restart.
 
 ## Compatibility
 
-Built and tested against **Valheim 0.221.12**, BepInEx pack 5.4.2333.
+Built and tested against **Valheim 1.0.7**, BepInEx pack 5.4.2350.
 
 It hooks only three methods — `ZNetScene.Awake`, `ParticleDecal.Awake` and
 `Character.ApplyDamage` — and identifies blood by *material* rather than by prefab name, so it
