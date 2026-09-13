@@ -67,10 +67,27 @@ namespace CarturHDBlood
                 BloodPreset preset = BloodPreset.Current();
                 int count = Mathf.Clamp(
                     Mathf.RoundToInt(preset.PoolCount * DebugTuning.PoolCountMultiplier()), 1, 8);
-                float size = preset.PoolSize * DebugTuning.PoolSizeMultiplier();
-                // Scaled by the same lifetime multiplier as everything else, which the config
-                // description promises and the code was not doing.
-                float life = Plugin.PoolLifetime.Value * GroundPreset.Current().LifetimeMultiplier;
+                // Pool size follows the dead creature's actual collider height, so PoolSize means
+                // "the pool for a greydwarf-sized kill".
+                //
+                // This was first written to scale by the effect's authored ground-decal size, which
+                // looked principled and was wrong: those decals are shared child prefabs, so a boar
+                // reads as LARGER than a greydwarf and got a 5-unit pool against the greydwarf's
+                // 3.2 - visibly backwards, since the greydwarf is the taller creature. See
+                // CreatureSize for the measurement that replaced it.
+                float scale = CreatureSize.Scale();
+
+                float size = preset.PoolSize * DebugTuning.PoolSizeMultiplier() * scale;
+                // Absolute seconds, NOT scaled by the preset's lifetime multiplier.
+                //
+                // It used to be scaled, on the grounds that the config description promised it.
+                // That was the wrong call: every other lifetime in the mod multiplies a value the
+                // GAME authored, where a multiplier is the only way to express "a bit longer than
+                // vanilla". PoolLifetime is a number the owner types in seconds, and a setting that
+                // reads 45 has to mean 45. At GroundBlood 0.3 the multiplier was 0.3, so a pool
+                // asked to last 45 seconds was vanishing in 13.5 - and the setting gave no hint
+                // why. The config description is corrected to match.
+                float life = Plugin.PoolLifetime.Value;
 
                 for (int i = 0; i < count; i++)
                 {

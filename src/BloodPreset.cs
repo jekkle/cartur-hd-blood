@@ -130,8 +130,12 @@ namespace CarturHDBlood
                     return new BloodPreset
                     {
                         Ground = 0.3f, Hit = 0.2f, Death = 0.5f,
-                        Wet = 0.35f, Opacity = 0.47f,
-                        PoolSize = 3.5f, PoolCount = 3,
+                        // Wet, Opacity, PoolSize and PoolCount are the owner's own tuned values,
+                        // signed off in game on 13 Sept ("i feel like the blood looks good") and
+                        // baked here so Normal reproduces that look instead of overriding it.
+                        // PoolSize is the pool for a GREYDWARF-sized kill - see CreatureSize.
+                        Wet = 0.4f, Opacity = 0.51f,
+                        PoolSize = 3.2f, PoolCount = 4,
                         DropletSize = 0.02f, DropletSpread = 0.6f, DropletCount = 1.5f,
                         CloudSize = 0.92f, Stretch = false,
                         HitThreshold = 0.02f,

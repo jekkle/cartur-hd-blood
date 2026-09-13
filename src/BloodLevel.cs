@@ -52,7 +52,18 @@ namespace CarturHDBlood
                 // how much blood there is, not about flattening that design.
                 SizeMultiplier = Mathf.Max(0.25f, 1f + (g - 1f) * 0.3f),
 
-                LifetimeMultiplier = Mathf.Max(0.25f, g),
+                // Never SHORTER than vanilla, only longer.
+                //
+                // This used to be the raw scale, so GroundBlood 0.3 cut every mark to 30% of its
+                // authored life - a greydwarf hit mark went from 5 seconds to 1.5 and was gone
+                // before the fight ended, which read as "hit blood doesn't reach the ground" when
+                // it was landing perfectly well and then disappearing.
+                //
+                // Turning the blood down should mean FEWER marks, not marks that blink out: the
+                // chance multiplier above already delivers "less blood", and doing it twice was
+                // never the intent. Above 1 it still stretches, so the high presets keep blood
+                // around longer than vanilla.
+                LifetimeMultiplier = Mathf.Max(1f, g),
 
                 // 0 leaves vanilla's own caps alone (they run 10 to 1000); the caller only ever
                 // raises a cap, never lowers one. 2 -> 300, 3 -> 600.

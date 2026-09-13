@@ -234,8 +234,17 @@ namespace CarturHDBlood
                 if (Plugin.ReplaceTexture.Value)
                     SkinMaterial(mat);
 
-                TuneDecalSystem(decalSystem, mat);
+                // Read BEFORE the hit mark is resized, and handed to TuneDecalSystem so the texture
+                // is still chosen from what the game authored. Giving a greydwarf boar-sized hit
+                // marks must not also move it onto boar's artwork - size and amount vary by
+                // creature, textures do not.
+                float textureSize = AuthoredSize(decalSystem.main.startSize);
+
+                LevelHitMark(decal, decalSystem);
+                TuneDecalSystem(decalSystem, mat, textureSize);
                 TuneChance(decal);
+                LevelHitDensity(decal);
+                NormaliseSpread(decal);
 
                 // Both of these key off the spawned effect root and dedupe themselves, so an
                 // effect carrying two or three ParticleDecals still gets one of each.
@@ -458,6 +467,7 @@ namespace CarturHDBlood
         // and handing the clone to a Seeker Queen decal would change more than its texture.
         private static readonly Dictionary<int, Material> SmallGroundMaterials = new Dictionary<int, Material>();
         private static readonly Dictionary<int, Material> AltGroundMaterials = new Dictionary<int, Material>();
+
 
         /// Gives this decal system one of the three ground marks.
         ///
@@ -745,14 +755,207 @@ namespace CarturHDBlood
             }
         }
 
-        private static void TuneDecalSystem(ParticleSystem ps, Material shared)
+        /// The burst count vanilla's common hit effects emit toward the ground.
+        ///
+        /// Not a chosen number: read out of the bundle, 14 of the 108 ParticleDecal hosts sit at
+        /// exactly 5, including player, boar and wolf, and nothing blood-related sits between 3
+        /// and 5.
+        private const int CommonDecalBurst = 5;
+
+        /// Boar's authored hit mark, which the owner picked as the one every creature should leave.
+        ///
+        /// Read from the bundle, not chosen: vfx_boar_hit's decal is authored 1..3, and so are 23
+        /// of the other 33 hit decals in the game - player, wolf, deer, goblin, troll and dragon
+        /// among them. It is already the norm. Six sit below it at 1..2 (bat, deathsquito,
+        /// greydwarf, greydwarf nest, neck, SeekerQueen spit) and those are the ones this raises.
+        private const float BoarHitMin = 1f;
+        private const float BoarHitMax = 3f;
+
+        /// Gives every creature the hit mark a boar leaves.
+        ///
+        /// Runs BEFORE TuneDecalSystem so the new size is what gets read as the authored size -
+        /// which means these marks also land in the same texture bracket a boar's does, because a
+        /// 1..3 midpoint of 2.0 is not below SmallDecalSize. That is the point rather than a side
+        /// effect: the owner asked for boar's hit mark, and the texture is part of that mark.
+        ///
+        /// Only raises. Four hit decals are authored LARGER than boar's at 3..4 - seeker,
+        /// babyseeker, serpent and the hjall spit - and those are left alone.
+        private static void LevelHitMark(ParticleDecal decal, ParticleSystem decalSystem)
+        {
+            if (decalSystem == null || IsDeathEffect(decal))
+                return;
+
+            try
+            {
+                ParticleSystem.MainModule main = decalSystem.main;
+                if (AuthoredSize(main.startSize) >= (BoarHitMin + BoarHitMax) * 0.5f)
+                    return;
+
+                main.startSize = new ParticleSystem.MinMaxCurve(BoarHitMin, BoarHitMax);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Hit mark levelling failed: " + e.Message);
+            }
+        }
+
+        /// Anything below this is one of vanilla's 0.18-second "splat" hosts, not a real spray.
+        ///
+        /// Measured across all 32 death decal hosts in the bundle: six sit at 0.17-0.18s and the
+        /// next shortest is 2s. The gap is wide enough that a cutoff here cannot catch anything
+        /// else by accident.
+        private const float PileLifetime = 0.25f;
+
+        /// Boar's own host, which is the look this is aiming at: 1..6 m/s, 2s, gravity 0.5.
+        /// Kept shorter than boar's 2s because these fire at 10 m/s rather than 1-6, so the same
+        /// lifetime would throw them twice as far as the thing being matched.
+        private const float SpreadLifetime = 0.8f;
+        private const float SpreadGravity = 0.5f;
+
+        /// The far end of the same clamp: how far a death may throw blood, in metres.
+        ///
+        /// Measured, not chosen. Death hosts bunch at or below 20m - seeker, tick, gjall and
+        /// babyseeker all sit exactly there - and only three exceed it: the Seeker Queen and the
+        /// bonemaw serpent at 30m, and the dragon at 40m. Past about 20m the marks land outside
+        /// the fight, so the kill itself looks under-bled while blood you never see is painted in
+        /// the trees. Capping here pulls those three in and leaves the 6-16m band untouched.
+        private const float MaxReach = 20f;
+
+        /// The top of a MinMaxCurve, whatever mode it was authored in.
+        private static float MaxOf(ParticleSystem.MinMaxCurve c)
+        {
+            switch (c.mode)
+            {
+                case ParticleSystemCurveMode.Constant:
+                    return c.constant;
+                case ParticleSystemCurveMode.TwoConstants:
+                    return c.constantMax;
+                default:
+                    return c.curveMultiplier;
+            }
+        }
+
+        /// Stops six creatures dumping their biggest ground marks in a pile on the corpse.
+        ///
+        /// Greydwarf, greydwarf elite, neck, bat, deathsquito and tentaroot all carry a death host
+        /// named "splat" authored at speed 10, lifetime 0.18s, gravity 0. At 10 m/s a particle that
+        /// lives 0.18s travels 1.8 metres, and with no gravity it does not arc - so every mark that
+        /// host lands, and these are its LARGEST (authored 3.0 against the sibling host's 1.25),
+        /// falls inside a 1.8m circle. Stack those with the death pool and the result is one solid
+        /// blob, which is exactly how it reads in game next to a boar's scattered marks.
+        ///
+        /// Boar has no such host: one emitter at 1..6 m/s for 2s with gravity, which arcs its marks
+        /// out to 12m. Giving the six the same motion - travel and fall - is what makes them spread
+        /// instead of pile. Only motion is touched. Size, colour, count and chance stay authored, so
+        /// a greydwarf still marks less ground than a troll.
+        ///
+        /// The far end is clamped too, at MaxReach - but only the three hosts past 20m, and only by
+        /// shortening their lifetime. Everything in the 6-16m band is left exactly as authored.
+        ///
+        /// Deliberately NOT a rule that scales spread by creature size. That was tried against the
+        /// bundle and fails: authored decal size is not a size signal, because effects share child
+        /// prefabs - a hen and a lox both carry a decal authored 3.5, so scaling by it would have a
+        /// chicken throwing blood 21 metres against a boar's 12. Bigger creatures already bleed
+        /// more through burst and chance, which is where that difference belongs.
+        private static void NormaliseSpread(ParticleDecal decal)
+        {
+            ParticleSystem host = decal.GetComponent<ParticleSystem>();
+            if (host == null)
+                return;
+
+            try
+            {
+                ParticleSystem.MainModule main = host.main;
+
+                // AuthoredSize is a midpoint reader for any MinMaxCurve, not just sizes.
+                float life = AuthoredSize(main.startLifetime);
+                if (life <= 0f)
+                    return;
+
+                // Floor: the 0.18-second piles described above.
+                if (life < PileLifetime)
+                {
+                    main.startLifetime = new ParticleSystem.MinMaxCurve(SpreadLifetime);
+                    main.gravityModifier = new ParticleSystem.MinMaxCurve(SpreadGravity);
+                    return;
+                }
+
+                // Ceiling: shortened rather than slowed, because speed is what gives a spray its
+                // character - a dragon's blood should still leave fast, it just should not still
+                // be travelling forty metres later. Scaled through the existing helper so an
+                // authored range keeps its shape instead of collapsing to one value.
+                float speed = MaxOf(main.startSpeed);
+                if (speed <= 0.01f)
+                    return;
+
+                float reach = speed * life;
+                if (reach > MaxReach)
+                    main.startLifetime = Scale(main.startLifetime, MaxReach / reach);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Death spread normalisation failed: " + e.Message);
+            }
+        }
+
+        /// Brings the sparsest hit effects up to the burst count the common ones already use.
+        ///
+        /// A ground mark is not painted on. ParticleDecal sits on a SPRAY system and spawns one
+        /// mark per particle that physically reaches the floor, gated by m_chance - so the number
+        /// of colliding particles is the real frequency dial, and vanilla does not author it
+        /// evenly. Read out of the bundle:
+        ///
+        ///     vfx_player_hit / vfx_boar_hit / vfx_wolf_hit    bloodchunks           burst 5
+        ///     vfx_greydwarf_hit / _nest_hit / vfx_neck_hit    vfx_BloodHit_decals   burst 3
+        ///     fx_bat_hit / fx_deathsquito_hit                 vfx_BloodHit_decals   burst 3
+        ///
+        /// m_chance is 100 on every one of them, so the chance itself was never the difference -
+        /// the greydwarf family simply gets 40% fewer chances to mark the floor. Greydwarf elites
+        /// are in there too: there is no vfx_greydwarf_elite_hit prefab in the game at all, so
+        /// elites share vfx_greydwarf_hit and inherit the same shortfall. That is the "greydwarfs
+        /// barely bleed on the ground until they die" the owner reported - their DEATH effect
+        /// carries a second decal authored at 3, which is why deaths always read.
+        ///
+        /// Only ever RAISES, and only systems that already use bursts. The eight hosts authored
+        /// with burst 0 are rate-over-time flows - puke, dragon breath, seeker spit - where adding
+        /// a burst would emit a clump vanilla never had.
+        private static void LevelHitDensity(ParticleDecal decal)
+        {
+            ParticleSystem host = decal.GetComponent<ParticleSystem>();
+            if (host == null)
+                return;
+
+            try
+            {
+                ParticleSystem.EmissionModule em = host.emission;
+                if (!em.enabled)
+                    return;
+
+                for (int i = 0; i < em.burstCount; i++)
+                {
+                    ParticleSystem.Burst b = em.GetBurst(i);
+                    float count = b.count.constantMax;
+                    if (count <= 0f || count >= CommonDecalBurst)
+                        continue;
+
+                    b.count = new ParticleSystem.MinMaxCurve(CommonDecalBurst);
+                    em.SetBurst(i, b);
+                }
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Hit density levelling failed: " + e.Message);
+            }
+        }
+
+        private static void TuneDecalSystem(ParticleSystem ps, Material shared, float textureSize)
         {
             GroundPreset preset = GroundPreset.Current();
             ParticleSystem.MainModule main = ps.main;
 
-            // Captured before scaling: which mark a decal gets is chosen from its authored size,
-            // and a size multiplier shouldn't change the artwork.
-            float authoredSize = AuthoredSize(main.startSize);
+            // Which mark a decal gets is chosen from the size the GAME authored - passed in by the
+            // caller, because by this point LevelHitMark may have resized it. A size multiplier,
+            // and now a hit-mark resize, must not change the artwork.
 
             main.startSize = Realism.JitterSize(main.startSize);
 
@@ -773,7 +976,7 @@ namespace CarturHDBlood
             Realism.GrowDecal(ps);
 
             if (Plugin.ReplaceTexture.Value)
-                AssignGroundVariant(ps, shared, authoredSize);
+                AssignGroundVariant(ps, shared, textureSize);
         }
 
         internal static float AuthoredSize(ParticleSystem.MinMaxCurve c)

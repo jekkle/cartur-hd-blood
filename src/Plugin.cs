@@ -210,12 +210,16 @@ namespace CarturHDBlood
                 "256x256 and reads as a membrane rather than liquid. Colour is unaffected either " +
                 "way - the splash still takes its colour from whatever creature it came out of.");
 
-            SmallDecalSize = Bind2("2 - Advanced", "SmallDecalSize", 2f,
+            SmallDecalSize = Config.Bind("2 - Advanced", "SmallDecalSize", 2f,
                 new ConfigDescription(
-                    "Ground marks with an authored size below this get the small impact texture; " +
-                    "everything above it gets one of the two large ones. Vanilla ground decals " +
-                    "run 0.5..1.4 on light hits up to 5..8 on the biggest deaths, so 2 splits " +
-                    "roughly between grazes and real wounds.",
+                    "Ground marks with an authored size below this get the small impact "
+                    + "texture; everything above it gets one of the two large ones. Vanilla "
+                    + "ground decals run 0.5..1.4 on light hits up to 5..8 on the biggest "
+                    + "deaths, so 2 splits roughly between grazes and real wounds.\n"
+                    + "Lowering it hands the large, denser artwork to small marks too - at "
+                    + "0.5 nothing uses the impact texture at all. That reads as more blood "
+                    + "on creatures like greydwarfs, but it CHANGES WHICH TEXTURE they draw "
+                    + "with, which is not the same thing as changing their size.",
                     new AcceptableValueRange<float>(0.5f, 8f)));
 
             GroundNormalMap = Config.Bind("2 - Advanced", "GroundNormalMap", true,
@@ -276,7 +280,7 @@ namespace CarturHDBlood
                     "uses for blood_cloud, so alpha means what it says. Off restores vanilla's " +
                     "cutout rendering."));
 
-            FadeStart = Bind2("2 - Advanced", "FadeStart", 0f,
+            FadeStart = Config.Bind("2 - Advanced", "FadeStart", 0f,
                 new ConfigDescription(
                     "When a ground mark starts fading, as a fraction of its life. Needs " +
                     "GroundFade on to be visible at all.\n" +
@@ -446,30 +450,32 @@ namespace CarturHDBlood
                     "same factor and cannot produce variation; this can. 0 disables.",
                     new AcceptableValueRange<float>(0f, 0.8f)));
 
-            PoolOnDeath = Bind2("2 - Advanced", "PoolOnDeath", true,
+            PoolOnDeath = Config.Bind("2 - Advanced", "PoolOnDeath", true,
                 "Leave a settled pool of blood under a kill. Every other mark the mod makes is an " +
                 "impact at the instant of the hit; nothing reads as blood that has run out and " +
                 "spread, because vanilla has no such concept. The pool is emitted into the death " +
                 "effect's own decal system, so it inherits that creature's blood colour and dries " +
                 "and fades along with everything else.");
 
-            PoolSize = Bind2("2 - Advanced", "PoolSize", 3.5f,
+            PoolSize = Config.Bind("2 - Advanced", "PoolSize", 3.2f,
                 new ConfigDescription(
                     "Size of a death pool in world units. Vanilla impact decals run 1 to 6, with " +
                     "a troll death at 4-6, so 3.5 reads as a substantial pool without exceeding " +
                     "the largest thing the game already draws.",
                     new AcceptableValueRange<float>(0.5f, 10f)));
 
-            PoolLifetime = Bind2("2 - Advanced", "PoolLifetime", 45f,
+            PoolLifetime = Config.Bind("2 - Advanced", "PoolLifetime", 45f,
                 new ConfigDescription(
-                    "How long a death pool lasts, in seconds, before LifetimeMultiplier applies. " +
+                    "How long a death pool lasts, in real seconds. This one is absolute - the "
+                    + "blood level's lifetime multiplier does NOT apply to it, so 45 means 45 at "
+                    + "every setting. " +
                     "Deliberately far longer than an impact splat - a pool is the thing that " +
                     "should still be there when you walk back past. It also grows more slowly for " +
                     "free: the grow-in curve is normalised to each particle's own lifetime, so a " +
                     "long-lived pool spreads over seconds rather than instantly.",
                     new AcceptableValueRange<float>(5f, 120f)));
 
-            PoolCount = Bind2("2 - Advanced", "PoolCount", 3,
+            PoolCount = Config.Bind("2 - Advanced", "PoolCount", 3,
                 new ConfigDescription(
                     "Overlapping decals per pool, jittered slightly apart so they read as one " +
                     "irregular mass rather than concentric stamps.",
@@ -624,6 +630,7 @@ namespace CarturHDBlood
             // Instance ids are unique per session; this only keeps the set from growing as
             // worlds are loaded and unloaded.
             Pooling.Clear();
+            CreatureSize.Clear();
             DebugTuning.Reset();
             SprayAim.Reset();
         }
