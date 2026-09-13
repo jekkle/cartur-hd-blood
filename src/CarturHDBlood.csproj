@@ -6,7 +6,7 @@
     <!-- Keep in step with the version in [BepInPlugin] - Thunderstore reads the
          manifest, BepInEx reads the attribute, and a mismatch shows users two
          different numbers for the same build. -->
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
     <!-- Managed DLLs come from the raw Steam install -->
@@ -72,6 +72,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\splatter_impact_512_rgba.png">
       <LogicalName>CarturHDBlood.splatter_impact_512_rgba.png</LogicalName>
+    </EmbeddedResource>
+
+    <!-- The airborne splash. Replaces vanilla's slime_splash on the cloned blood material only -
+         the clone is what keeps slimes on the original. Colour is untouched: the material stays
+         neutral white and each creature's startColor still decides it. -->
+    <EmbeddedResource Include="Assets\droplet_256_rgba.png">
+      <LogicalName>CarturHDBlood.droplet_256_rgba.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\splatter_spray_1024_gloss.png">
+      <LogicalName>CarturHDBlood.splatter_spray_1024_gloss.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\splash_1024_rgba.png">
+      <LogicalName>CarturHDBlood.splash_1024_rgba.png</LogicalName>
     </EmbeddedResource>
 
     <!-- Normal maps, one per ground mark, same size as the diffuse it pairs with.

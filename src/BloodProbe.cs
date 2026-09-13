@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -73,6 +74,7 @@ namespace CarturHDBlood
             // plays on a hit or death, while the name scan catches anything registered directly.
             var found = new Dictionary<int, GameObject>();
             var reachedFrom = new Dictionary<int, List<string>>();
+            var sizes = new Dictionary<string, float>();
 
             int characters = 0;
             foreach (GameObject prefab in scene.m_prefabs)
@@ -88,6 +90,14 @@ namespace CarturHDBlood
                     continue;
                 characters++;
 
+                // Character.GetHeight() is Mathf.Max(m_collider.height, m_collider.radius * 2) and
+                // applies no scale, so reading the collider straight off the prefab gives exactly
+                // the number the live call would - without having to kill one of everything first.
+                // m_collider itself is only assigned in Awake, which has not run on a prefab.
+                CapsuleCollider capsule = prefab.GetComponent<CapsuleCollider>();
+                if (capsule != null)
+                    sizes[prefab.name] = Mathf.Max(capsule.height, capsule.radius * 2f);
+
                 Sweep(character.m_hitEffects, prefab.name + ".m_hitEffects", found, reachedFrom);
                 Sweep(character.m_critHitEffects, prefab.name + ".m_critHitEffects", found, reachedFrom);
                 Sweep(character.m_backstabHitEffects, prefab.name + ".m_backstabHitEffects", found, reachedFrom);
@@ -96,6 +106,23 @@ namespace CarturHDBlood
 
             sb.AppendLine($"scanned {scene.m_prefabs.Count} prefabs, {characters} with a Character component");
             sb.AppendLine($"distinct blood effect prefabs: {found.Count}");
+            sb.AppendLine();
+
+            // Every creature's height and the death-pool size it will get, without needing to have
+            // killed one. This is the table PoolSize is calibrated against.
+            sb.AppendLine("================================================================");
+            sb.AppendLine("CREATURE HEIGHTS AND DEATH POOL SIZE");
+            sb.AppendLine($"  reference height {CreatureSize.ReferenceHeight:0.##}m = scale 1.00, " +
+                          $"clamped {CreatureSize.MinScale:0.##}..{CreatureSize.MaxScale:0.##}");
+            sb.AppendLine($"  PoolSize is currently {Plugin.PoolSize.Value:0.###}");
+            sb.AppendLine();
+            sb.AppendLine(string.Format("  {0,-34}{1,9}{2,8}{3,11}", "creature", "height", "scale", "pool"));
+            foreach (var kv in sizes.OrderBy(k => k.Value))
+            {
+                float scale = CreatureSize.ScaleFor(kv.Value);
+                sb.AppendLine(string.Format("  {0,-34}{1,8:0.##}m{2,8:0.00}{3,11:0.00}",
+                                            kv.Key, kv.Value, scale, Plugin.PoolSize.Value * scale));
+            }
             sb.AppendLine();
 
             foreach (var kv in found)

@@ -31,6 +31,19 @@ namespace CarturHDBlood
     [HarmonyPatch(typeof(Character), nameof(Character.ApplyDamage))]
     internal static class Patch_Character_ApplyDamage
     {
+        /// The hit that was most recently blocked successfully.
+        ///
+        /// Character.RPC_Damage calls BlockAttack and then ApplyDamage on the same HitData, in
+        /// that order, synchronously - so by the time the postfix below runs, this either holds
+        /// the very object it was handed or something older. Compared by reference, never by
+        /// value, so an older entry cannot match a new hit; HitData instances are not pooled.
+        ///
+        /// One field rather than a set, because the two calls are adjacent in one method and
+        /// nothing can interleave between them.
+        private static HitData _lastBlocked;
+
+        internal static void MarkBlocked(HitData hit) => _lastBlocked = hit;
+
         private static void Postfix(Character __instance, HitData hit, bool triggerEffects)
         {
             if (__instance == null || hit == null)
@@ -38,7 +51,14 @@ namespace CarturHDBlood
             if (!Plugin.ModEnabled.Value || !triggerEffects)
                 return;
 
-            float fraction = Plugin.HitEffectThreshold.Value;
+            // A hit the target blocked should not draw blood. This mod lowered the bleed
+            // threshold from vanilla's tenth of max health down to a fiftieth, which is what
+            // made blocked hits start bleeding: the chip damage left after a block clears the
+            // new bar easily and never came close to the old one.
+            if (ReferenceEquals(hit, _lastBlocked))
+                return;
+
+            float fraction = BloodPreset.Current().HitThreshold;
             if (fraction >= 0.1f)
                 return;   // at or above vanilla's tenth there is nothing to add
 
@@ -67,6 +87,28 @@ namespace CarturHDBlood
             {
                 Plugin.Log.LogWarning("Hit-threshold effect failed: " + e.Message);
             }
+        }
+    }
+
+    /// Records a successful block so the effect patch above can skip it.
+    ///
+    /// Humanoid rather than Character: BlockAttack is virtual, Harmony patches the exact method
+    /// it is given, and the base implementation is not the one that runs for anything that can
+    /// actually block. Every creature that blocks - the player included - is a Humanoid.
+    ///
+    /// Only the return value matters. BlockAttack already subtracts the blocked damage from the
+    /// hit through HitData.BlockDamage, so a fully absorbed hit was never going to bleed anyway;
+    /// this is about the chip damage left over when a block reduces a hit without erasing it.
+    /// Named by string with explicit parameter types, because BlockAttack is protected - nameof
+    /// cannot reach it from outside the class, and the argument list pins the right overload
+    /// rather than leaving Harmony to guess if the game ever adds one.
+    [HarmonyPatch(typeof(Humanoid), "BlockAttack", new[] { typeof(HitData), typeof(Character) })]
+    internal static class Patch_Humanoid_BlockAttack
+    {
+        private static void Postfix(HitData hit, bool __result)
+        {
+            if (__result && hit != null)
+                Patch_Character_ApplyDamage.MarkBlocked(hit);
         }
     }
 }
