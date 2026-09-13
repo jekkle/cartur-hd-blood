@@ -32,6 +32,48 @@ namespace CarturHDBlood
         // once per material, not once per spawned decal.
         private static readonly HashSet<int> SkinnedMaterials = new HashSet<int>();
 
+        /// Every material this mod owns or has written to, held as references rather than ids so
+        /// the look settings can be re-applied to all of them at world load.
+        ///
+        /// SkinnedMaterials holds instance ids, and an id is not a handle. That distinction is
+        /// why changing Wetness or Reflections appeared to do nothing for an entire session:
+        /// SkinMaterial returns early once the texture is already ours, so on a world reload it
+        /// never reached the lines that write those properties, and only a full relaunch applied
+        /// them. The menu implied they were live and they were not.
+        private static readonly List<Material> Owned = new List<Material>();
+
+        private static void Own(Material mat)
+        {
+            if (mat != null && !Owned.Contains(mat))
+                Owned.Add(mat);
+        }
+
+        /// Re-applies the settings that live on a material rather than inside a texture.
+        ///
+        /// Called once per world load, so changing them in the menu takes effect on the next
+        /// world load instead of the next launch.
+        ///
+        /// The split is worth knowing, because not everything can refresh this way. Wetness,
+        /// Reflections and the Cutout-to-Fade switch are material properties, so they update
+        /// here. GroundOpacity is baked into the texture's pixels when it loads, and turning
+        /// GroundNormalMap on when it was off at startup means the normal map was never loaded
+        /// at all - both of those still need a relaunch, and saying so is better than pretending
+        /// otherwise.
+        internal static void RefreshLookSettings()
+        {
+            int n = 0;
+            foreach (Material mat in Owned)
+            {
+                if (mat == null)
+                    continue;
+                ApplyWetness(mat);
+                ApplyGroundFade(mat);
+                n++;
+            }
+            if (n > 0)
+                Plugin.Log.LogInfo($"Re-applied look settings to {n} blood material(s).");
+        }
+
         // Ground marks. Two large, chosen per decal, and one small.
         private static Texture2D _groundLarge;
         private static Texture2D _groundLargeAlt;
@@ -303,6 +345,7 @@ namespace CarturHDBlood
                                    "it a droplet texture (vanilla leaves these untextured).");
             }
 
+            Own(_bloodDropMaterial);
             r.sharedMaterial = _bloodDropMaterial;
             return true;
         }
@@ -341,6 +384,7 @@ namespace CarturHDBlood
                                    "so slimes are unaffected).");
             }
 
+            Own(_bloodSplashMaterial);
             r.sharedMaterial = _bloodSplashMaterial;
             return true;
         }
@@ -369,9 +413,24 @@ namespace CarturHDBlood
             // ours back on the next decal.
             bool alreadyOurs = before == albedo;
             if (alreadyOurs && SkinnedMaterials.Contains(mat.GetInstanceID()))
+            {
+                // The texture is already ours and does not need rewriting, but the look settings
+                // may have been changed in the menu since. Applying them here is what makes
+                // Wetness and Reflections take on a world reload rather than only on a restart -
+                // without it this early return skipped every line below, and an entire session
+                // was spent changing settings that could not take effect.
+                Own(mat);
+                ApplyWetness(mat);
+                ApplyGroundFade(mat);
+                // Clears _BumpMap and the _NORMALMAP keyword off materials an earlier build wrote
+                // them to, so the fix lands on a world reload rather than needing a clean install.
+                ClearForeignNormalSlots(mat);
+                SetNormal(mat, _groundLargeNormal);
                 return;
+            }
 
             SkinnedMaterials.Add(mat.GetInstanceID());
+            Own(mat);
 
             // Captured once, before the first swap. Valheim reuses the blood decal material for
             // things that are not blood - Moder's frost breath and the Seeker Queen's spit both
@@ -450,6 +509,7 @@ namespace CarturHDBlood
                 var clone = new Material(shared) { name = name };
                 if (!clone.HasProperty("_MainTex"))
                     return null;
+                Own(clone);
                 clone.SetTexture("_MainTex", tex);
                 ApplyWetness(clone);
                 ApplyGroundFade(clone);
@@ -485,13 +545,45 @@ namespace CarturHDBlood
         ///
         /// Still silent when a material has neither, for the original reason: a modded or updated
         /// shader without the slot should cost the shine, not the blood.
+        /// Undoes what an earlier build wrote to the wrong normal slot.
+        ///
+        /// Material property values persist for the life of the loaded material, so a material
+        /// that had _BumpMap and _NORMALMAP set by a previous session keeps them until something
+        /// clears them. Only done where _NormalTex exists - that is the marker for "this shader
+        /// had its own slot and should never have been given the other one".
+        private static void ClearForeignNormalSlots(Material mat)
+        {
+            if (mat == null || !mat.HasProperty("_NormalTex") || !mat.HasProperty("_BumpMap"))
+                return;
+            mat.SetTexture("_BumpMap", null);
+            mat.DisableKeyword("_NORMALMAP");
+        }
+
         private static void SetNormal(Material mat, Texture2D normal)
         {
             if (normal == null || mat == null)
                 return;
 
+            // ONE slot, not both, and _NormalTex wins where it exists.
+            //
+            // A material that declares _NormalTex has told us where its normal goes. Writing
+            // _BumpMap as well, and switching on _NORMALMAP, is writing to names whose meaning in
+            // THAT shader is unknown - and splat_decal_blend is Custom/ParticleDecal, a custom
+            // shader whose source is not readable from the bundle. Those two lines were added for
+            // Particles/Standard Surface2, which genuinely needs them, and applied to every blood
+            // material without checking whether the others wanted them.
+            //
+            // Ground blood then began rendering as a blue-grey network tracing the splat's own
+            // shape, with the decal's start colour measured live at full yellow saturation - the
+            // tint was correct and something after it was overriding. A tangent-space normal map
+            // is blue-lavender, which is what that looked like. Not proven, because the shader
+            // cannot be read, but it is the one change that could plausibly cause it and this
+            // restores the behaviour that was working before.
             if (mat.HasProperty("_NormalTex"))
+            {
                 mat.SetTexture("_NormalTex", normal);
+                return;
+            }
 
             if (mat.HasProperty("_BumpMap"))
             {
@@ -596,6 +688,47 @@ namespace CarturHDBlood
             // the keyword both have to be set: Unity's Standard family branches on the keyword,
             // and setting the float alone changes the inspector value while the compiled shader
             // carries on reflecting.
+            // Full brightness on the ground materials. Verified from the game bundle:
+            //
+            //     splat_decal_blend    _Color (0.502, 0.502, 0.502)
+            //     seeker_blood_splat   _Color (0.557, 0.557, 0.557)
+            //     SeekerQueen_decals   _Color (0.708, 0.708, 0.708)
+            //
+            // A plain halving, applied before texture, tint or lighting has a say. Vanilla's
+            // reddish brains texture carried enough colour of its own to survive it; a white
+            // texture that relies entirely on the creature's startColor does not.
+            //
+            // This also matters MORE the more another mod adds to the lighting. Ambient is a
+            // fixed ADDITION and the creature's colour is a MULTIPLICATION, so the only lever
+            // against an ambient this mod does not control is making the multiplied term bigger.
+            // Measured on greydwarf yellow over grass: saturation 0.50 -> 0.63, brightness
+            // 0.47 -> 0.71. Doubling the colour halves how much the blue matters.
+            //
+            // Only ever raised, and _TintColor is deliberately left alone - its 0.5 alpha may be
+            // a legacy-neutral value that doubles internally, and that cannot be read from the
+            // bundle.
+            if (mat.HasProperty("_Color"))
+            {
+                Color c = mat.GetColor("_Color");
+                if (c.r < 0.999f || c.g < 0.999f || c.b < 0.999f)
+                    mat.SetColor("_Color", new Color(1f, 1f, 1f, c.a));
+            }
+
+            // Unlit is the escape hatch from every other mod's lighting.
+            //
+            // Valheim's outdoor ambient is blue and ADDITIVE, so it survives whatever the albedo
+            // and the tint say - and a shading overhaul or a sky replacer changes how much of it
+            // lands on a surface. On an install running both, ground blood rendered as a blue-grey
+            // network whose colour followed the weather, while the decal's own start colour
+            // measured fully saturated yellow throughout. Nothing in this mod could win that
+            // argument, because the light is added after everything this mod controls.
+            //
+            // _LightingEnabled = 0 takes the decal out of that path entirely: albedo times the
+            // creature's colour and nothing else. Less physically interesting, and the only way to
+            // guarantee blood is the colour of blood on an install like that.
+            if (mat.HasProperty("_LightingEnabled"))
+                mat.SetFloat("_LightingEnabled", Plugin.GroundLighting.Value ? 1f : 0f);
+
             if (mat.HasProperty("_GlossyReflections"))
             {
                 bool on = Plugin.Reflections.Value;
@@ -931,26 +1064,61 @@ namespace CarturHDBlood
             }
         }
 
-        /// Multiplies a ground texture's alpha, to put back the density vanilla's cutout
-        /// rendering used to force.
+        /// Puts the ground art onto the alpha convention the shader actually blends with, and
+        /// applies the density multiplier while it is there.
         ///
-        /// Cutout drew 98% of a splat at full opacity regardless of the artwork - a pixel was
-        /// either solid or gone. Switching to Fade so the blood can actually fade out means the
-        /// texture's real alpha is used, and it averages 0.78, so every mark got thinner. This is
-        /// the compensation, not a correction to the art.
+        /// THE COLOUR FIX. Measured on mid-alpha pixels, where the two conventions differ:
         ///
-        /// Multiply-and-clamp rather than a gamma curve: the solid middle saturates at 1 and
-        /// stops, while the feathered rim is scaled proportionally and stays soft. A gamma lifts
-        /// the rim hardest, which is exactly the part that has to stay gentle for the fade to
-        /// read.
+        ///     vanilla brains 64  (splat_decal_blend's own texture)   ink/alpha 2.19
+        ///     splatter_spray_1024                                    ink/alpha 1.00
+        ///     splatter_mist_1024                                     ink/alpha 0.99
+        ///     splatter_impact_512                                    ink/alpha 1.00
+        ///
+        /// Vanilla authors these STRAIGHT: RGB is white, the shape lives entirely in alpha, and
+        /// ink/alpha lands near 1/alpha. This mod's art is premultiplied - RGB equal to alpha -
+        /// and splat_decal_blend blends _SrcBlend 5 / _DstBlend 10, which is straight alpha. So
+        /// the colour was being multiplied by alpha TWICE:
+        ///
+        ///     result = (texRGB * startColor) * alpha + background * (1 - alpha)
+        ///     texRGB = alpha   ->   startColor * alpha^2
+        ///
+        /// Greydwarf yellow (0.82, 0.80, 0.10) on grass at alpha 0.5 came out at brightness 0.29
+        /// against vanilla's 0.39 - 36% dimmer - which is the "it used to be vibrant and show on
+        /// grass, now it's dull" this was reported as. GroundOpacity made it worse rather than
+        /// better: raising alpha while leaving RGB behind drops ink/alpha to 0.71, so the mark got
+        /// denser and duller at the same time.
+        ///
+        /// The v1 rule that ground art must be premultiplied is not wrong, it is out of scope. It
+        /// was derived when these decals were believed to render through a cutout path, where
+        /// alpha is 0 or 1 and the two conventions are identical. Under Fade they are not.
+        ///
+        /// Nothing is lost by whitening. The art is greyscale - its RGB carries no information the
+        /// alpha does not already hold - so this discards a duplicate, not a detail. Alpha is
+        /// untouched apart from the density multiplier, so silhouette, coverage and the fade-out
+        /// are all exactly as before.
         private static void Solidify(Texture2D tex)
         {
             float mul = BloodPreset.Current().Opacity;
-            if (tex == null || mul <= 1.001f)
+            // Skips only when the multiplier is exactly 1, not when it is at or below 1. The
+            // earlier "<= 1.001f" silently ignored every value under 1, which would have made
+            // the setting's lower half do nothing at all once the range was widened to allow it.
+            if (tex == null || Mathf.Abs(mul - 1f) < 0.001f)
                 return;
 
             try
             {
+                // REVERTED to premultiplied. Whitening the albedo is correct in isolation -
+                // vanilla's brains measures a flat 255 at solid pixels - but in game it made
+                // ground blood render as a pale blue-white network tracing the normal map's
+                // ridges instead of a coloured mark.
+                //
+                // Same mechanism as the earlier magenta: outdoor ambient light in this game is
+                // blue and is ADDED rather than multiplied by albedo, so doubling the albedo
+                // doubled how much of that blue survives. Vanilla gets away with flat white
+                // because brains is 64x64 and soft, with no 1024 normal map underneath it for
+                // the ambient to catch. Our art has one on every tendril.
+                //
+                // The alpha multiplier below is all this does now, exactly as before.
                 Color[] px = tex.GetPixels();
                 for (int i = 0; i < px.Length; i++)
                     px[i].a = Mathf.Clamp01(px[i].a * mul);
@@ -959,7 +1127,7 @@ namespace CarturHDBlood
             }
             catch (Exception e)
             {
-                Plugin.Log.LogWarning($"Could not raise opacity on \"{tex.name}\": {e.Message}");
+                Plugin.Log.LogWarning($"Could not rewrite \"{tex.name}\" to straight alpha: {e.Message}");
             }
         }
 

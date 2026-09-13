@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
@@ -29,6 +30,7 @@ namespace CarturHDBlood
         internal static ConfigEntry<float> Wetness;
         internal static ConfigEntry<bool> WetnessMap;
         internal static ConfigEntry<bool> Reflections;
+        internal static ConfigEntry<bool> GroundLighting;
         internal static ConfigEntry<bool> GroundFade;
         internal static ConfigEntry<float> FadeStart;
         internal static ConfigEntry<float> GroundOpacity;
@@ -216,14 +218,14 @@ namespace CarturHDBlood
                     "roughly between grazes and real wounds.",
                     new AcceptableValueRange<float>(0.5f, 8f)));
 
-            GroundNormalMap = Bind2("2 - Advanced", "GroundNormalMap", true,
+            GroundNormalMap = Config.Bind("2 - Advanced", "GroundNormalMap", true,
                 "Light the ground blood with its own normal map, so highlights follow the shape " +
                 "of the splat and it reads as wet rather than flat. Off leaves the game's own " +
                 "normal in place. Turn it off if the lighting looks wrong - the decal shader's " +
                 "expected normal encoding is not documented anywhere, and the symptom of getting " +
                 "it wrong is highlights on the opposite side from the light.");
 
-            Wetness = Bind2("2 - Advanced", "Wetness", 0.75f,
+            Wetness = Config.Bind("2 - Advanced", "Wetness", 0.35f,
                 new ConfigDescription(
                     "How wet blood looks - the shader's smoothness, applied to every blood " +
                     "material rather than just the ground.\n" +
@@ -251,7 +253,7 @@ namespace CarturHDBlood
                     "a multiplier over the map instead, so Wetness still works as the overall " +
                     "level either way."));
 
-            Reflections = Bind2("2 - Advanced", "Reflections", false,
+            Reflections = Config.Bind("2 - Advanced", "Reflections", false,
                 new ConfigDescription(
                     "Let blood mirror the sky as well as catching direct light.\n" +
                     "Every blood material ships with this on, which is why raising Wetness made " +
@@ -286,7 +288,7 @@ namespace CarturHDBlood
                     "away, and it reaches a true zero rather than being cut off while visible.",
                     new AcceptableValueRange<float>(0f, 0.9f)));
 
-            GroundOpacity = Bind2("2 - Advanced", "GroundOpacity", 1.4f,
+            GroundOpacity = Config.Bind("2 - Advanced", "GroundOpacity", 0.47f,
                 new ConfigDescription(
                     "Density of ground blood, as a multiplier on the artwork's own alpha.\n" +
                     "This exists because of what GroundFade changed. Under vanilla's Cutout " +
@@ -295,12 +297,24 @@ namespace CarturHDBlood
                     "Fade the same pixels draw at their real alpha, which averages 0.78, so the " +
                     "splat became noticeably thinner. Nothing broke; the texture is simply being " +
                     "told the truth for the first time.\n" +
-                    "  1    the artwork exactly as authored - thinner than you are used to\n" +
-                    "  1.4  default; roughly the density Cutout used to force, soft edges kept\n" +
+                    "  0.5  light marks that need several overlaps to read as solid\n" +
+                    "  0.7  blood that soaks in rather than sitting on top\n" +
+                    "  1    the artwork exactly as authored\n" +
+                    "  1.4  roughly the density Cutout used to force\n" +
                     "  2+   heavier than vanilla ever was\n" +
+                    "THIS IS THE MAIN BRIGHTNESS CONTROL, and it matters most where marks overlap. " +
+                    "A blended layer approaches solid as layers stack, and how fast depends " +
+                    "entirely on this:\n" +
+                    "  at 0.85 alpha:  1 layer 0.85,  2 layers 0.98,  3 layers 1.00\n" +
+                    "  at 0.55 alpha:  1 layer 0.55,  2 layers 0.80,  3 layers 0.91\n" +
+                    "At the high end two overlapping marks are already solid colour, and nothing " +
+                    "underneath them can be seen - measured on this mod, halving the blood colour " +
+                    "moved the result by 9% because the surface was saturated before colour had " +
+                    "any say. If ground blood reads as bright pink rather than dark red, this is " +
+                    "the setting to pull down, not the colour.\n" +
                     "Multiplies and clamps rather than brightening evenly, so the solid middle " +
                     "reaches full while the feathered rim stays soft and can still fade out.",
-                    new AcceptableValueRange<float>(1f, 3f)));
+                    new AcceptableValueRange<float>(0.2f, 3f)));
 
             DirectionalSpray = Bind2("2 - Advanced", "DirectionalSpray", true,
                 new ConfigDescription(
@@ -339,6 +353,22 @@ namespace CarturHDBlood
                     "DirectionalSpray on.",
                     new AcceptableValueRange<float>(0.05f, 1f)));
 
+            GroundLighting = Config.Bind("2 - Advanced", "GroundLighting", true,
+                "Let scene lighting shade ground blood. ON keeps the sun, the shading and the wet " +
+                "highlight - what makes a mark read as liquid rather than a sticker.\n" +
+                "OFF draws each mark in its own colour with nothing added: no ambient, no " +
+                "specular, no reflection. Flat, but immune to whatever another mod does to the " +
+                "lighting. A last resort for when blood comes out the colour of the sky.\n" +
+                "Why the switch exists: Valheim's outdoor ambient is blue, " +
+                "it is ADDED to a surface rather than multiplied by it, and a shading overhaul or " +
+                "a sky replacer changes how much of it lands. On an install running both, yellow " +
+                "greydwarf blood rendered as a blue-grey network whose colour followed the " +
+                "weather - while the decal's own start colour measured fully saturated yellow the " +
+                "entire time.\n" +
+                "Unlit means the creature's blood colour is the only thing deciding what you see. " +
+                "Turn it on if you want marks to sit in the scene's lighting and have no other " +
+                "mod fighting over it.");
+
             DecalMaterials = Bind2("2 - Advanced", "DecalMaterials",
                 "splat_decal_blend,seeker_blood_splat,SeekerQueen_decals",
                 "Comma-separated material names whose ground decals count as blood, matched as " +
@@ -376,7 +406,7 @@ namespace CarturHDBlood
                     "odd-coloured blood is being forced red.",
                     new AcceptableValueRange<float>(0f, 1f)));
 
-            BloodTint = Bind2("2 - Advanced", "BloodTint", 0.5f,
+            BloodTint = Config.Bind("2 - Advanced", "BloodTint", 0.6f,
                 new ConfigDescription(
                     "How far RED blood is pulled toward BloodColor, for a deeper, browner red.\n" +
                     "  0    the game's own colours, untouched\n" +
@@ -389,7 +419,7 @@ namespace CarturHDBlood
                     "left exactly as they are at any value.",
                     new AcceptableValueRange<float>(0f, 1f)));
 
-            BloodColor = Bind2("2 - Advanced", "BloodColor", "#8C0505",
+            BloodColor = Config.Bind("2 - Advanced", "BloodColor", "#470303",
                 "Colour used to repaint washed-out decals. Hex. Brightness and transparency are " +
                 "taken from the original, so only hue and saturation come from this.");
 
@@ -522,10 +552,72 @@ namespace CarturHDBlood
 
         /// Everything that has to happen once per world, in one place so the hot-reload path
         /// and the ZNetScene.Awake patch cannot drift apart.
+        /// Writes the settings that are actually in force to the log, once per world load.
+        ///
+        /// This exists because not knowing the live values cost three wrong diagnoses in a row.
+        /// Ground blood rendered as a blue sheen; it was chased through the texture's alpha
+        /// convention, then the normal map, then the shader's blend state - and the cause was
+        /// Reflections sitting at true with Wetness at 0.75, mirroring a blue sky. One look at
+        /// the config would have ended it immediately.
+        ///
+        /// EFFECTIVE values, not the raw entries. BloodLevel overrides thirteen of them, so the
+        /// number in the config file is frequently not the number in use, and printing the file
+        /// would have been its own trap. Anything a preset is currently supplying is marked.
+        ///
+        /// Three reasons a value can surprise you, all of them real and all of them hit in one
+        /// session: a preset silently overriding it, an existing config value beating a new code
+        /// default, and BepInEx writing its in-memory copy back over a file edited while the game
+        /// was running.
+        private static void LogEffectiveSettings()
+        {
+            try
+            {
+                BloodPreset p = BloodPreset.Current();
+                bool preset = BloodLevel.Value != BloodAmount.Custom;
+                string via = preset ? $"from preset {BloodLevel.Value}" : "from Advanced (Custom)";
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine($"Settings in force - amounts {via}:");
+                sb.AppendLine($"   ground {p.Ground:0.##}   hit {p.Hit:0.##}   death {p.Death:0.##}" +
+                              $"   pools {p.PoolCount}x{p.PoolSize:0.##}   bleed threshold {p.HitThreshold:0.###}");
+                sb.AppendLine($"   droplets size {p.DropletSize:0.##} spread {p.DropletSpread:0.##} " +
+                              $"count {p.DropletCount:0.##}   cloud {p.CloudSize:0.##}   stretch {p.Stretch}");
+                sb.AppendLine($"   LOOK  lit {GroundLighting.Value}   wetness {p.Wet:0.##}   reflections {Reflections.Value}" +
+                              $"   normal map {GroundNormalMap.Value}   wetness map {WetnessMap.Value}");
+                sb.AppendLine($"   GROUND  opacity {GroundOpacity.Value:0.##}   fade {GroundFade.Value}" +
+                              $" from {FadeStart.Value:0.##}   ageing {DecalAging.Value}" +
+                              $"   replace texture {ReplaceTexture.Value}");
+                sb.Append($"   SPRAY  directional {DirectionalSpray.Value}   angle {SprayAngle.Value:0}" +
+                          $"   lift {SprayLift.Value:0.##}   debug menu {DebugTuning.DebugMenu.Value}");
+                Log.LogInfo(sb.ToString());
+
+                // The one combination measured to cause a reported problem. Not a style opinion:
+                // _GlossyReflections makes the decal mirror the skybox, and at high smoothness
+                // that reflection is sharp enough to be the dominant thing on screen. It reads
+                // blue under a clear sky and white under an overcast one.
+                if (Reflections.Value && p.Wet > 0.5f)
+                {
+                    Log.LogWarning(
+                        $"Reflections are on with wetness {p.Wet:0.##}. Ground blood will mirror " +
+                        "the sky rather than show its own colour - blue under a clear sky, white " +
+                        "under cloud. Set Reflections to false, or wetness below 0.5.");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning("Could not report effective settings: " + e.Message);
+            }
+        }
+
         internal static void ApplyToScene(ZNetScene scene)
         {
+            // First, so the log shows what the rest of this ran with.
+            LogEffectiveSettings();
+
             // Before the diagnostics, so the first decal of the session already has our texture.
             BloodSkin.PreSkin(scene);
+            // After the skin pass, so materials created this load are included.
+            BloodSkin.RefreshLookSettings();
             // Finds the systems to copy. The copying itself happens per spawned effect - see
             // CloudGraft for why it cannot be done to the prefabs here.
             CloudGraft.Cache(scene);

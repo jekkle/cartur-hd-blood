@@ -55,6 +55,15 @@ namespace CarturHDBlood
     /// hit that produces a quarter of one reads as a different effect rather than a smaller one.
     /// This does mean every landed blow costs a full death-sized burst.
     ///
+    /// Opacity is well UNDER 1 at every level, which looks wrong next to the setting's own
+    /// description of 1 as "the artwork as authored". It is deliberate and it was measured.
+    /// These decals blend, so overlapping marks stack toward solid, and how fast depends
+    /// entirely on this number: at 0.85 alpha two layers reach 0.98 and the colour underneath
+    /// stops mattering at all. Halving the blood colour at that density moved the result by 9%.
+    /// Under 0.5 a mark still reads on its own while a pile of them stays dark instead of
+    /// flattening into one bright sheet - which is the difference between blood soaking into
+    /// ground and a decal sitting on top of it.
+    ///
     /// Stretch is off at every level. It was on, and it was wrong: Unity's velocityScale is a
     /// multiplier on SPEED, so a droplet travelling 6 m/s with the old default of 2 drew as a
     /// TWELVE METRE streak. Three hundred of those turned a kill into a fountain of red lines
@@ -85,7 +94,7 @@ namespace CarturHDBlood
                     {
                         // Vanilla's own ground amount - at 1 only the artwork differs.
                         Ground = 0.15f, Hit = 0.1f, Death = 0.25f,
-                        Wet = 0.25f, Opacity = 1.2f,
+                        Wet = 0.30f, Opacity = 0.40f,
                         PoolSize = 2.5f, PoolCount = 1,
                         DropletSize = 0.02f, DropletSpread = 0.4f, DropletCount = 0.75f,
                         CloudSize = 0.85f, Stretch = false,
@@ -97,7 +106,7 @@ namespace CarturHDBlood
                     return new BloodPreset
                     {
                         Ground = 0.6f, Hit = 0.4f, Death = 1f,
-                        Wet = 0.4f, Opacity = 1.6f,
+                        Wet = 0.38f, Opacity = 0.60f,
                         PoolSize = 4.5f, PoolCount = 3,
                         DropletSize = 0.02f, DropletSpread = 0.7f, DropletCount = 2f,
                         CloudSize = 1f, Stretch = false,
@@ -109,7 +118,7 @@ namespace CarturHDBlood
                     {
                         // 3 is the top of the ground scale: every hit marks, and marks stay.
                         Ground = 1.2f, Hit = 0.8f, Death = 2f,
-                        Wet = 0.45f, Opacity = 2f,
+                        Wet = 0.40f, Opacity = 0.80f,
                         PoolSize = 6f, PoolCount = 6,
                         DropletSize = 0.02f, DropletSpread = 0.85f, DropletCount = 4f,
                         CloudSize = 1.25f, Stretch = false,
@@ -121,7 +130,7 @@ namespace CarturHDBlood
                     return new BloodPreset
                     {
                         Ground = 0.3f, Hit = 0.2f, Death = 0.5f,
-                        Wet = 0.35f, Opacity = 1.4f,
+                        Wet = 0.35f, Opacity = 0.47f,
                         PoolSize = 3.5f, PoolCount = 3,
                         DropletSize = 0.02f, DropletSpread = 0.6f, DropletCount = 1.5f,
                         CloudSize = 0.92f, Stretch = false,
