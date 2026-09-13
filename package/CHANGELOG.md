@@ -55,6 +55,29 @@ doing what you expect can be seen rather than guessed at.
 New ground artwork, a droplet texture, and a debug section for isolating one element at a
 time.
 
+**Ground blood now scales with the creature, not with the effect.** Death pool size follows
+the dead creature's own collider height, so a boar leaves less than a greydwarf and a troll
+leaves a great deal more. Two earlier attempts scaled by the effect's authored decal size
+instead; that inverts, because decal systems are shared child prefabs - a hen and a lox carry
+the same one.
+
+**Marks that piled on the corpse now scatter.** Greydwarf, greydwarf elite, neck, bat,
+deathsquito and tentaroot all carry a death emitter authored to live 0.18 seconds with no
+gravity, so everything it landed fell inside a 1.8 metre circle. Those now arc and travel.
+At the other end, the three effects that threw blood past 20 metres are pulled back in, so
+it lands where the kill happened.
+
+**Ground marks are no longer shorter-lived than vanilla.** Turning blood down used to cut
+every mark's lifetime by the same factor, so at a low setting a greydwarf hit mark lasted
+1.5 seconds - it landed correctly and then vanished before the fight ended. Less blood now
+means fewer marks, not marks that blink out. PoolLifetime is absolute seconds and ignores
+the blood level entirely: 45 means 45.
+
+**Hit marks are levelled up to the common size.** Six creatures emitted 3 ground-seeking
+particles where player, boar and wolf emit 5, and six drew a smaller hit mark than everyone
+else, both at the same 100% chance. Which texture a mark uses is unchanged - that is decided
+by the size the game authored, not by the size it ends up drawn at.
+
 ### Upgrading from 1.0.x
 
 Existing config values always win over new defaults, so a few settings keep their old
