@@ -1,9 +1,14 @@
 # Cartur's HD Blood
 
+*Free, and always will be — if it improved your game you can [tip me on Patreon](https://www.patreon.com/c/cartur).*
+
 Higher resolution ground blood, and a real burst of blood on every hit and kill.
 
 Vanilla draws its ground blood from a **64×64** texture, and most creatures throw nothing into
 the air at all when you hit them. This replaces the first and fixes the second.
+
+![Ground blood mark](https://raw.githubusercontent.com/jekkle/cartur-hd-blood/master/docs/images/ground-blood-overhead.png)
+![Blood burst on a kill](https://raw.githubusercontent.com/jekkle/cartur-hd-blood/master/docs/images/death-burst.png)
 
 ## What it does
 
@@ -65,6 +70,15 @@ own blood materials; if one doesn't, add its material name under `Advanced / Dec
 - If ground blood ever looks lit from the wrong side, turn off `Advanced / GroundNormalMap`.
   The decal shader's expected normal encoding isn't documented, so that switch is there as an
   escape hatch.
+
+## More from Cartur
+
+- [Cartur's Map Pins](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Map_Pins/) — labelled
+  map pins on ore, dungeons, beehives, runestones and boss altars as you find them.
+- [Cartur's Compass and Clock](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Compass_and_Clock/) —
+  a Skyrim-style compass bar showing your pins at their real bearing, plus an in-game clock.
+- [Cartur's Safe Stamina](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Safe_Stamina/) —
+  stamina costs nothing until something hostile is actually near.
 
 ## Credits
 

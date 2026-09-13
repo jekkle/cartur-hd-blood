@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+- The large ground mark no longer ever renders as bare spray on its own - it reads as
+  a thin scatter with no solid body alone, so it's now always paired with the mist or
+  impact art instead.
+- Added screenshots and links to my other mods.
+
 ## 1.0.0
 
 First release.
