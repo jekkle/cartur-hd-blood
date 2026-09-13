@@ -36,6 +36,17 @@ namespace CarturHDBlood
         private static Texture2D _groundLarge;
         private static Texture2D _groundLargeAlt;
         private static Texture2D _groundSmall;
+        // The airborne splash, for the cloned blood material only.
+        private static Texture2D _splash;
+        // Smoothness map. Linear, not sRGB: this is data the shader reads as a number, not a
+        // picture, and letting Unity gamma-correct it would skew every smoothness value.
+        private static Texture2D _gloss;
+        // The airborne droplet. Vanilla's blood_drop material has no _MainTex at all - the 200
+        // droplets are flat shaded quads - so this is an addition rather than a replacement.
+        // 256 is sized to what a droplet actually covers: 0.05 world units is 28 screen pixels
+        // at melee range on a 1080p screen and 113 at DropletSize 4, so 256 leaves about 2x for
+        // mipmapping and no more.
+        private static Texture2D _droplet;
         // One normal map per mark. Custom/ParticleDecal has a live _NormalTex - vanilla keeps
         // brains_n 64x64 there - so these decals are lit. Leaving vanilla's normal under our
         // albedo meant highlights followed the shape of a texture that is no longer drawn,
@@ -188,8 +199,18 @@ namespace CarturHDBlood
                 // effect carrying two or three ParticleDecals still gets one of each.
                 CloudGraft.Apply(decal);
 
-                if (IsDeathEffect(decal))
+                if (IsDeathEffect(decal) && DebugTuning.DeathPoolEnabled())
                     Pooling.SpawnPool(decal);
+
+                // After the decal's lifetime has been scaled, so the timer covers the value
+                // actually in use rather than the authored one.
+                ExtendEffectLifetime(decal);
+
+                SprayAim.Apply(decal);
+
+                // Last, so it can tune the systems CloudGraft just added as well as the ones the
+                // effect shipped with. No-op unless the debug menu is switched on.
+                DebugTuning.Apply(decal);
             }
             catch (Exception e)
             {
@@ -240,6 +261,52 @@ namespace CarturHDBlood
         private static Material _vanillaDecalMaterial;
         private static string[] _excludePrefixes;
 
+        private static Material _bloodDropMaterial;
+
+        /// Gives the 200 airborne droplets a texture, which vanilla never does.
+        ///
+        /// Cloned rather than assigned to the shared material, for the same reason the splash is:
+        /// `blood_drop` is one material shared by 128 renderer slots, and this mod has already
+        /// been caught once assuming a material named after blood is only used by blood. Cloning
+        /// means no proof about the other owners is needed - whoever they are, they keep the
+        /// original object untouched.
+        ///
+        /// _Color is left alone here, unlike the splash clone: the droplets are not green, and
+        /// their per-creature startColor already works.
+        internal static bool ApplyDropletTexture(ParticleSystemRenderer r)
+        {
+            LoadTextures();
+
+            if (_droplet == null || r == null)
+                return false;
+
+            Material original = r.sharedMaterial;
+            if (original == null || original == _bloodDropMaterial)
+                return false;
+
+            if (_bloodDropMaterial == null)
+            {
+                _bloodDropMaterial = new Material(original) { name = "CarturBloodDroplet" };
+
+                if (!_bloodDropMaterial.HasProperty("_MainTex"))
+                {
+                    Plugin.Log.LogWarning(
+                        $"\"{original.name}\" has no _MainTex, so a droplet texture cannot be " +
+                        "assigned to it. Droplets stay untextured; nothing else is affected.");
+                    _bloodDropMaterial = null;
+                    return false;
+                }
+
+                _bloodDropMaterial.SetTexture("_MainTex", _droplet);
+                ApplyWetness(_bloodDropMaterial);
+                Plugin.Log.LogInfo($"Cloned \"{original.name}\" -> \"CarturBloodDroplet\" and gave " +
+                                   "it a droplet texture (vanilla leaves these untextured).");
+            }
+
+            r.sharedMaterial = _bloodDropMaterial;
+            return true;
+        }
+
         private static bool ReplaceSlimeSplash(ParticleSystemRenderer r)
         {
             Material original = r.sharedMaterial;
@@ -257,10 +324,18 @@ namespace CarturHDBlood
                 if (_bloodSplashMaterial.HasProperty("_EmissionColor"))
                     _bloodSplashMaterial.SetColor("_EmissionColor", Color.black);
 
-                // The texture is left as vanilla's slime_splash. Only the green comes off.
-                // This used to be handed the mod's own spray art, but the mod no longer ships
-                // any - the airborne blood is vanilla again - and a splash carrying the wrong
-                // silhouette was never the complaint. The tint was.
+                // Vanilla's slime_splash is 256x256 and a membrane rather than a splash, so the
+                // clone gets our own 1024 instead. Only the picture changes: _Color stays white
+                // above, so each creature's startColor still decides the colour exactly as before.
+                //
+                // An earlier version put the mod's spray art here and it read wrong - that art was
+                // a spray, not a splash. This one is the right silhouette for the job.
+                if (_splash != null && Plugin.ReplaceSplashTexture.Value &&
+                    _bloodSplashMaterial.HasProperty("_MainTex"))
+                {
+                    _bloodSplashMaterial.SetTexture("_MainTex", _splash);
+                }
+                ApplyWetness(_bloodSplashMaterial);
                 Plugin.Log.LogInfo($"Cloned \"{original.name}\" -> \"CarturBloodSplash\" " +
                                    "(green splash inside blood effects; the original is left alone " +
                                    "so slimes are unaffected).");
@@ -306,6 +381,8 @@ namespace CarturHDBlood
 
             mat.SetTexture("_MainTex", albedo);
             SetNormal(mat, _groundLargeNormal);
+            ApplyWetness(mat);
+            ApplyGroundFade(mat);
 
             Plugin.Log.LogInfo($"Skinned \"{mat.name}\" id={mat.GetInstanceID()}: " +
                                $"_MainTex \"{(before == null ? "none" : before.name)}\" -> \"{albedo.name}\" " +
@@ -374,6 +451,8 @@ namespace CarturHDBlood
                 if (!clone.HasProperty("_MainTex"))
                     return null;
                 clone.SetTexture("_MainTex", tex);
+                ApplyWetness(clone);
+                ApplyGroundFade(clone);
                 // Its own normal, not the shared material's: the small mark lit by the large
                 // mark's bumps is exactly the mismatch this whole change is fixing.
                 SetNormal(clone, normal);
@@ -389,15 +468,148 @@ namespace CarturHDBlood
             }
         }
 
-        /// Assigns a normal map if the shader has the slot and we have the texture.
+        /// Assigns a normal map to whichever slot this material's shader actually has.
         ///
-        /// Silent when either is missing, deliberately: the property is not documented anywhere,
-        /// and a modded or updated shader without it should cost the shine, not the blood.
+        /// TWO names, because the blood materials do not share a shader. Read out of the game's
+        /// own bundle rather than guessed:
+        ///
+        ///     blood_splat         Particles/Standard Surface2   _BumpMap     (was empty)
+        ///     blood_splat2        (external shader)             _BumpMap     (was empty)
+        ///     blood_drop          Particles/Standard Surface2   _BumpMap     (was empty)
+        ///     splat_decal_blend   Custom/ParticleDecal          _NormalTex
+        ///
+        /// Only splat_decal_blend has _NormalTex, so writing that name alone meant the normal map
+        /// was silently dropped on three of the four materials - including blood_splat, which is
+        /// the main ground mark. The HasProperty guard turned a wrong property name into no error
+        /// and no effect, which is exactly the failure it was written to prevent.
+        ///
+        /// Still silent when a material has neither, for the original reason: a modded or updated
+        /// shader without the slot should cost the shine, not the blood.
         private static void SetNormal(Material mat, Texture2D normal)
         {
-            if (normal == null || mat == null || !mat.HasProperty("_NormalTex"))
+            if (normal == null || mat == null)
                 return;
-            mat.SetTexture("_NormalTex", normal);
+
+            if (mat.HasProperty("_NormalTex"))
+                mat.SetTexture("_NormalTex", normal);
+
+            if (mat.HasProperty("_BumpMap"))
+            {
+                mat.SetTexture("_BumpMap", normal);
+                // Particles/Standard Surface2 compiles the normal path out unless the keyword is
+                // on. Assigning the texture without it binds a map nothing ever samples.
+                mat.EnableKeyword("_NORMALMAP");
+            }
+        }
+
+        /// Makes blood look wet rather than painted on.
+        ///
+        /// Every blood material's shader is a PBR particle shader with the usual smoothness
+        /// controls, which the mod had never touched. Their authored values, from the bundle:
+        ///
+        ///     blood_splat        _Glossiness 0.23   _Metallic 0   _MetallicGlossMap empty
+        ///     splat_decal_blend  _Glossiness 0.14   _Metallic 0   _NormalTex bound
+        ///     blood_drop         _Glossiness 0      _Metallic 0   _MetallicGlossMap empty
+        ///     blood_cloud        _Glossiness 0      _Metallic 0
+        ///
+        /// _SpecularHighlights, _GlossyReflections and _LightingEnabled are already 1 on all of
+        /// them, so the lighting path is live and only the smoothness was missing.
+        ///
+        /// Metallic is deliberately left at 0. Blood is a dielectric; raising metallic makes it
+        /// reflect like wet paint on a car, which is the usual way this goes wrong.
+        ///
+        /// Two paths, because they do different things and the shader only honours one at a time:
+        /// with no gloss map assigned the shader uses _Glossiness, a single value over the whole
+        /// splat - fresh, evenly wet. With a map assigned _Glossiness is IGNORED and _GlossMapScale
+        /// multiplies the map instead, so the shine follows the artwork's own ridges and the flat
+        /// areas stay dull - congealing, wet only where it pooled. Both are written so the setting
+        /// works whichever way the map toggle is left.
+        /// Switches ground blood from alpha-testing to alpha-blending so it can actually fade.
+        ///
+        /// Vanilla ships these materials at _Mode 1 (Cutout) with _Cutoff 0.32, _SrcBlend One,
+        /// _DstBlend Zero and _ZWrite on. Under alpha test there is no partial transparency at
+        /// all: a pixel is either fully drawn or discarded. So the colourOverLifetime fade in
+        /// Realism.AgeDecal could not do what it was written to do - lowering alpha ate the splat
+        /// away from its edges inward, held the middle at full strength, and then dropped the
+        /// remainder below the threshold in one frame. A fade that ends in a pop.
+        ///
+        /// The target values are not invented. blood_cloud in the same bundle already ships at
+        /// _Mode 2 with _SrcBlend 5 (SrcAlpha), _DstBlend 10 (OneMinusSrcAlpha) and _ZWrite 0,
+        /// which is Unity's own Fade preset; this copies that configuration onto the ground
+        /// materials.
+        ///
+        /// Keywords and render queue move with the blend state. Unity's Standard family branches
+        /// on _ALPHATEST_ON / _ALPHABLEND_ON, and a material left in the opaque queue would be
+        /// drawn before the things it has to blend against.
+        ///
+        /// ZWrite goes off, which is what a blended surface requires, and is safe here for the
+        /// reason it is safe for every other decal: these lie flat on terrain rather than
+        /// intersecting each other in depth.
+        internal static void ApplyGroundFade(Material mat)
+        {
+            if (mat == null || !Plugin.GroundFade.Value || !mat.HasProperty("_Mode"))
+                return;
+
+            if (Mathf.Abs(mat.GetFloat("_Mode") - 2f) < 0.01f)
+                return;   // already in Fade mode
+
+            mat.SetFloat("_Mode", 2f);
+            if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            if (mat.HasProperty("_DstBlend")) mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            if (mat.HasProperty("_ZWrite"))   mat.SetFloat("_ZWrite", 0f);
+
+            mat.DisableKeyword("_ALPHATEST_ON");
+            mat.EnableKeyword("_ALPHABLEND_ON");
+            mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+            Plugin.Log.LogInfo($"\"{mat.name}\": Cutout -> Fade, so ground blood can fade out " +
+                               "instead of being cut away and popping.");
+        }
+
+        internal static void ApplyWetness(Material mat)
+        {
+            if (mat == null)
+                return;
+
+            float wet = Mathf.Clamp01(BloodPreset.Current().Wet);
+
+            if (mat.HasProperty("_Glossiness"))
+                mat.SetFloat("_Glossiness", wet);
+
+            if (mat.HasProperty("_GlossMapScale"))
+                mat.SetFloat("_GlossMapScale", wet);
+
+            // Environment reflection, and the reason wet blood came out looking white or grey.
+            //
+            // All five blood materials ship with _GlossyReflections = 1. That makes the surface
+            // mirror the skybox, and Valheim's sky is grey-white, so every splat picks up a broad
+            // pale sheen across its whole area. At the vanilla smoothness of 0.14-0.23 it is
+            // invisible; at 0.75 it is the first thing you see.
+            //
+            // It is not a bug in the shader - blood is a dielectric, so its specular really is
+            // the colour of the light rather than of the blood. But a whole-surface reflection of
+            // the sky reads as wet plastic. Real wet blood shows a small bright highlight where
+            // the sun is and stays dark everywhere else, which is _SpecularHighlights alone.
+            //
+            // So reflections go off by default and the direct highlight stays on. The float and
+            // the keyword both have to be set: Unity's Standard family branches on the keyword,
+            // and setting the float alone changes the inspector value while the compiled shader
+            // carries on reflecting.
+            if (mat.HasProperty("_GlossyReflections"))
+            {
+                bool on = Plugin.Reflections.Value;
+                mat.SetFloat("_GlossyReflections", on ? 1f : 0f);
+                if (on) mat.DisableKeyword("_GLOSSYREFLECTIONS_OFF");
+                else    mat.EnableKeyword("_GLOSSYREFLECTIONS_OFF");
+            }
+
+            if (Plugin.WetnessMap.Value && _gloss != null && mat.HasProperty("_MetallicGlossMap"))
+            {
+                mat.SetTexture("_MetallicGlossMap", _gloss);
+                // Same as the normal map: the sampler is compiled out without the keyword.
+                mat.EnableKeyword("_METALLICGLOSSMAP");
+            }
         }
 
         private static void TuneDecalSystem(ParticleSystem ps, Material shared)
@@ -684,21 +896,173 @@ namespace CarturHDBlood
                 return;
             _loadAttempted = true;
 
-            _groundLarge = Load("splatter_spray_1024_rgba.png", "CarturBloodGroundLarge", mipmap: true);
+            Texture2D spray = Load("splatter_spray_1024_rgba.png", "CarturBloodGroundLargeSpray", mipmap: true);
             _groundLargeAlt = Load("splatter_mist_1024_rgba.png", "CarturBloodGroundLargeAlt", mipmap: true);
             _groundSmall = Load("splatter_impact_512_rgba.png", "CarturBloodGroundSmall", mipmap: true);
 
+            // Ground art only. The splash and droplet are drawn against the sky rather than
+            // layered on terrain, and they were never rendered through the cutout path, so they
+            // have nothing to compensate for.
+            Solidify(spray);
+            Solidify(_groundLargeAlt);
+            Solidify(_groundSmall);
+
+            // Spray on its own is almost all thin streak and bare canvas - no solid body to read
+            // as a mark from a few steps away. Baking it together with the other two rather than
+            // leaving it as a standalone option: the existing coin flip in AssignGroundVariant
+            // still picks which large mark a given hit gets, but now BOTH outcomes carry spray
+            // plus a companion instead of one outcome being spray alone.
+            _groundLarge = Composite(spray, _groundSmall, "CarturBloodGroundLarge");
+            _groundLargeAlt = Composite(spray, _groundLargeAlt, "CarturBloodGroundLargeAlt");
+            _splash = Load("splash_1024_rgba.png", "CarturBloodSplashTex", mipmap: true);
+            // Optional: there is no embedded copy yet, so this stays null until a file is dropped
+            // in BepInEx/config. Absence is not an error.
+            _droplet = Load("droplet_256_rgba.png", "CarturBloodDropletTex", mipmap: true, optional: true);
+            _gloss = Load("splatter_spray_1024_gloss.png", "CarturBloodGlossTex", mipmap: true,
+                          optional: true, linear: true);
+
             if (Plugin.GroundNormalMap.Value)
             {
-                _groundLargeNormal = Load("splatter_spray_1024_normal.png", "CarturBloodGroundLargeN", mipmap: true);
-                _groundLargeAltNormal = Load("splatter_mist_1024_normal.png", "CarturBloodGroundLargeAltN", mipmap: true);
-                _groundSmallNormal = Load("splatter_impact_512_normal.png", "CarturBloodGroundSmallN", mipmap: true);
+                // linear: normal maps are direction data, not a picture. Loaded as sRGB, Unity
+                // gamma-decodes every channel and the decoded values are no longer unit vectors.
+                _groundLargeNormal = Load("splatter_spray_1024_normal.png", "CarturBloodGroundLargeN", mipmap: true, linear: true);
+                _groundLargeAltNormal = Load("splatter_mist_1024_normal.png", "CarturBloodGroundLargeAltN", mipmap: true, linear: true);
+                _groundSmallNormal = Load("splatter_impact_512_normal.png", "CarturBloodGroundSmallN", mipmap: true, linear: true);
+            }
+        }
+
+        /// Multiplies a ground texture's alpha, to put back the density vanilla's cutout
+        /// rendering used to force.
+        ///
+        /// Cutout drew 98% of a splat at full opacity regardless of the artwork - a pixel was
+        /// either solid or gone. Switching to Fade so the blood can actually fade out means the
+        /// texture's real alpha is used, and it averages 0.78, so every mark got thinner. This is
+        /// the compensation, not a correction to the art.
+        ///
+        /// Multiply-and-clamp rather than a gamma curve: the solid middle saturates at 1 and
+        /// stops, while the feathered rim is scaled proportionally and stays soft. A gamma lifts
+        /// the rim hardest, which is exactly the part that has to stay gentle for the fade to
+        /// read.
+        private static void Solidify(Texture2D tex)
+        {
+            float mul = BloodPreset.Current().Opacity;
+            if (tex == null || mul <= 1.001f)
+                return;
+
+            try
+            {
+                Color[] px = tex.GetPixels();
+                for (int i = 0; i < px.Length; i++)
+                    px[i].a = Mathf.Clamp01(px[i].a * mul);
+                tex.SetPixels(px);
+                tex.Apply(updateMipmaps: true);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning($"Could not raise opacity on \"{tex.name}\": {e.Message}");
+            }
+        }
+
+        /// Lays `overlay` under `basePattern` into one new texture. Sampled by UV rather than by
+        /// pixel index, so `overlay` can be a different resolution than `basePattern` - impact is
+        /// 512, spray and mist are both 1024 - with no separate resize step.
+        ///
+        /// Alpha screen-combines (coverage only grows, never cancels) and colour takes whichever
+        /// side is more opaque at that pixel, rather than averaging the two into a flat wash.
+        /// Cheap, and the blend already goes through the same ground-fade material as a plain
+        /// mark, so a true alpha composite would not read any differently once decaled.
+        private static Texture2D Composite(Texture2D basePattern, Texture2D overlay, string texName)
+        {
+            if (basePattern == null || overlay == null)
+                return basePattern;
+
+            try
+            {
+                int w = basePattern.width, h = basePattern.height;
+                Color[] basePixels = basePattern.GetPixels();
+                Color[] outPixels = new Color[basePixels.Length];
+
+                for (int y = 0; y < h; y++)
+                {
+                    float v = (y + 0.5f) / h;
+                    for (int x = 0; x < w; x++)
+                    {
+                        Color a = basePixels[y * w + x];
+                        Color b = overlay.GetPixelBilinear((x + 0.5f) / w, v);
+                        float outA = 1f - (1f - a.a) * (1f - b.a);
+                        Color rgb = a.a >= b.a ? a : b;
+                        outPixels[y * w + x] = new Color(rgb.r, rgb.g, rgb.b, outA);
+                    }
+                }
+
+                var result = new Texture2D(w, h, TextureFormat.RGBA32, mipChain: true)
+                {
+                    name = texName,
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Bilinear,
+                };
+                result.SetPixels(outPixels);
+                result.Apply(updateMipmaps: true);
+                return result;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning($"Could not composite \"{texName}\": {e.Message}. Using " +
+                                      $"\"{basePattern.name}\" alone.");
+                return basePattern;
+            }
+        }
+
+        /// Keeps the effect object alive long enough for its own decals to finish fading.
+        ///
+        /// Valheim destroys each spawned effect with TimedDestruction.m_timeout, authored to suit
+        /// vanilla's particle lifetimes. This mod lengthens decal lifetime through GroundBlood
+        /// without touching that timer, so on a long-lived mark the parent object is destroyed
+        /// while the decal is still visible - and everything it holds vanishes in a single frame.
+        /// That is the pop at the end of a fade: not the gradient, the object being deleted
+        /// underneath it.
+        ///
+        /// Only ever extended, never shortened, so an effect the game already gives plenty of
+        /// time keeps exactly what its author set.
+        private static void ExtendEffectLifetime(ParticleDecal decal)
+        {
+            try
+            {
+                Transform root = decal.transform.root;
+                if (root == null)
+                    return;
+
+                var timer = root.GetComponentInChildren<TimedDestruction>(true);
+                if (timer == null)
+                    return;
+
+                float needed = 0f;
+                foreach (ParticleSystem ps in root.GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    if (ps == null) continue;
+                    ParticleSystem.MainModule m = ps.main;
+                    float life = m.startLifetime.mode == ParticleSystemCurveMode.TwoConstants
+                        ? m.startLifetime.constantMax
+                        : m.startLifetime.constant;
+                    needed = Mathf.Max(needed, m.duration + life);
+                }
+
+                // A second of headroom, because the timer starts before the last particle is born.
+                needed += 1f;
+
+                if (timer.m_timeout < needed)
+                    timer.m_timeout = needed;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Could not extend effect lifetime: " + e.Message);
             }
         }
 
         /// A file in BepInEx/config wins over the embedded asset, so the art can be swapped
         /// without a rebuild.
-        private static Texture2D Load(string fileName, string texName, bool mipmap)
+        private static Texture2D Load(string fileName, string texName, bool mipmap,
+                                      bool optional = false, bool linear = false)
         {
             byte[] data = null;
 
@@ -725,7 +1089,16 @@ namespace CarturHDBlood
                     {
                         if (s == null)
                         {
-                            Plugin.Log.LogError("Embedded texture missing: " + fileName);
+                            if (optional)
+                            {
+                                Plugin.Log.LogInfo(
+                                    "No " + fileName + " yet - drop one in BepInEx/config as " +
+                                    "carturblood_" + fileName + " to use it.");
+                            }
+                            else
+                            {
+                                Plugin.Log.LogError("Embedded texture missing: " + fileName);
+                            }
                             return null;
                         }
                         data = new byte[s.Length];
@@ -739,7 +1112,7 @@ namespace CarturHDBlood
                 }
             }
 
-            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipmap)
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipmap, linear)
             {
                 name = texName,
                 // Clamp, so a particle quad cannot sample the opposite edge of the image and

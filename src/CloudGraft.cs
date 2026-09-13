@@ -81,8 +81,9 @@ namespace CarturHDBlood
             if (scene == null || !Plugin.ModEnabled.Value)
                 return;
 
-            float hit = Mathf.Max(0f, Plugin.HitBlood.Value);
-            float death = Mathf.Max(0f, Plugin.DeathBlood.Value);
+            BloodPreset preset = BloodPreset.Current();
+            float hit = Mathf.Max(0f, preset.Hit);
+            float death = Mathf.Max(0f, preset.Death);
             if (hit <= 0f && death <= 0f)
             {
                 Plugin.Log.LogInfo("Cloud graft off (both scales are 0).");
@@ -158,8 +159,8 @@ namespace CarturHDBlood
                 if (!isHit && !isDeath)
                     return;
 
-                float scale = Mathf.Max(0f, isHit ? Plugin.HitBlood.Value
-                                                  : Plugin.DeathBlood.Value);
+                BloodPreset amounts = BloodPreset.Current();
+                float scale = Mathf.Max(0f, isHit ? amounts.Hit : amounts.Death);
                 if (scale <= 0f)
                     return;
 
@@ -336,6 +337,18 @@ namespace CarturHDBlood
                     // project has already had to fix once for decal sizes.
                     b.count = BloodSkin.Scale(b.count, scale);
                     em.SetBurst(i, b);
+                }
+
+                // maxParticles is a hard cap on live particles, not a hint. A system authored for
+                // 30 that is asked to emit 90 emits 30 and reports nothing, so DeathBlood 3 would
+                // have been quietly delivering less than 3 on any cloud whose cap sat near its
+                // own burst. Raised alongside, and only upward - a system with generous headroom
+                // is left as its author set it.
+                if (scale > 1f)
+                {
+                    int want = Mathf.CeilToInt(main.maxParticles * scale);
+                    if (main.maxParticles < want)
+                        main.maxParticles = want;
                 }
             }
 

@@ -61,8 +61,13 @@ namespace CarturHDBlood
                 if (!TryFindGround(origin, out Vector3 point, out Vector3 normal))
                     return;
 
-                int count = Mathf.Clamp(Plugin.PoolCount.Value, 1, 8);
-                float size = Plugin.PoolSize.Value;
+                // The debug multipliers are 1 unless the debug menu is switched on, so this reads
+                // exactly as before for anyone who never opens it. Both are still clamped to the
+                // same 1-8 and the same units as the section 2 settings they multiply.
+                BloodPreset preset = BloodPreset.Current();
+                int count = Mathf.Clamp(
+                    Mathf.RoundToInt(preset.PoolCount * DebugTuning.PoolCountMultiplier()), 1, 8);
+                float size = preset.PoolSize * DebugTuning.PoolSizeMultiplier();
                 // Scaled by the same lifetime multiplier as everything else, which the config
                 // description promises and the code was not doing.
                 float life = Plugin.PoolLifetime.Value * GroundPreset.Current().LifetimeMultiplier;

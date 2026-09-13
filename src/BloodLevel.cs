@@ -60,6 +60,8 @@ namespace CarturHDBlood
             };
         }
 
-        public static GroundPreset Current() => From(Plugin.GroundBlood.Value);
+        /// Reads the blood preset rather than GroundBlood directly, so the one BloodLevel choice
+        /// reaches the ground decals too. On Custom the preset simply returns GroundBlood.
+        public static GroundPreset Current() => From(BloodPreset.Current().Ground);
     }
 }
