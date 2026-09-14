@@ -7,10 +7,16 @@ using HarmonyLib;
 
 namespace CarturHDBlood
 {
-    [BepInPlugin(Guid, "Cartur's HD Blood", "1.1.1")]
+    [BepInPlugin(Guid, "Cartur's HD Blood", Version)]
     public class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.jekkle.valheim.carturhdblood";
+
+        // One place, because there were three and they drifted: the attribute said 1.1.1 while
+        // the load line still said 1.1.0, so the log named a version that was not running.
+        // The csproj still carries its own copy - MSBuild cannot read this - so that one stays
+        // a manual bump, which is what the comment above it is for.
+        public const string Version = "1.1.1";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
@@ -538,7 +544,7 @@ namespace CarturHDBlood
             _harmony = new Harmony(Guid);
             _harmony.PatchAll();
 
-            Log.LogInfo("Cartur's HD Blood 1.1.0 loaded.");
+            Log.LogInfo("Cartur's HD Blood " + Version + " loaded.");
 
             // Hot reload (BepInEx ScriptEngine, F6): apply immediately if a world is already up.
             //
