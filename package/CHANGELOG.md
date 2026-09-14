@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.1
+
+Listing only - no code changed. The only difference in the DLL is the version number stamped
+into it, so there is no reason to update for this unless you want the new icon.
+
+- New package icon, matching the screenshot used on Nexus.
+- The 1.1.0 notes below were written before the last round of ground-blood work and did not
+  describe it. They now do. Nothing in that list is new in 1.1.1 - it all shipped in 1.1.0.
+
 ## 1.1.0
 
 One setting instead of fifteen, and a lot of things that were quietly wrong.

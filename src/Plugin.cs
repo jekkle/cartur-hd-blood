@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace CarturHDBlood
 {
-    [BepInPlugin(Guid, "Cartur's HD Blood", "1.1.0")]
+    [BepInPlugin(Guid, "Cartur's HD Blood", "1.1.1")]
     public class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.jekkle.valheim.carturhdblood";
