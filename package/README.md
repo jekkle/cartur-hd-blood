@@ -6,7 +6,8 @@
 [Follow Command](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Follow_Command/) ·
 [Compass and Clock](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Compass_and_Clock/) ·
 [Safe Stamina](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Safe_Stamina/) ·
-[Flooring](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Flooring/)
+[Flooring](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Flooring/) ·
+[UI HUD](https://thunderstore.io/c/valheim/p/Cartur/Carturs_UI_HUD/)
 
 Higher resolution ground blood, and a real burst of blood on every hit and kill.
 
