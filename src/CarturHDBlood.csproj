@@ -6,7 +6,7 @@
     <!-- Keep in step with the version in [BepInPlugin] - Thunderstore reads the
          manifest, BepInEx reads the attribute, and a mismatch shows users two
          different numbers for the same build. -->
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>https://nuget.bepinex.dev/v3/index.json</RestoreAdditionalProjectSources>
     <!-- Managed DLLs come from the raw Steam install -->

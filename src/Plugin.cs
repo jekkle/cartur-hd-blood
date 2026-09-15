@@ -16,7 +16,7 @@ namespace CarturHDBlood
         // the load line still said 1.1.0, so the log named a version that was not running.
         // The csproj still carries its own copy - MSBuild cannot read this - so that one stays
         // a manual bump, which is what the comment above it is for.
-        public const string Version = "1.1.1";
+        public const string Version = "1.1.2";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;

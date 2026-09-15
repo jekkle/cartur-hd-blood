@@ -15,10 +15,21 @@ $version = $manifest.version_number
 
 # The plugin version and the package version are read by different people in different
 # places; if they drift, the Thunderstore listing lies about what is in the DLL.
-# This mod carries its version in the [BepInPlugin] attribute rather than a constant.
+#
+# Read from the Version constant, not from the [BepInPlugin] attribute: the attribute
+# used to carry the number literally, and once it was changed to reference the constant
+# there was no longer a quoted version in it for this to find - which stopped the pack
+# dead rather than letting a drifted version through, but stopped it all the same.
 $plugin = Get-Content (Join-Path $root "src\Plugin.cs") -Raw
-if ($plugin -notmatch 'BepInPlugin\([^)]*,\s*"([0-9.]+)"\s*\)') { throw "Could not read the plugin version from src\Plugin.cs" }
+if ($plugin -notmatch 'const\s+string\s+Version\s*=\s*"([0-9.]+)"') { throw "Could not read the Version constant from src\Plugin.cs" }
 if ($Matches[1] -ne $version) { throw "manifest.json is $version but the plugin says $($Matches[1])" }
+
+# MSBuild cannot read that constant, so the csproj keeps its own copy. Checked here so the
+# two cannot drift silently.
+$csproj = Get-Content (Join-Path $root "src\CarturHDBlood.csproj") -Raw
+if ($csproj -match '<Version>([0-9.]+)</Version>' -and $Matches[1] -ne $version) {
+    throw "manifest.json is $version but the csproj says $($Matches[1])"
+}
 
 dotnet build (Join-Path $root "src\CarturHDBlood.csproj") -c Release
 if (-not $?) { throw "build failed" }

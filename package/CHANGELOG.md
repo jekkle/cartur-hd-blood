@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.2
+
+- Page only - the mod itself is unchanged from 1.1.1. Adds a link to Cartur's Flooring,
+  so every mod of mine points at the others.
+
 ## 1.1.1
 
 Listing only - no code changed. The only difference in the DLL is the version number stamped
