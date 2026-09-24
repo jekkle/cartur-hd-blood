@@ -1,5 +1,100 @@
 # Changelog
 
+## 1.4.0
+
+**Fire spun out.** All fire VFX work now lives in **Cartur Enhanced**
+(`com.jekkle.valheim.carturenhanced`). This mod is blood-only again. Install
+Cartur Enhanced alongside if you want the HD flames.
+
+## 1.3.1
+
+**Character-select fire.** HD fire mats also apply on the main menu / character
+select screen (`FejdStartup.Awake` + `ShowCharacterSelection`), which loads
+before `ZNetScene`.
+
+## 1.3.0
+
+**Missing fire mats.** Also skins:
+
+- `flame_small` / `grill_burnt_smoke` (leaf_low fuel FX)
+- `flame_large` / `portal_flame` / `shaman_purpleflame` (wildfire06)
+- `aoe_flame` / `aspect_aoe_flame` (wildfire01)
+- `flames_large_flipbook` (16×8 sheet)
+- `FlameRound*` (10×5 sheet)
+- Extra sparks: `embers`, `blue_cinder`, `firestaff_sparc`, `faderflame_sparcs`, …
+- `magetable_smoke_cinder` (cinder tex)
+
+Vanilla sizes. Same toggle: `EnableCampfireTextures`.
+
+## 1.2.9
+
+**Candles + combat.** Fire texture pass walks every prefab for flame / fireball /
+candleflame / ashrain_cinder mats. Vanilla sizes.
+
+## 1.2.8
+
+**Rest of the fire items.** Smelter, blast furnace, charcoal kiln, forge, blackforge,
+eitr refinery, frost foundry/kiln, upgrade station, portal, demisters, plus their
+fuel/produce VFX. Also `flame2` (oven slots). Vanilla sizes.
+
+## 1.2.7
+
+Removed player-fire size scaling. Vanilla authored particle sizes win (torch already
+smaller than campfire than bonfire). Textures only.
+
+## 1.2.6
+
+Per-type particle size experiment (torch/brazier haircut). Reverted in 1.2.7.
+
+## 1.2.5
+
+**More fire objects.** Extended the player-fire list to dungeon/NPC kits, pyres,
+cooking fires, hot tub, jack-o-turnip, goblin/Morkhalla torches, HouseFire, and
+fuel-add bursts. Still skips smelters/forges/kilns and combat AOEs. Same toggle.
+
+## 1.2.4
+
+**Player fires.** Same sharper flame art now on hearth, bonfire, braziers and torches
+(plus campfire variants `fire_pit_haldor` / `fire_pit_hildir`). Still textures only,
+cloned mats — smelters/AOEs untouched. Same toggle: `EnableCampfireTextures`.
+
+## 1.2.3
+
+**Campfire textures.** `fire_pit` and `fire_pit_iron` get the same sharper soft flame,
+8×8 flipbook and ember art (cloned mats only). Textures only — no rate retune.
+Toggle: `EnableCampfireTextures`.
+
+## 1.2.2
+
+Dialed creature burn back a notch (still above vanilla, below 1.2.1):
+
+- Milder flame size / rate / lifetime and burn light
+- Quieter smoke (near bonfire rate, smaller plume)
+- Ember boost closer to the original light bump
+
+## 1.2.1
+
+More punch on creature burn (campfires still vanilla):
+
+- Hotter flame / flipbook / ember art
+- Particle retune — denser flames, taller tongues, brighter burn light
+- Thin sooty smoke grafted from bonfire smoke onto spawned `vfx_Burning*`
+- Advanced: `EnableBurnRetune`, `EnableBurnSmoke`
+
+## 1.2.0
+
+**Creature-on-fire VFX.** `vfx_Burning` (and blue/green/undead variants) get sharper flame
+and ember textures. Materials are cloned on those prefabs only — campfires, hearths,
+bonfires and smelters stay vanilla.
+
+- Soft flame replaces the 8×8 `leaf_low` blob on the body-cling systems
+- Enhanced 8×8 flipbook on the animated fireball layer
+- Ember spark texture + light spark-rate bump
+- Advanced toggles: `EnableBurnTextures`, `EnableBurnEmberBoost`
+- Override art without rebuild: drop `carturblood_flame_soft_512.png` (etc.) in BepInEx/config
+
+No smoke graft yet (keeps EffectList.Create out of Release).
+
 ## 1.1.2
 
 - Page only - the mod itself is unchanged from 1.1.1. Adds a link to Cartur's Flooring,

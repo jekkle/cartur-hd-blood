@@ -15,8 +15,17 @@ namespace CarturHDBlood
     /// several of them (textures, material skinning) are applied once to shared materials at
     /// world load and genuinely cannot change live. These can.
     ///
-    /// Off by default. With DebugMenu false nothing in this file touches a single particle, so a
-    /// player who never opens it gets exactly the shipped behaviour.
+    /// Two sets of settings live here and they ship differently.
+    ///
+    /// The seven LOOK dials - droplet texture, size, spread and count, cloud size, stretch and
+    /// stretch amount - are bound in every build, under "2 - Advanced". They are preset values:
+    /// BloodPreset.Current() reads them under Custom and Apply() uses them whether or not the
+    /// debug menu exists.
+    ///
+    /// Everything else is a diagnostic - isolation switches for judging one element at a time -
+    /// and is bound only in a Debug build. In a released build DebugMenu is null, `debug` is
+    /// false, and none of those branches run; a player's settings screen has no "4 - Debug"
+    /// section at all.
     ///
     /// The three elements it exposes are the three things actually drawn when you hit something,
     /// measured off the greydwarf death effect rather than assumed:
@@ -31,17 +40,27 @@ namespace CarturHDBlood
     ///   slime_splash  the flat splash quad, tinted per creature by startColor.
     internal static class DebugTuning
     {
-        internal static ConfigEntry<bool> DebugMenu;
+        // ---- look: bound in every build, section "2 - Advanced" ----
 
-        internal static ConfigEntry<bool> ShowDroplets;
         internal static ConfigEntry<bool> DropletTexture;
         internal static ConfigEntry<float> DropletSize;
         internal static ConfigEntry<float> DropletSpread;
         internal static ConfigEntry<float> DropletCount;
+        internal static ConfigEntry<float> CloudSize;
+        internal static ConfigEntry<bool> StretchParticles;
+        internal static ConfigEntry<float> StretchAmount;
+
+        // ---- diagnostics: assigned only by BindDiagnostics, which a Release build never calls.
+        // They stay DECLARED in both builds because Apply() still names them inside branches
+        // guarded by `debug`, which is constant false once DebugMenu is null. Declaring them is
+        // what keeps that one method free of #if, at the cost of a null field nothing reads.
+#pragma warning disable 0649 // never assigned in Release - that is the point
+        internal static ConfigEntry<bool> DebugMenu;
+
+        internal static ConfigEntry<bool> ShowDroplets;
         internal static ConfigEntry<bool> BigDropsSlowFaster;
 
         internal static ConfigEntry<bool> ShowCloud;
-        internal static ConfigEntry<float> CloudSize;
 
         internal static ConfigEntry<bool> ShowSplash;
         internal static ConfigEntry<float> SplashSize;
@@ -55,13 +74,25 @@ namespace CarturHDBlood
 
         internal static ConfigEntry<bool> LogShaderProperties;
 
-        internal static ConfigEntry<bool> StretchParticles;
-        internal static ConfigEntry<float> StretchAmount;
         internal static ConfigEntry<float> Gravity;
         internal static ConfigEntry<float> Drag;
         internal static ConfigEntry<float> Speed;
+#pragma warning restore 0649
 
+#if DIAGNOSTICS
         private const string Section = "4 - Debug";
+#endif
+
+        /// Seven of the entries below are not diagnostics. Apply() says so itself: the droplet
+        /// size, spread, count, texture, cloud size and stretch are PRESET values, read by
+        /// BloodPreset.Current() whenever BloodLevel is Custom and applied whether or not the
+        /// debug menu is open. They were only in "4 - Debug" because that is where they were
+        /// written, and shipping the look of the mod inside a section named Debug is what this
+        /// move corrects. They live in "2 - Advanced" with the rest of the tuning now.
+        ///
+        /// Anyone who had changed one loses that change once: the key moves file section. The
+        /// defaults are the shipped look, so a player who never touched them sees nothing.
+        private const string Advanced = "2 - Advanced";
 
         /// Binds a debug entry and marks it advanced, so the settings screen shows BloodLevel
         /// and little else until Advanced is ticked. Duck-typed by ConfigurationManager; inert
@@ -78,32 +109,30 @@ namespace CarturHDBlood
 
         public static void Bind(ConfigFile cfg)
         {
-            DebugMenu = BindDebug(cfg, Section, "DebugMenu", false,
-                new ConfigDescription(
-                    "Master switch for everything below. Off means this whole section is ignored " +
-                    "and the mod behaves exactly as shipped.\n" +
-                    "These settings apply to the NEXT hit or death - no restart needed - because " +
-                    "they are applied to each effect as it spawns. Settings in the other sections " +
-                    "mostly are not: those change shared materials once at world load."));
+            BindLook(cfg);
+#if DIAGNOSTICS
+            BindDiagnostics(cfg);
+#endif
+        }
 
-            // ---- the 200 droplets ----
-
-            ShowDroplets = BindDebug(cfg, Section, "ShowDroplets", true,
-                new ConfigDescription(
-                    "The 200 small blood_drop particles. Turn off to see what the rest of the " +
-                    "effect contributes on its own.\n" +
-                    "Note these carry NO texture in vanilla - they are flat shaded quads."));
-
-            DropletTexture = BindDebug(cfg, Section, "DropletTexture", true,
+        /// The seven dials that describe how the blood LOOKS. Bound in every build: they are
+        /// read by BloodPreset.Current() under Custom and applied by Apply() whether or not the
+        /// debug menu exists, so leaving them out of a Release build would silently drop the
+        /// droplet sizing, spread, count and texture that the mod ships with.
+        private static void BindLook(ConfigFile cfg)
+        {
+            DropletTexture = BindDebug(cfg, Advanced, "DropletTexture", true,
                 new ConfigDescription(
                     "Gives the droplets a texture. Vanilla has none on them at all - they are " +
                     "flat shaded quads.\n" +
-                    "Needs a file at BepInEx/config/carturblood_droplet_256_rgba.png. With no " +
-                    "file present this does nothing and says so once in the log.\n" +
+                    "The droplet artwork ships inside the mod, so this works out of the box. To " +
+                    "use your own instead, drop a PNG at " +
+                    "BepInEx/config/carturblood_droplet_256_rgba.png and it overrides the one " +
+                    "built in.\n" +
                     "Visible at vanilla size in melee - a droplet is 28 screen pixels across at " +
                     "1.5 m on a 1080p screen. It is only across a field that it shrinks to a dot."));
 
-            DropletSize = BindDebug(cfg, Section, "DropletSize", 0.15f,
+            DropletSize = BindDebug(cfg, Advanced, "DropletSize", 0.15f,
                 new ConfigDescription(
                     "Multiplies droplet size. Vanilla is 0.05 world units, and since a world unit " +
                     "is a metre that is a 50 mm droplet - a golf ball. Real spatter thrown off a " +
@@ -119,7 +148,7 @@ namespace CarturHDBlood
                     "about 0.5 the count has to come down or the screen fills with red.",
                     new AcceptableValueRange<float>(0.02f, 10f)));
 
-            DropletSpread = BindDebug(cfg, Section, "DropletSpread", 0.6f,
+            DropletSpread = BindDebug(cfg, Advanced, "DropletSpread", 0.6f,
                 new ConfigDescription(
                     "Spread of droplet sizes within one burst, as a fraction either side of " +
                     "DropletSize. 0.6 means 0.4x to 1.6x.\n" +
@@ -139,7 +168,7 @@ namespace CarturHDBlood
                     "spatter has. An even mix is already a large improvement on none.",
                     new AcceptableValueRange<float>(0f, 0.9f)));
 
-            DropletCount = BindDebug(cfg, Section, "DropletCount", 1f,
+            DropletCount = BindDebug(cfg, Advanced, "DropletCount", 1f,
                 new ConfigDescription(
                     "Multiplies how many droplets are emitted. 1 is vanilla's 200, 5 is 1000.\n" +
                     "Count and size pull against each other, and small-and-many is the pairing " +
@@ -152,18 +181,65 @@ namespace CarturHDBlood
 
             // ---- the 88 cloud particles ----
 
-            ShowCloud = BindDebug(cfg, Section, "ShowCloud", true,
-                new ConfigDescription(
-                    "The blood_cloud burst - both the systems this mod grafts on and any the " +
-                    "effect already had. Turn off to judge the droplets and splash alone."));
-
-            CloudSize = BindDebug(cfg, Section, "CloudSize", 1f,
+            CloudSize = BindDebug(cfg, Advanced, "CloudSize", 1f,
                 new ConfigDescription(
                     "Multiplies cloud particle size. Vanilla is 0.5-1.5 world units.\n" +
                     "Smaller reads as spray, larger reads as mist.",
                     new AcceptableValueRange<float>(0.1f, 3f)));
 
             // ---- the splash quad ----
+
+            StretchParticles = BindDebug(cfg, Advanced, "StretchParticles", false,
+                new ConfigDescription(
+                    "Draws droplets and cloud particles STRETCHED along their own direction of " +
+                    "travel instead of as camera-facing squares.\n" +
+                    "This is the single biggest difference between grain floating in the air and " +
+                    "blood spray: a fast particle becomes a streak, a slow one stays a blob, so " +
+                    "the burst shows its own motion. Vanilla draws every particle as the same " +
+                    "square whether it is flying or hanging still."));
+
+            StretchAmount = BindDebug(cfg, Advanced, "StretchAmount", 0.012f,
+                new ConfigDescription(
+                    "How far a particle stretches, in metres per metre-per-second of its speed. " +
+                    "Only used when StretchParticles is on.\n" +
+                    "This is not a taste dial - it has a correct order of magnitude. Droplets " +
+                    "travel 1-6 m/s and are about 17 mm across at the default size, so a streak " +
+                    "two or three times a droplet's own length needs roughly 0.012. The old " +
+                    "default of 2 drew TWELVE METRE streaks and turned a kill into a firework.\n" +
+                    "  0.004  barely elongated\n" +
+                    "  0.012  default; reads as a droplet in flight\n" +
+                    "  0.05   long tracer streaks\n" +
+                    "Cloud particles are far bigger than droplets, so no single value flatters " +
+                    "both. This one is scaled for the droplets.",
+                    new AcceptableValueRange<float>(0f, 0.2f)));
+        }
+
+#if DIAGNOSTICS
+        /// Isolation switches for judging one element at a time while tuning. Debug builds only
+        /// - `dotnet build -c Debug`. Released builds never bind these, so DebugMenu stays null,
+        /// Apply()'s `debug` is false, and every branch below it is dead.
+        private static void BindDiagnostics(ConfigFile cfg)
+        {
+            DebugMenu = BindDebug(cfg, Section, "DebugMenu", false,
+                new ConfigDescription(
+                    "Master switch for everything below. Off means this whole section is ignored " +
+                    "and the mod behaves exactly as shipped.\n" +
+                    "These settings apply to the NEXT hit or death - no restart needed - because " +
+                    "they are applied to each effect as it spawns. Settings in the other sections " +
+                    "mostly are not: those change shared materials once at world load."));
+
+            // ---- the 200 droplets ----
+
+            ShowDroplets = BindDebug(cfg, Section, "ShowDroplets", true,
+                new ConfigDescription(
+                    "The 200 small blood_drop particles. Turn off to see what the rest of the " +
+                    "effect contributes on its own.\n" +
+                    "Note these carry NO texture in vanilla - they are flat shaded quads."));
+
+            ShowCloud = BindDebug(cfg, Section, "ShowCloud", true,
+                new ConfigDescription(
+                    "The blood_cloud burst - both the systems this mod grafts on and any the " +
+                    "effect already had. Turn off to judge the droplets and splash alone."));
 
             ShowSplash = BindDebug(cfg, Section, "ShowSplash", true,
                 new ConfigDescription(
@@ -219,30 +295,6 @@ namespace CarturHDBlood
 
             // ---- spray shape ----
 
-            StretchParticles = BindDebug(cfg, Section, "StretchParticles", false,
-                new ConfigDescription(
-                    "Draws droplets and cloud particles STRETCHED along their own direction of " +
-                    "travel instead of as camera-facing squares.\n" +
-                    "This is the single biggest difference between grain floating in the air and " +
-                    "blood spray: a fast particle becomes a streak, a slow one stays a blob, so " +
-                    "the burst shows its own motion. Vanilla draws every particle as the same " +
-                    "square whether it is flying or hanging still."));
-
-            StretchAmount = BindDebug(cfg, Section, "StretchAmount", 0.012f,
-                new ConfigDescription(
-                    "How far a particle stretches, in metres per metre-per-second of its speed. " +
-                    "Only used when StretchParticles is on.\n" +
-                    "This is not a taste dial - it has a correct order of magnitude. Droplets " +
-                    "travel 1-6 m/s and are about 17 mm across at the default size, so a streak " +
-                    "two or three times a droplet's own length needs roughly 0.012. The old " +
-                    "default of 2 drew TWELVE METRE streaks and turned a kill into a firework.\n" +
-                    "  0.004  barely elongated\n" +
-                    "  0.012  default; reads as a droplet in flight\n" +
-                    "  0.05   long tracer streaks\n" +
-                    "Cloud particles are far bigger than droplets, so no single value flatters " +
-                    "both. This one is scaled for the droplets.",
-                    new AcceptableValueRange<float>(0f, 0.2f)));
-
             Gravity = BindDebug(cfg, Section, "Gravity", 0.85f,
                 new ConfigDescription(
                     "Downward pull on airborne blood. 0 makes particles fly in a straight line " +
@@ -276,6 +328,7 @@ namespace CarturHDBlood
                     "and, with StretchParticles on, makes longer streaks.",
                     new AcceptableValueRange<float>(0.1f, 5f)));
         }
+#endif
 
         /// Effect instances already tuned.
         ///
@@ -290,7 +343,10 @@ namespace CarturHDBlood
         /// Applied to each spawned effect once, from BloodSkin.Apply.
         public static void Apply(ParticleDecal decal)
         {
-            if (decal == null || DebugMenu == null)
+            // Only the decal is required. DebugMenu is null in a Release build - the diagnostics
+            // are never bound there - and returning on that would take the preset path out with
+            // it, leaving droplets at vanilla size on every install that ships.
+            if (decal == null)
                 return;
 
             Transform root = decal.transform.root;
@@ -307,7 +363,7 @@ namespace CarturHDBlood
             // The DEBUG values - the Show toggles, gravity, drag, speed, the shader dump - exist
             // to isolate one element while judging it. Those stay behind DebugMenu, because
             // switching three of five elements off is a diagnostic state, not a configuration.
-            bool debug = DebugMenu.Value;
+            bool debug = DebugMenu != null && DebugMenu.Value;
             BloodPreset preset = BloodPreset.Current();
 
             foreach (ParticleSystemRenderer r in root.GetComponentsInChildren<ParticleSystemRenderer>(true))

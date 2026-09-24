@@ -25,7 +25,7 @@ loading after this one still sees vanilla.
 | `CreatureSize.cs` | Sizes the death pool to the creature rather than to the effect's authored decal size |
 | `Pooling.cs` | A settled pool under a kill, as opposed to the instant of impact |
 | `Realism.cs` | The behavioural part — making blood read as liquid rather than stamped decals |
-| `EffectGraph.cs`, `BloodPreset.cs`, `BloodLevel.cs` | Effect lookup and the preset/level system behind the config |
+| `BloodPreset.cs`, `BloodLevel.cs` | The preset/level system behind the config |
 
 ### Why the graft exists
 
@@ -37,21 +37,34 @@ green, greydwarf yellow, boar and deer red.
 
 ### Harmony patches
 
+Shipped in every build:
+
 ```
+ParticleDecal.Awake        LiveProbe     (the entry point - fires for every decal instance)
+ZNetScene.Awake            Plugin        (config reload and the pre-skin pass)
 Character.ApplyDamage      HitThreshold, SprayAim
-Character.OnDeath          CreatureSize
 Humanoid.BlockAttack       HitThreshold
-EffectList.Create          LiveProbe   (diagnostics)
-ParticleDecal.Awake        LiveProbe   (diagnostics)
-ZNetScene.Awake            Plugin      (setup)
+Character.OnDeath          CreatureSize
+Player.OnDeath             CreatureSize  (Player overrides the slot and never calls base)
+```
+
+Debug builds only, behind `#if DIAGNOSTICS`:
+
+```
+EffectList.Create          LiveProbe
+Character.OnDeath          LiveProbe
 ```
 
 ## Diagnostics
 
-`BloodProbe.cs`, `LiveProbe.cs`, `DebugTuning.cs`, `MaterialAudit.cs` and
-`TextureDump.cs` exist to answer "why does this effect look wrong" — dumping
-effect graphs, material properties and textures from a live game. They are
-development tools, not features.
+`BloodProbe.cs`, `EffectGraph.cs`, `MaterialAudit.cs` and `TextureDump.cs` exist
+to answer "why does this effect look wrong" — dumping effect graphs, material
+properties and textures from a live game. They are development tools, not
+features, and the csproj drops all four from a Release build.
+
+`LiveProbe.cs` and `DebugTuning.cs` ship in every build: the first carries the
+mod's `ParticleDecal.Awake` entry point and the second binds the look settings
+`BloodPreset` reads. Only their `#if DIAGNOSTICS` parts are development-only.
 
 `tools/` holds the texture pipeline that produced the shipped atlases:
 generation, cropping, tone and splat previews, plus `releasecheck.ps1`.

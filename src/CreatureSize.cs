@@ -93,4 +93,20 @@ namespace CarturHDBlood
         /// postfix ran the pool would already have been laid down at the wrong size.
         private static void Prefix(Character __instance) => CreatureSize.Record(__instance);
     }
+
+    /// The player needs its own hook because Player.OnDeath never reaches Character.OnDeath.
+    ///
+    /// Player overrides the virtual slot and its body does not call base at any point - read off
+    /// assembly_valheim: Player::OnDeath runs its own stats, tombstone and respawn code and spawns
+    /// the death effects through Player::CreateDeathEffects. So the Character.OnDeath patch above
+    /// simply never fires for the local player, and _height was still whatever creature died last -
+    /// a hen's pool under the player's corpse, or a troll's.
+    ///
+    /// Same Prefix reasoning as above: CreateDeathEffects is called inside OnDeath, so the height
+    /// has to be recorded before the original runs.
+    [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+    internal static class Patch_Player_OnDeath_Size
+    {
+        private static void Prefix(Player __instance) => CreatureSize.Record(__instance);
+    }
 }

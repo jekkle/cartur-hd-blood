@@ -16,7 +16,7 @@ namespace CarturHDBlood
         // the load line still said 1.1.0, so the log named a version that was not running.
         // The csproj still carries its own copy - MSBuild cannot read this - so that one stays
         // a manual bump, which is what the comment above it is for.
-        public const string Version = "1.1.2";
+        public const string Version = "1.4.0";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
@@ -216,7 +216,7 @@ namespace CarturHDBlood
                 "256x256 and reads as a membrane rather than liquid. Colour is unaffected either " +
                 "way - the splash still takes its colour from whatever creature it came out of.");
 
-            SmallDecalSize = Config.Bind("2 - Advanced", "SmallDecalSize", 2f,
+            SmallDecalSize = Bind2("2 - Advanced", "SmallDecalSize", 2f,
                 new ConfigDescription(
                     "Ground marks with an authored size below this get the small impact "
                     + "texture; everything above it gets one of the two large ones. Vanilla "
@@ -228,14 +228,14 @@ namespace CarturHDBlood
                     + "with, which is not the same thing as changing their size.",
                     new AcceptableValueRange<float>(0.5f, 8f)));
 
-            GroundNormalMap = Config.Bind("2 - Advanced", "GroundNormalMap", true,
+            GroundNormalMap = Bind2("2 - Advanced", "GroundNormalMap", true,
                 "Light the ground blood with its own normal map, so highlights follow the shape " +
                 "of the splat and it reads as wet rather than flat. Off leaves the game's own " +
                 "normal in place. Turn it off if the lighting looks wrong - the decal shader's " +
                 "expected normal encoding is not documented anywhere, and the symptom of getting " +
                 "it wrong is highlights on the opposite side from the light.");
 
-            Wetness = Config.Bind("2 - Advanced", "Wetness", 0.35f,
+            Wetness = Bind2("2 - Advanced", "Wetness", 0.35f,
                 new ConfigDescription(
                     "How wet blood looks - the shader's smoothness, applied to every blood " +
                     "material rather than just the ground.\n" +
@@ -245,7 +245,8 @@ namespace CarturHDBlood
                     "them; only the smoothness was missing.\n" +
                     "  0     matte, dried\n" +
                     "  0.23  vanilla's ground blood\n" +
-                    "  0.75  default; fresh and wet\n" +
+                    "  0.35  default; damp, a step past vanilla\n" +
+                    "  0.75  fresh and wet\n" +
                     "  1     a mirror, and it will look like it\n" +
                     "Metallic is deliberately left at 0 and not exposed. Blood is a dielectric, " +
                     "and raising metallic is the usual way this ends up looking like car paint.",
@@ -256,14 +257,16 @@ namespace CarturHDBlood
                     "Take wetness from a texture instead of one value for the whole splat, so the " +
                     "shine follows the artwork's own wet ridges and the flat areas stay dull. " +
                     "Reads congealing rather than fresh.\n" +
-                    "Needs a file at BepInEx/config/carturblood_splatter_spray_1024_gloss.png, " +
-                    "with metallic in the red channel and smoothness in alpha - the channel layout " +
-                    "the shader expects, not a plain greyscale image. Does nothing without it.\n" +
+                    "The gloss map ships inside the mod, so this works out of the box. To use " +
+                    "your own instead, drop a PNG at " +
+                    "BepInEx/config/carturblood_splatter_spray_1024_gloss.png and it overrides " +
+                    "the one built in - metallic in the red channel and smoothness in alpha, the " +
+                    "channel layout the shader expects, not a plain greyscale image.\n" +
                     "With a map assigned the shader ignores the flat Wetness value and uses it as " +
                     "a multiplier over the map instead, so Wetness still works as the overall " +
                     "level either way."));
 
-            Reflections = Config.Bind("2 - Advanced", "Reflections", false,
+            Reflections = Bind2("2 - Advanced", "Reflections", false,
                 new ConfigDescription(
                     "Let blood mirror the sky as well as catching direct light.\n" +
                     "Every blood material ships with this on, which is why raising Wetness made " +
@@ -283,10 +286,13 @@ namespace CarturHDBlood
                     "full strength, and then the remainder drops below the cutoff in a single " +
                     "frame - a fade that ends in a pop.\n" +
                     "On switches the ground materials to the same Fade blending the game already " +
-                    "uses for blood_cloud, so alpha means what it says. Off restores vanilla's " +
-                    "cutout rendering."));
+                    "uses for blood_cloud, so alpha means what it says.\n" +
+                    "Turning it OFF needs a relaunch. The switch is written onto the game's own " +
+                    "shared materials and only ever goes Cutout -> Fade; nothing puts the cutout " +
+                    "state back, so a trip to the main menu is not enough and the materials stay " +
+                    "in Fade until the game is restarted."));
 
-            FadeStart = Config.Bind("2 - Advanced", "FadeStart", 0f,
+            FadeStart = Bind2("2 - Advanced", "FadeStart", 0f,
                 new ConfigDescription(
                     "When a ground mark starts fading, as a fraction of its life. Needs " +
                     "GroundFade on to be visible at all.\n" +
@@ -298,7 +304,7 @@ namespace CarturHDBlood
                     "away, and it reaches a true zero rather than being cut off while visible.",
                     new AcceptableValueRange<float>(0f, 0.9f)));
 
-            GroundOpacity = Config.Bind("2 - Advanced", "GroundOpacity", 0.47f,
+            GroundOpacity = Bind2("2 - Advanced", "GroundOpacity", 0.47f,
                 new ConfigDescription(
                     "Density of ground blood, as a multiplier on the artwork's own alpha.\n" +
                     "This exists because of what GroundFade changed. Under vanilla's Cutout " +
@@ -363,7 +369,7 @@ namespace CarturHDBlood
                     "DirectionalSpray on.",
                     new AcceptableValueRange<float>(0.05f, 1f)));
 
-            GroundLighting = Config.Bind("2 - Advanced", "GroundLighting", true,
+            GroundLighting = Bind2("2 - Advanced", "GroundLighting", true,
                 "Let scene lighting shade ground blood. ON keeps the sun, the shading and the wet " +
                 "highlight - what makes a mark read as liquid rather than a sticker.\n" +
                 "OFF draws each mark in its own colour with nothing added: no ambient, no " +
@@ -416,11 +422,11 @@ namespace CarturHDBlood
                     "odd-coloured blood is being forced red.",
                     new AcceptableValueRange<float>(0f, 1f)));
 
-            BloodTint = Config.Bind("2 - Advanced", "BloodTint", 0.6f,
+            BloodTint = Bind2("2 - Advanced", "BloodTint", 0.6f,
                 new ConfigDescription(
                     "How far RED blood is pulled toward BloodColor, for a deeper, browner red.\n" +
                     "  0    the game's own colours, untouched\n" +
-                    "  0.5  default\n" +
+                    "  0.6  default\n" +
                     "  1    exactly BloodColor\n" +
                     "Vanilla authors red blood very bright and very saturated - a boar is " +
                     "RGBA(0.868, 0.006, 0.006), nearly primary red - which reads more like paint " +
@@ -429,7 +435,7 @@ namespace CarturHDBlood
                     "left exactly as they are at any value.",
                     new AcceptableValueRange<float>(0f, 1f)));
 
-            BloodColor = Config.Bind("2 - Advanced", "BloodColor", "#470303",
+            BloodColor = Bind2("2 - Advanced", "BloodColor", "#470303",
                 "Colour used to repaint washed-out decals. Hex. Brightness and transparency are " +
                 "taken from the original, so only hue and saturation come from this.");
 
@@ -456,21 +462,21 @@ namespace CarturHDBlood
                     "same factor and cannot produce variation; this can. 0 disables.",
                     new AcceptableValueRange<float>(0f, 0.8f)));
 
-            PoolOnDeath = Config.Bind("2 - Advanced", "PoolOnDeath", true,
+            PoolOnDeath = Bind2("2 - Advanced", "PoolOnDeath", true,
                 "Leave a settled pool of blood under a kill. Every other mark the mod makes is an " +
                 "impact at the instant of the hit; nothing reads as blood that has run out and " +
                 "spread, because vanilla has no such concept. The pool is emitted into the death " +
                 "effect's own decal system, so it inherits that creature's blood colour and dries " +
                 "and fades along with everything else.");
 
-            PoolSize = Config.Bind("2 - Advanced", "PoolSize", 3.2f,
+            PoolSize = Bind2("2 - Advanced", "PoolSize", 3.2f,
                 new ConfigDescription(
                     "Size of a death pool in world units. Vanilla impact decals run 1 to 6, with " +
                     "a troll death at 4-6, so 3.5 reads as a substantial pool without exceeding " +
                     "the largest thing the game already draws.",
                     new AcceptableValueRange<float>(0.5f, 10f)));
 
-            PoolLifetime = Config.Bind("2 - Advanced", "PoolLifetime", 45f,
+            PoolLifetime = Bind2("2 - Advanced", "PoolLifetime", 45f,
                 new ConfigDescription(
                     "How long a death pool lasts, in real seconds. This one is absolute - the "
                     + "blood level's lifetime multiplier does NOT apply to it, so 45 means 45 at "
@@ -481,7 +487,7 @@ namespace CarturHDBlood
                     "long-lived pool spreads over seconds rather than instantly.",
                     new AcceptableValueRange<float>(5f, 120f)));
 
-            PoolCount = Config.Bind("2 - Advanced", "PoolCount", 3,
+            PoolCount = Bind2("2 - Advanced", "PoolCount", 3,
                 new ConfigDescription(
                     "Overlapping decals per pool, jittered slightly apart so they read as one " +
                     "irregular mass rather than concentric stamps.",
@@ -599,8 +605,12 @@ namespace CarturHDBlood
                 sb.AppendLine($"   GROUND  opacity {GroundOpacity.Value:0.##}   fade {GroundFade.Value}" +
                               $" from {FadeStart.Value:0.##}   ageing {DecalAging.Value}" +
                               $"   replace texture {ReplaceTexture.Value}");
+                // DebugMenu only exists in a Debug build - see DebugTuning.
                 sb.Append($"   SPRAY  directional {DirectionalSpray.Value}   angle {SprayAngle.Value:0}" +
-                          $"   lift {SprayLift.Value:0.##}   debug menu {DebugTuning.DebugMenu.Value}");
+                          $"   lift {SprayLift.Value:0.##}" +
+                          (DebugTuning.DebugMenu == null
+                               ? ""
+                               : $"   debug menu {DebugTuning.DebugMenu.Value}"));
                 Log.LogInfo(sb.ToString());
 
                 // The one combination measured to cause a reported problem. Not a style opinion:
@@ -690,4 +700,5 @@ namespace CarturHDBlood
 #endif
         }
     }
+
 }

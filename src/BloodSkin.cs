@@ -306,10 +306,16 @@ namespace CarturHDBlood
 
         private static Material _bloodSplashMaterial;
 
-        // The texture the decal material had before we touched it, kept so effects that borrow
+        // The texture each decal material had before we touched it, kept so effects that borrow
         // the blood material for something that is not blood can be handed it back.
-        private static Texture _originalMainTex;
-        private static Material _vanillaDecalMaterial;
+        //
+        // Keyed by the source material's instance id for the same reason SmallGroundMaterials is:
+        // there are THREE decal materials in the game, not one. A single static recorded whichever
+        // of splat_decal_blend / seeker_blood_splat / SeekerQueen_decals was skinned first and then
+        // handed that one texture, on a clone of that one material, to all three - so Moder's frost
+        // breath and the Seeker Queen's spit both got restored to the wrong artwork.
+        private static readonly Dictionary<int, Texture> OriginalMainTextures = new Dictionary<int, Texture>();
+        private static readonly Dictionary<int, Material> VanillaDecalMaterials = new Dictionary<int, Material>();
         private static string[] _excludePrefixes;
 
         private static Material _bloodDropMaterial;
@@ -441,11 +447,11 @@ namespace CarturHDBlood
             SkinnedMaterials.Add(mat.GetInstanceID());
             Own(mat);
 
-            // Captured once, before the first swap. Valheim reuses the blood decal material for
-            // things that are not blood - Moder's frost breath and the Seeker Queen's spit both
-            // render through it - so those effects need the original texture put back.
-            if (_originalMainTex == null && before != null)
-                _originalMainTex = before;
+            // Captured once per material, before its first swap. Valheim reuses the blood decal
+            // materials for things that are not blood - Moder's frost breath and the Seeker Queen's
+            // spit both render through them - so those effects need the original texture put back.
+            if (before != null && !OriginalMainTextures.ContainsKey(mat.GetInstanceID()))
+                OriginalMainTextures[mat.GetInstanceID()] = before;
 
             mat.SetTexture("_MainTex", albedo);
             SetNormal(mat, _groundLargeNormal);
@@ -1149,23 +1155,29 @@ namespace CarturHDBlood
         /// material - and therefore real blood - is unaffected.
         private static void RestoreVanilla(ParticleSystem decalSystem, Material template)
         {
-            if (_originalMainTex == null)
+            if (template == null)
+                return;
+
+            int id = template.GetInstanceID();
+            if (!OriginalMainTextures.TryGetValue(id, out Texture original) || original == null)
                 return;
 
             try
             {
-                if (_vanillaDecalMaterial == null)
+                if (!VanillaDecalMaterials.TryGetValue(id, out Material vanilla) || vanilla == null)
                 {
-                    _vanillaDecalMaterial = new Material(template) { name = "CarturVanillaDecal" };
-                    _vanillaDecalMaterial.SetTexture("_MainTex", _originalMainTex);
+                    vanilla = new Material(template) { name = "CarturVanillaDecal" };
+                    vanilla.SetTexture("_MainTex", original);
+                    VanillaDecalMaterials[id] = vanilla;
                     Plugin.Log.LogInfo(
-                        $"Built \"CarturVanillaDecal\" from \"{_originalMainTex.name}\" for effects that " +
-                        "borrow the blood material for non-blood (frost breath, acid spit, egg goo).");
+                        $"Built \"CarturVanillaDecal\" from \"{template.name}\" with \"{original.name}\" " +
+                        "for effects that borrow the blood material for non-blood (frost breath, " +
+                        "acid spit, egg goo).");
                 }
 
                 var r = decalSystem.GetComponent<ParticleSystemRenderer>();
                 if (r != null)
-                    r.sharedMaterial = _vanillaDecalMaterial;
+                    r.sharedMaterial = vanilla;
             }
             catch (Exception e)
             {
@@ -1251,8 +1263,6 @@ namespace CarturHDBlood
             _groundLarge = Composite(spray, _groundSmall, "CarturBloodGroundLarge");
             _groundLargeAlt = Composite(spray, _groundLargeAlt, "CarturBloodGroundLargeAlt");
             _splash = Load("splash_1024_rgba.png", "CarturBloodSplashTex", mipmap: true);
-            // Optional: there is no embedded copy yet, so this stays null until a file is dropped
-            // in BepInEx/config. Absence is not an error.
             _droplet = Load("droplet_256_rgba.png", "CarturBloodDropletTex", mipmap: true, optional: true);
             _gloss = Load("splatter_spray_1024_gloss.png", "CarturBloodGlossTex", mipmap: true,
                           optional: true, linear: true);

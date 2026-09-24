@@ -1,0 +1,51 @@
+[size=4][b]Higher resolution ground blood, and a real burst of blood on every hit and kill.[/b][/size]
+
+[b]Ground blood.[/b] Vanilla draws its ground blood from a 64x64 texture. Three new 1024 and 512 textures replace it - a different mark for a graze than for a kill, and two large marks alternating so the same shape does not repeat. Each ships with its own normal map, so light catches the strands and droplets and the blood reads as wet rather than as a flat stain.
+
+[b]Blood in the air, on every hit.[/b] Most creatures throw nothing into the air when you hit them - 24 of 28 hit effects and 33 of 48 death effects have no such burst at all. This gives them one, scaled down for a hit and sized to the creature: a chicken bleeds less than a troll.
+
+[b]Per-creature colour is preserved.[/b] Neck blood is green, greydwarf yellow, boar and deer red. That is the game's own design, and this keeps it rather than painting everything red.
+
+[size=4][b]Settings[/b][/size]
+
+BepInEx/config/com.jekkle.valheim.carturhdblood.cfg. Settings apply on a world reload - a trip to the main menu and back.
+
+[list]
+[*][b]Enabled[/b] (true) - master switch. Off leaves vanilla blood untouched.[/*]
+[*][b]BloodLevel[/b] (Normal) - how much blood, everywhere. Low, Normal, High, Extreme or Custom.[/*]
+[*][b]GroundBlood[/b] (1.5) - how much ends up on the ground. [b]Custom only.[/b][/*]
+[*][b]HitBlood[/b] (0.25) - blood thrown into the air per hit. [b]Custom only.[/b][/*]
+[*][b]DeathBlood[/b] (1.0) - blood thrown into the air per death. [b]Custom only.[/b][/*]
+[/list]
+
+[b]BloodLevel is the dial to turn.[/b] It drives everything, and anything but Custom overrides the three settings below it - so set BloodLevel to Custom first if you want to work those by hand. On that scale 0 is none, 1 is vanilla and 3 is a lot.
+
+Everything else lives under [b]Advanced[/b] and you should not need it: droplet size, spread and count, cloud size, pool size and lifetime, wetness, opacity and the material names.
+
+[size=4][b]Compatibility[/b][/size]
+
+Built and tested against [b]Valheim 1.0.7[/b], BepInEx pack 5.4.2350.
+
+Three methods are hooked - ZNetScene.Awake, ParticleDecal.Awake and Character.ApplyDamage - and blood is identified by [i]material[/i] rather than by prefab name, so it should survive a game update. What an update is most likely to break is the material names it looks for, and those are listed under Advanced so they can be corrected without a new build. If blood stops appearing after a patch, that is the first place to look.
+
+Works alongside texture packs, including HD Valheim Textures. Modded creatures are picked up automatically if they use the game's own blood materials; if one does not, add its material name under Advanced / DecalMaterials.
+
+Blood is client-side and visual. Nothing is networked, no save data is touched, and other players do not need it.
+
+[size=4][b]Installation[/b][/size]
+
+Requires BepInEx. Unpack into your Valheim folder so the DLL lands in BepInEx/plugins.
+
+Artwork and design by Cartur.
+
+[size=4][b]More from Cartur[/b][/size]
+
+[url=https://www.nexusmods.com/valheim/mods/3681]Map Pins[/url] - pins the world onto your map as you explore it.
+[url=https://www.nexusmods.com/valheim/mods/3684]Compass and Clock[/url] - a compass bar across the top of the screen.
+[url=https://www.nexusmods.com/valheim/mods/3685]Safe Stamina[/url] - stamina costs nothing while no enemy is near.
+[url=https://www.nexusmods.com/valheim/mods/3728]Follow Command[/url] - every tamed animal takes the follow command.
+[url=https://www.nexusmods.com/valheim/mods/3760]Flooring[/url] - floors keep the rain off, and fires sit on them.
+[url=https://www.nexusmods.com/valheim/mods/3779]UI - HUD[/url] - a hand-drawn bronze HUD you can arrange in game.
+[url=https://www.nexusmods.com/valheim/mods/3888]Waste Management[/url] - a trash can and a sort button in the inventory.
+
+Free, and always will be - if it improved your game you can [url=https://www.patreon.com/c/cartur]tip me on Patreon[/url].
