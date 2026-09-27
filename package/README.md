@@ -78,6 +78,9 @@ Artwork and design by Cartur.
 
 *Free, and always will be. If it improved your game you can [tip me on Patreon](https://www.patreon.com/c/cartur).*
 
+**[Discord](https://discord.gg/nd5RqpwNkz)** — bug reports, install help, and mod requests.
+Bug reports get their own thread so nothing is lost in a chat scroll, and requests are voted on.
+
 **More from Cartur:**
 [Map Pins](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Map_Pins/) ·
 [Compass and Clock](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Compass_and_Clock/) ·
@@ -85,4 +88,5 @@ Artwork and design by Cartur.
 [Follow Command](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Follow_Command/) ·
 [Flooring](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Flooring/) ·
 [UI HUD](https://thunderstore.io/c/valheim/p/Cartur/Carturs_UI_HUD/) ·
-[Waste Management](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Waste_Management/)
+[Waste Management](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Waste_Management/) ·
+[Feeding Trough](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Feeding_Trough/)
