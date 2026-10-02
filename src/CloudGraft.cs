@@ -45,7 +45,7 @@ namespace CarturHDBlood
         /// no-ops rather than throwing.
         private const string SourceEffect = "vfx_greydwarf_death";
 
-        private const string GraftPrefix = "CarturBloodCloud_";
+        internal const string GraftPrefix = "CarturBloodCloud_";
 
         /// Read-only references into the source prefab. Never instantiated at load - see the
         /// class comment for what happened when they were.
@@ -131,6 +131,9 @@ namespace CarturHDBlood
             }
 
             _source = systems;
+            // Without this the divisor in Apply stays at its 1f initial value and sizeScale is
+            // just the creature's raw decal size, clamped. Read from the same source prefab.
+            _sourceDecalSize = ReadDecalSize(src, 1f);
 
             Plugin.Log.LogInfo(
                 $"Cloud graft armed: {systems.Count} system(s) from \"{SourceEffect}\", " +

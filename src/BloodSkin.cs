@@ -212,6 +212,12 @@ namespace CarturHDBlood
             if (decal == null || !Plugin.ModEnabled.Value)
                 return;
 
+            // CloudGraft instantiates a copy of the greydwarf's cloud system, and if that
+            // carries a ParticleDecal its Awake lands here before the graft has stripped it.
+            // It is our own object, not a game decal, so it must not be tuned or counted.
+            if (decal.name.StartsWith(CloudGraft.GraftPrefix, StringComparison.Ordinal))
+                return;
+
             ParticleSystem decalSystem = decal.m_decalSystem;
             if (decalSystem == null)
                 return;
@@ -525,6 +531,10 @@ namespace CarturHDBlood
                 var clone = new Material(shared) { name = name };
                 if (!clone.HasProperty("_MainTex"))
                     return null;
+                // A clone of a material already switched to Fade is born in Fade, so it inherits
+                // the shared one's saved original or GroundFade-off could never restore it.
+                if (FadeOriginal.TryGetValue(id, out Blend inherited))
+                    FadeOriginal[clone.GetInstanceID()] = inherited;
                 Own(clone);
                 clone.SetTexture("_MainTex", tex);
                 ApplyWetness(clone);
@@ -653,13 +663,46 @@ namespace CarturHDBlood
         /// ZWrite goes off, which is what a blended surface requires, and is safe here for the
         /// reason it is safe for every other decal: these lie flat on terrain rather than
         /// intersecting each other in depth.
+        private struct Blend { public float Mode, Src, Dst, ZWrite; public int Queue; public bool AlphaTest; }
+        private static readonly Dictionary<int, Blend> FadeOriginal = new Dictionary<int, Blend>();
+
         internal static void ApplyGroundFade(Material mat)
         {
-            if (mat == null || !Plugin.GroundFade.Value || !mat.HasProperty("_Mode"))
+            if (mat == null || !mat.HasProperty("_Mode"))
                 return;
+
+            int id = mat.GetInstanceID();
+
+            // Turned off after being on: put back exactly what was there before the first switch.
+            // Without this the material stayed in Fade until the game was relaunched.
+            if (!Plugin.GroundFade.Value)
+            {
+                if (FadeOriginal.TryGetValue(id, out Blend o))
+                {
+                    mat.SetFloat("_Mode", o.Mode);
+                    if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", o.Src);
+                    if (mat.HasProperty("_DstBlend")) mat.SetFloat("_DstBlend", o.Dst);
+                    if (mat.HasProperty("_ZWrite"))   mat.SetFloat("_ZWrite", o.ZWrite);
+                    if (o.AlphaTest) mat.EnableKeyword("_ALPHATEST_ON"); else mat.DisableKeyword("_ALPHATEST_ON");
+                    mat.DisableKeyword("_ALPHABLEND_ON");
+                    mat.renderQueue = o.Queue;
+                    FadeOriginal.Remove(id);
+                }
+                return;
+            }
 
             if (Mathf.Abs(mat.GetFloat("_Mode") - 2f) < 0.01f)
                 return;   // already in Fade mode
+
+            FadeOriginal[id] = new Blend
+            {
+                Mode = mat.GetFloat("_Mode"),
+                Src = mat.HasProperty("_SrcBlend") ? mat.GetFloat("_SrcBlend") : 1f,
+                Dst = mat.HasProperty("_DstBlend") ? mat.GetFloat("_DstBlend") : 0f,
+                ZWrite = mat.HasProperty("_ZWrite") ? mat.GetFloat("_ZWrite") : 1f,
+                AlphaTest = mat.IsKeywordEnabled("_ALPHATEST_ON"),
+                Queue = mat.renderQueue,
+            };
 
             mat.SetFloat("_Mode", 2f);
             if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);

@@ -44,9 +44,17 @@ namespace CarturHDBlood
 
         internal static void MarkBlocked(HitData hit) => _lastBlocked = hit;
 
-        private static void Postfix(Character __instance, HitData hit, bool triggerEffects)
+        // Vanilla ApplyDamage returns before doing anything when the target is already dead or
+        // teleporting, so no effect should follow. That has to be read BEFORE the call: after a
+        // killing blow IsDead() is true too, and skipping on it would drop the final hit's blood.
+        private static void Prefix(Character __instance, out bool __state)
         {
-            if (__instance == null || hit == null)
+            __state = __instance != null && !__instance.IsDead() && !__instance.IsTeleporting();
+        }
+
+        private static void Postfix(Character __instance, HitData hit, bool triggerEffects, bool __state)
+        {
+            if (!__state || __instance == null || hit == null)
                 return;
             if (!Plugin.ModEnabled.Value || !triggerEffects)
                 return;
@@ -78,7 +86,8 @@ namespace CarturHDBlood
                     return;
 
                 // Below our own bar: too glancing to bleed at all.
-                if (damage <= maxHealth * fraction)
+                // Vanilla also returns outright at 0.1 total damage or less.
+                if (damage <= 0.1f || damage <= maxHealth * fraction)
                     return;
 
                 __instance.m_hitEffects.Create(hit.m_point, Quaternion.identity, __instance.transform);
