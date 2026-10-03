@@ -287,10 +287,11 @@ namespace CarturHDBlood
                     "frame - a fade that ends in a pop.\n" +
                     "On switches the ground materials to the same Fade blending the game already " +
                     "uses for blood_cloud, so alpha means what it says.\n" +
-                    "Turning it OFF needs a relaunch. The switch is written onto the game's own " +
-                    "shared materials and only ever goes Cutout -> Fade; nothing puts the cutout " +
-                    "state back, so a trip to the main menu is not enough and the materials stay " +
-                    "in Fade until the game is restarted."));
+                    "Takes effect immediately either way: turning it off puts back the exact " +
+                    "blending each material had before."));
+            // Live, not at the next world load: ApplyGroundFade now saves and restores the
+            // original blending, so a change can be applied to the materials already owned.
+            GroundFade.SettingChanged += (_, __) => BloodSkin.RefreshLookSettings();
 
             FadeStart = Bind2("2 - Advanced", "FadeStart", 0f,
                 new ConfigDescription(
