@@ -2,9 +2,6 @@
 
 Higher resolution ground blood, and a real burst of blood on every hit and kill.
 
-Fire VFX (campfires, burn status, candles, combat flames) live in a separate mod:
-**Cartur Enhanced**.
-
 ![Ground blood mark](https://raw.githubusercontent.com/jekkle/cartur-hd-blood/master/docs/images/ground-blood-overhead.png)
 
 ![Blood burst on a kill](https://raw.githubusercontent.com/jekkle/cartur-hd-blood/master/docs/images/death-burst.png)
@@ -89,4 +86,6 @@ Bug reports get their own thread so nothing is lost in a chat scroll, and reques
 [Flooring](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Flooring/) ·
 [UI HUD](https://thunderstore.io/c/valheim/p/Cartur/Carturs_UI_HUD/) ·
 [Waste Management](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Waste_Management/) ·
-[Feeding Trough](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Feeding_Trough/)
+[Feeding Trough](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Feeding_Trough/) ·
+[Build Camera](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Build_Camera/) ·
+[Combat Text](https://thunderstore.io/c/valheim/p/Cartur/Carturs_Combat_Text/)

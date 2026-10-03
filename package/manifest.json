@@ -2,7 +2,7 @@
   "name": "Carturs_HD_Blood",
   "version_number": "1.4.0",
   "website_url": "https://github.com/jekkle/cartur-hd-blood",
-  "description": "Higher resolution ground blood, and a real burst of blood on every hit and kill. (Fire VFX moved to Cartur Enhanced.)",
+  "description": "Higher resolution ground blood, and a real burst of blood on every hit and kill.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2333"
   ]
