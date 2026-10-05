@@ -67,7 +67,12 @@ namespace CarturHDBlood
                 if (mat == null)
                     continue;
                 ApplyWetness(mat);
-                ApplyGroundFade(mat);
+                // Ground only. The droplet and splash particle materials are owned for Wetness and
+                // are never faded when created, so fading them here meant toggling GroundFade in the
+                // menu switched droplets to Fade where a fresh launch leaves them Cutout (pilot
+                // 2026-10-05: "CarturBloodDroplet": Cutout -> Fade on the toggle).
+                if (mat != _bloodDropMaterial && mat != _bloodSplashMaterial)
+                    ApplyGroundFade(mat);
                 n++;
             }
             if (n > 0)
