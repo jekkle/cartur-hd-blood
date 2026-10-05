@@ -127,3 +127,9 @@ not need it.
 
 Anything else that reskins blood effects will conflict, since both would be
 writing the same particle systems.
+
+---
+
+**[Discord](https://discord.gg/nd5RqpwNkz)** — bug reports, install help, and mod requests.
+Bug reports get their own thread so nothing is lost in a chat scroll, and requests are voted on.
+
