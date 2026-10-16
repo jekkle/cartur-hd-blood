@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1
+
+- The README is rewritten: a fuller description of what the mod does, every setting and default checked against the code, and image captions that match the pictures. No code changes.
+
 ## 1.4.0
 
 - **The blood cloud now fits the creature.** The airborne cloud copied onto creatures that have none was sized against the wrong source value, so most clouds came out about twice as big as intended and every large creature hit the same cap.
